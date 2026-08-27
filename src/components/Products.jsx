@@ -4,6 +4,7 @@ const PRODUCTS = [
   {
     n: '01',
     name: 'Coconut Oil',
+    slug: 'coconut-oil',
     desc: 'Cold-pressed from fresh white kernel',
     img: '/products/coconut-oil.png',
     tint: '#e6e1d4',
@@ -12,6 +13,7 @@ const PRODUCTS = [
   {
     n: '02',
     name: 'Groundnut Oil',
+    slug: 'groundnut-oil',
     desc: 'Wood-pressed — deep, warm and nutty',
     img: '/products/groundnut-oil.png',
     tint: '#e8d8ba',
@@ -20,6 +22,7 @@ const PRODUCTS = [
   {
     n: '03',
     name: 'Peanut Oil',
+    slug: 'peanut-oil',
     desc: 'Small batch, clean and high-heat ready',
     img: '/products/peanut-oil.png',
     tint: '#e3c8a3',
@@ -72,9 +75,10 @@ export default function Products() {
           {PRODUCTS.map((p) => (
             <article
               key={p.name}
-              className={`group relative mx-auto flex w-full max-w-[24rem] flex-col md:max-w-none ${p.offset}`}
+              id={p.slug}
+              className={`group relative mx-auto flex w-full max-w-[24rem] scroll-mt-28 flex-col md:max-w-none ${p.offset}`}
             >
-              <a href="#shop" className="relative block" aria-label={p.name}>
+              <a href={`#${p.slug}`} className="relative block" aria-label={p.name}>
                 <div
                   className="product-card relative grid place-items-center overflow-hidden"
                   style={{ background: p.tint }}
