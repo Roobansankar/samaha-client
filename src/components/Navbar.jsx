@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { useScrolled } from '../hooks/useScrolled'
 import { Search, User, ShoppingCart, Menu, X, Leaf, ChevronRight } from 'lucide-react'
 
 const LINKS = [
-  { label: 'Home', href: '#top' },
+  { label: 'Home', href: '/', isLink: true },
   { label: 'Shop', href: '#shop' },
   { label: 'Health Benefits', href: '#benefits' },
-  { label: 'About', href: '#groves' },
+  { label: 'About', href: '/about', isLink: true },
   { label: 'Press', href: '#press' },
   { label: 'Blog', href: '#blog' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'Contact', href: '/contact', isLink: true },
 ]
 
 const CART_COUNT = 2
@@ -53,6 +54,7 @@ export default function Navbar() {
   const scrolled = useScrolled(8)
   const [menuOpen, setMenuOpen] = useState(false)
   const [active, setActive] = useState('#top')
+  const location = useLocation()
 
   useEffect(() => {
     document.body.classList.toggle('no-scroll', menuOpen)
@@ -68,39 +70,51 @@ export default function Navbar() {
 
   return (
     <header className={`nav-header ${scrolled ? 'is-scrolled' : ''}`} data-open={menuOpen}>
-      <div className="nav-header__inner grid grid-cols-[auto_1fr_auto] items-center gap-3 min-[901px]:grid-cols-[1fr_auto_1fr] min-[901px]:gap-4"
+      <div className="nav-header__inner grid grid-cols-[1fr_auto_1fr] items-center gap-3 min-[901px]:grid-cols-[auto_1fr_auto] min-[901px]:gap-4"
            style={{ paddingInline: 'var(--spacing-gutter)', paddingBlock: scrolled ? '0.8rem' : '1.35rem', transition: 'padding-block var(--duration-2) var(--ease-default)' }}>
 
-        {/* Left: burger (mobile) + brand */}
-        <div className="flex min-w-0 items-center gap-2">
-          <button
-            type="button"
-            className="nav-burger hidden max-[900px]:grid place-items-center w-[42px] h-[42px] -ml-2 rounded-full bg-transparent text-olive-800 cursor-pointer hover:bg-olive-100 hover:text-olive-950 transition-colors duration-150"
-            aria-label="Open menu"
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen(true)}
-          >
-            <Menu size={22} strokeWidth={1.8} />
-          </button>
+        {/* Burger — mobile only, pinned left */}
+        <button
+          type="button"
+          className="nav-burger hidden max-[900px]:grid place-items-center w-[42px] h-[42px] -ml-2 justify-self-start rounded-full bg-transparent text-olive-800 cursor-pointer hover:bg-olive-100 hover:text-olive-950 transition-colors duration-150"
+          aria-label="Open menu"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(true)}
+        >
+          <Menu size={22} strokeWidth={1.8} />
+        </button>
+
+        {/* Brand — centred on mobile (nudged left to offset the two icons on
+            the right), left-aligned on desktop */}
+        <div className="justify-self-center -translate-x-[18px] min-[901px]:translate-x-0 min-[901px]:justify-self-start min-[901px]:pl-6">
           <Wordmark hideTaglineOnMobile />
         </div>
 
         {/* Center: primary links */}
         <nav className="nav-links max-[900px]:hidden flex justify-center gap-8" aria-label="Primary">
           {LINKS.map((link) => (
-            <a key={link.href}
-               className={`nav-link font-medium tracking-wide text-olive-700 hover:text-olive-950 ${active === link.href ? 'is-active text-olive-950' : ''}`}
-               style={{ fontSize: 'clamp(0.83rem, 0.8rem + 0.15vw, 0.92rem)' }}
-               href={link.href}
-               aria-current={active === link.href ? 'page' : undefined}
-               onClick={() => setActive(link.href)}>
-              {link.label}
-            </a>
+            link.isLink ? (
+              <Link key={link.href}
+                 className={`nav-link font-medium tracking-wide text-olive-700 hover:text-olive-950 ${(link.href === '/' ? location.pathname === '/' : location.pathname.startsWith(link.href)) ? 'is-active text-olive-950' : ''}`}
+                 style={{ fontSize: 'clamp(0.83rem, 0.8rem + 0.15vw, 0.92rem)' }}
+                 to={link.href}>
+                {link.label}
+              </Link>
+            ) : (
+              <a key={link.href}
+                 className={`nav-link font-medium tracking-wide text-olive-700 hover:text-olive-950 ${active === link.href ? 'is-active text-olive-950' : ''}`}
+                 style={{ fontSize: 'clamp(0.83rem, 0.8rem + 0.15vw, 0.92rem)' }}
+                 href={link.href}
+                 aria-current={active === link.href ? 'page' : undefined}
+                 onClick={() => setActive(link.href)}>
+                {link.label}
+              </a>
+            )
           ))}
         </nav>
 
         {/* Right: icons */}
-        <div className="flex items-center justify-end min-w-0 gap-1">
+        <div className="flex items-center justify-end min-w-0 gap-1 min-[901px]:pr-6">
           <button type="button"
                   className="grid place-items-center w-[42px] h-[42px] rounded-full bg-transparent text-olive-800 cursor-pointer hover:bg-olive-100 hover:text-olive-950 transition-colors duration-150"
                   aria-label="Search">
@@ -145,16 +159,29 @@ export default function Navbar() {
         {/* Links */}
         <nav className="flex flex-col flex-grow px-6 py-4" aria-label="Mobile">
           {LINKS.map((link, i) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="nav-drawer-link flex items-center justify-between py-4 border-b border-olive-100 text-olive-900 hover:text-olive-700 transition-colors"
-              style={{ animationDelay: `${0.12 + i * 0.06}s` }}
-              onClick={() => setMenuOpen(false)}
-            >
-              <span className="font-sans font-semibold text-lg tracking-tight">{link.label}</span>
-              <ChevronRight size={18} strokeWidth={2} className="text-olive-400" />
-            </a>
+            link.isLink ? (
+              <Link
+                key={link.href}
+                to={link.href}
+                className="nav-drawer-link flex items-center justify-between py-4 border-b border-olive-100 text-olive-900 hover:text-olive-700 transition-colors"
+                style={{ animationDelay: `${0.12 + i * 0.06}s` }}
+                onClick={() => setMenuOpen(false)}
+              >
+                <span className="font-sans font-semibold text-lg tracking-tight">{link.label}</span>
+                <ChevronRight size={18} strokeWidth={2} className="text-olive-400" />
+              </Link>
+            ) : (
+              <a
+                key={link.href}
+                href={link.href}
+                className="nav-drawer-link flex items-center justify-between py-4 border-b border-olive-100 text-olive-900 hover:text-olive-700 transition-colors"
+                style={{ animationDelay: `${0.12 + i * 0.06}s` }}
+                onClick={() => setMenuOpen(false)}
+              >
+                <span className="font-sans font-semibold text-lg tracking-tight">{link.label}</span>
+                <ChevronRight size={18} strokeWidth={2} className="text-olive-400" />
+              </a>
+            )
           ))}
         </nav>
 

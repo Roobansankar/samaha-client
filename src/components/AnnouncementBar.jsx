@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 
 const MESSAGES = [
-  'Complimentary shipping on orders over $60',
-  'Harvest 2025 — the first cold press is now bottled',
+  'Complimentary shipping on orders over ₹5000',
+  'Harvest 2026 — the first cold press is now bottled',
   'Pressed, tinned & labelled by hand in small lots',
 ]
 

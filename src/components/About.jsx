@@ -3,13 +3,13 @@ import { ArrowUpRight } from 'lucide-react'
 export default function About() {
   return (
     <section className="bg-paper" id="groves">
-      <div className="container-site py-[clamp(3.5rem,9vw,7rem)]">
+      <div className="py-[clamp(3.5rem,9vw,7rem)] px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
         <div className="grid grid-cols-[1fr_1.05fr] items-center gap-[clamp(2rem,6vw,5rem)] max-[768px]:!grid-cols-1 max-[768px]:!gap-8">
 
           {/* Left: image */}
           <div className="relative h-[clamp(340px,40vw,500px)] overflow-hidden rounded-2xl bg-paper-3 shadow-md max-[768px]:h-[62vw] max-[768px]:min-h-[280px]">
             <img
-              src="/about.png"
+              src="https://i.pinimg.com/1200x/8e/aa/7f/8eaa7f18cfaedb369dc392453e6ba4a0.jpg"
               alt="Samaha olive grove on a terraced hillside"
               className="h-full w-full object-cover"
             />

@@ -33,7 +33,7 @@ const COLS = [
 export default function Footer() {
   return (
     <footer className="bg-olive-950 text-on-olive-soft">
-      <div className="container-site py-[clamp(3rem,7vw,5rem)]">
+      <div className="py-[clamp(3rem,7vw,5rem)] px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
         <div className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
 
           {/* Brand */}

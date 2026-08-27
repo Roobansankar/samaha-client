@@ -26,7 +26,7 @@ const REASONS = [
 export default function WhySamaha() {
   return (
     <section className="bg-paper" id="why" aria-label="Why choose Samaha">
-      <div className="container-site py-[clamp(3.5rem,9vw,7rem)]">
+      <div className="py-[clamp(3.5rem,9vw,7rem)] px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
         <div className="grid gap-x-16 gap-y-12 lg:grid-cols-[0.82fr_1.18fr]">
 
           {/* Left — sticky statement */}

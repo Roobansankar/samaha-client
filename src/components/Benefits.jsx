@@ -41,7 +41,8 @@ function Squiggle({ className }) {
 export default function Benefits() {
   return (
     <section className="bg-paper" id="benefits" aria-label="Coconut oil benefits">
-      <div className="mx-auto w-full max-w-[1520px] px-[var(--spacing-gutter)] py-[clamp(2.5rem,6vw,5rem)]">
+      <div className="mx-auto w-full max-w-[1520px] px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)] 
+py-[clamp(2.5rem,6vw,5rem)]">
         <div className="rounded-[clamp(1.25rem,3vw,2rem)] bg-olive-900 px-[clamp(1.5rem,5vw,5.5rem)] py-[clamp(2.5rem,6vw,4.5rem)] text-on-olive">
 
           {/* Header */}
