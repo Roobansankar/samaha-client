@@ -5,7 +5,9 @@ import { Search, User, ShoppingCart, Menu, X, Leaf, ChevronRight } from 'lucide-
 const LINKS = [
   { label: 'Home', href: '#top' },
   { label: 'Shop', href: '#shop' },
+  { label: 'Health Benefits', href: '#benefits' },
   { label: 'About', href: '#groves' },
+  { label: 'Press', href: '#press' },
   { label: 'Blog', href: '#blog' },
   { label: 'Contact', href: '#contact' },
 ]
@@ -66,8 +68,8 @@ export default function Navbar() {
 
   return (
     <header className={`nav-header ${scrolled ? 'is-scrolled' : ''}`} data-open={menuOpen}>
-      <div className="nav-header__inner container-site grid grid-cols-[auto_1fr_auto] items-center gap-3 min-[901px]:grid-cols-[1fr_auto_1fr] min-[901px]:gap-4"
-           style={{ paddingBlock: scrolled ? '0.8rem' : '1.35rem', transition: 'padding-block var(--duration-2) var(--ease-default)' }}>
+      <div className="nav-header__inner grid grid-cols-[auto_1fr_auto] items-center gap-3 min-[901px]:grid-cols-[1fr_auto_1fr] min-[901px]:gap-4"
+           style={{ paddingInline: 'var(--spacing-gutter)', paddingBlock: scrolled ? '0.8rem' : '1.35rem', transition: 'padding-block var(--duration-2) var(--ease-default)' }}>
 
         {/* Left: burger (mobile) + brand */}
         <div className="flex min-w-0 items-center gap-2">

@@ -1,5 +1,6 @@
 import AnnouncementBar from './components/AnnouncementBar'
 import Navbar from './components/Navbar'
+import ImageSlider from './components/ImageSlider'
 import Hero from './components/Hero'
 import TrustBar from './components/TrustBar'
 import About from './components/About'
@@ -19,6 +20,7 @@ export default function App() {
         <AnnouncementBar />
         <Navbar />
       </div>
+      <ImageSlider />
       <main>
         <Hero />
         <TrustBar />
