@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { ChevronLeft, ChevronRight, ArrowRight, Leaf } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
 
 // `src`       — landscape image for >=640px, exported 8:3 (2048x768 / 2560x960)
 // `srcMobile` — portrait image for <640px, exported ~3:4 (1080x1440). Keep the
@@ -13,6 +13,7 @@ const SLIDES = [
     title: 'Coconut Oil',
     text: 'Pressed from fresh white kernel within hours of cracking.',
     href: '#coconut-oil',
+    steps: ['Fresh kernel, milled same day', 'Cold-pressed below 27°C', 'Unfiltered, bottled by hand'],
   },
   {
     src: '/slide2.png',
@@ -22,6 +23,7 @@ const SLIDES = [
     title: 'Groundnut Oil',
     text: 'Deep, warm and nutty — the way it was always meant to be made.',
     href: '#groundnut-oil',
+    steps: ['Sun-dried groundnuts', 'Wood-pressed the slow way', 'Small, dated lots'],
   },
   {
     src: '/slide3.png',
@@ -31,6 +33,7 @@ const SLIDES = [
     title: 'Peanut Oil',
     text: 'Clean, light and stable enough for a hot pan.',
     href: '#peanut-oil',
+    steps: ['Hand-sorted peanuts', 'Cold-pressed in small batches', 'Clean, high-heat ready'],
   },
 ]
 
@@ -72,13 +75,9 @@ export default function ImageSlider() {
       />
 
       {/* Caption — overlaid top-left on mobile, vertically centred on desktop */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 px-[var(--spacing-gutter)] pt-[36%] sm:inset-0 sm:flex sm:items-center sm:px-0 sm:pt-0">
+      <div className="pointer-events-none absolute inset-x-0 top-0 px-[var(--spacing-gutter)] pt-[18%] sm:inset-0 sm:flex sm:items-center sm:px-0 sm:pt-0">
         <div className="mx-auto w-full sm:max-w-[1260px] sm:px-[var(--spacing-gutter)]">
           <div className="pointer-events-auto max-w-[15rem] sm:max-w-[30rem]">
-            {/* brand accent above the eyebrow — mobile only, same on every slide */}
-            <span className="mb-4 grid h-9 w-9 place-items-center rounded-full border border-olive-400/60 bg-paper/40 text-olive-700 sm:hidden">
-              <Leaf size={15} strokeWidth={1.8} />
-            </span>
             <p className="eyebrow">{slide.eyebrow}</p>
             <h2
               className="mt-2 font-display font-medium leading-[1.05] text-olive-900"
@@ -92,6 +91,19 @@ export default function ImageSlider() {
             >
               {slide.text}
             </p>
+
+            {/* mobile-only process steps — per slide */}
+            <ol className="mt-4 space-y-2 sm:hidden">
+              {slide.steps.map((step, i) => (
+                <li key={step} className="flex items-center gap-2.5 leading-tight text-text-soft"
+                    style={{ fontSize: '0.9rem' }}>
+                  <span className="grid h-[1.35rem] w-[1.35rem] shrink-0 place-items-center rounded-full bg-olive-900 text-[0.62rem] font-semibold text-paper">
+                    {i + 1}
+                  </span>
+                  {step}
+                </li>
+              ))}
+            </ol>
             <a href={slide.href} className="btn btn-primary mt-4 sm:mt-6">
               Shop {slide.title} <ArrowRight size={15} strokeWidth={2} />
             </a>
