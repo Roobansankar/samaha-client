@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
 
 // `src`       — landscape image for >=640px, exported 8:3 (2048x768 / 2560x960)
@@ -49,9 +49,28 @@ export default function ImageSlider() {
     return () => clearInterval(timer)
   }, [next])
 
+  // Touch swipe (mobile)
+  const touch = useRef(null)
+  const onTouchStart = (e) => {
+    touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+  const onTouchEnd = (e) => {
+    if (!touch.current) return
+    const dx = e.changedTouches[0].clientX - touch.current.x
+    const dy = e.changedTouches[0].clientY - touch.current.y
+    touch.current = null
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+      dx < 0 ? next() : prev()
+    }
+  }
+
   return (
     // Fixed frame — the image stays put. 4:5 on mobile, 8:3 strip from 640px up.
-    <section className="relative w-full overflow-hidden bg-paper aspect-[4/5] sm:aspect-[8/3]">
+    <section
+      className="relative w-full overflow-hidden bg-paper aspect-[4/5] sm:aspect-[8/3]"
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
       {SLIDES.map((s, i) => (
         <picture key={s.src}>
           {s.srcMobile && <source media="(max-width: 639px)" srcSet={s.srcMobile} />}
