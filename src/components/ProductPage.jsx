@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useParams } from 'react-router-dom'
 import {
-  ArrowRight, ChevronRight, ChevronLeft, X,
+  ChevronRight, ChevronLeft, X,
   Minus, Plus, Check, Star, Truck, RotateCcw, ShieldCheck,
 } from 'lucide-react'
 import { PRODUCTS, HIGHLIGHTS, getProduct, fromPrice } from '../data/products'
@@ -422,37 +422,31 @@ export default function ProductPage() {
             <h2 className="font-display font-medium text-olive-900" style={{ fontSize: headingSize }}>
               More from Samaha
             </h2>
-            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6">
+            <div className="mt-6 grid grid-cols-2 gap-4 sm:max-w-[600px] sm:gap-6">
               {others.map((o) => (
                 <Link
                   key={o.slug}
                   to={`/shop/${o.slug}`}
-                  className="group flex flex-col overflow-hidden rounded-[var(--radius-md)] border border-line bg-paper transition-shadow duration-200 hover:shadow-md"
+                  className="group flex flex-col overflow-hidden rounded-[var(--radius-lg)] border border-line bg-paper transition-shadow duration-200 hover:shadow-md"
                 >
                   <div className="relative overflow-hidden" style={{ background: o.tint, aspectRatio: '1 / 1' }}>
                     <img
                       src={o.images[0]}
                       alt={o.name}
                       onError={(e) => { e.currentTarget.style.visibility = 'hidden' }}
-                      className="absolute inset-0 h-full w-full object-contain p-5 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
+                      className="absolute inset-0 h-full w-full object-contain p-6 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
                     />
                   </div>
-                  <div className="p-3.5">
+                  <div className="p-4">
                     <p className="font-display text-sm font-medium leading-snug text-olive-900 sm:text-base">
                       {o.name}
                     </p>
-                    <p className="mt-1 text-xs text-text-mute">
+                    <p className="mt-1 text-xs text-text-mute sm:text-sm">
                       from <span className="font-semibold text-olive-800">₹{fromPrice(o)}</span>
                     </p>
                   </div>
                 </Link>
               ))}
-              <Link
-                to="/shop"
-                className="col-span-2 flex items-center justify-center gap-2 rounded-[var(--radius-md)] border border-dashed border-olive-300 p-4 text-sm font-medium text-olive-800 transition-colors hover:border-olive-400 hover:bg-paper-2 sm:col-span-1 sm:p-3"
-              >
-                All oils <ArrowRight size={15} strokeWidth={2} />
-              </Link>
             </div>
           </div>
 
