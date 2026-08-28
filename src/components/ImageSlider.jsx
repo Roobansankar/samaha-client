@@ -48,7 +48,7 @@ export default function ImageSlider() {
   return (
     // 3:4 portrait frame on phones, 8:3 strip from 640px up. object-cover fills
     // each frame — the matching image is exported at that ratio so nothing crops.
-    <section className="relative w-full overflow-hidden bg-paper aspect-[3/4] sm:aspect-[8/3]">
+    <section className="relative w-full overflow-hidden bg-paper aspect-[4/5] sm:aspect-[8/3]">
       {SLIDES.map((slide, i) => (
         <div
           key={slide.src}
