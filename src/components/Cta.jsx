@@ -6,7 +6,7 @@ export default function Cta() {
 
   return (
     <section className="bg-paper" id="join" aria-label="Join the list">
-      <div className="container-site pt-[clamp(1rem,2vw,1.5rem)] pb-[clamp(2rem,4vw,3rem)]">
+      <div className="pt-[clamp(1rem,2vw,1.5rem)] pb-[clamp(2rem,4vw,3rem)] px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
         <div className="rounded-[clamp(1.25rem,3vw,2rem)] border border-line bg-paper-2 px-[clamp(1.5rem,5vw,5rem)] py-[clamp(2.5rem,6vw,4.5rem)] text-center">
 
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-700">

@@ -30,7 +30,7 @@ export default function Faq() {
 
   return (
     <section className="bg-paper-2" id="faq" aria-label="Frequently asked questions">
-      <div className="container-site py-[clamp(2rem,4vw,3rem)]">
+      <div className="py-[clamp(2rem,4vw,3rem)] px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
         <div className="grid gap-x-16 gap-y-10 lg:grid-cols-[0.8fr_1.2fr]">
 
           {/* Left — heading */}

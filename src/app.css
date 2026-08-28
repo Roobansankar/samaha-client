@@ -518,9 +518,9 @@
       transform var(--duration-2) var(--ease-default);
   }
 
-  @media (max-width: 639px) {
+  @media (min-width: 640px) {
     .product-card {
-      aspect-ratio: 4 / 5;
+      aspect-ratio: 3 / 4;
     }
   }
 

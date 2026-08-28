@@ -5,19 +5,19 @@ const REVIEWS = [
     quote:
       'The grassy, peppery finish made me slow down at breakfast. It has quietly ruined every supermarket oil for me.',
     name: 'Aarti M.',
-    meta: 'Verified buyer · Bengaluru',
+    meta: 'Verified buyer · Coimbatore',
   },
   {
     quote:
       'You can taste that it was pressed days ago, not months. The coconut oil especially — clean, sweet, nothing stale about it.',
-    name: 'Daniel R.',
-    meta: 'Home cook · 3 orders',
+    name: 'Karthik R.',
+    meta: 'Home cook · Madurai',
   },
   {
     quote:
       'Bought a bottle as a gift and immediately ordered a second for myself. The dated lot number is a lovely touch.',
     name: 'Priya S.',
-    meta: 'Verified buyer · Mumbai',
+    meta: 'Verified buyer · Chennai',
   },
 ]
 
@@ -34,7 +34,7 @@ function Stars({ size = 15 }) {
 export default function Reviews() {
   return (
     <section className="bg-paper" id="reviews" aria-label="Customer reviews">
-      <div className="container-site py-[clamp(2rem,4vw,3rem)]">
+      <div className="py-[clamp(2rem,4vw,3rem)] px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
 
         <div className="mx-auto max-w-[40rem] text-center">
           <p className="eyebrow">Kind words</p>
