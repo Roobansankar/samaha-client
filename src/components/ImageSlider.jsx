@@ -37,9 +37,12 @@ const SLIDES = [
   },
 ]
 
+const REDUCED_MOTION =
+  typeof window !== 'undefined' &&
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
 export default function ImageSlider() {
   const [current, setCurrent] = useState(0)
-  const slide = SLIDES[current]
 
   const next = useCallback(() => setCurrent((c) => (c + 1) % SLIDES.length), [])
   const prev = useCallback(() => setCurrent((c) => (c - 1 + SLIDES.length) % SLIDES.length), [])
@@ -65,69 +68,82 @@ export default function ImageSlider() {
   }
 
   return (
-    // Fixed frame — the image stays put. 4:5 on mobile, 8:3 strip from 640px up.
+    // Fixed frame — 4:5 on mobile, 8:3 strip from 640px up.
     <section
       className="relative w-full overflow-hidden bg-paper aspect-[4/5] sm:aspect-[8/3]"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
+      aria-roledescription="carousel"
     >
-      {SLIDES.map((s, i) => (
-        <picture key={s.src}>
-          {s.srcMobile && <source media="(max-width: 639px)" srcSet={s.srcMobile} />}
-          <img
-            src={s.src}
-            alt={s.alt}
-            aria-hidden={i !== current}
-            className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
-            style={{ opacity: i === current ? 1 : 0 }}
-          />
-        </picture>
-      ))}
-
-      {/* legibility wash — desktop only, from the left */}
+      {/* Sliding track — the whole row translates one slide-width per step */}
       <div
-        className="pointer-events-none absolute inset-0 hidden sm:block"
+        className="flex h-full"
         style={{
-          background:
-            'linear-gradient(90deg, rgba(233,240,228,0.78) 0%, rgba(233,240,228,0.34) 36%, rgba(233,240,228,0) 58%)',
+          transform: `translateX(-${current * 100}%)`,
+          transition: REDUCED_MOTION ? 'none' : 'transform 620ms var(--ease-default)',
+          willChange: 'transform',
         }}
-      />
+      >
+        {SLIDES.map((s, i) => (
+          <div
+            key={s.src}
+            className="relative h-full w-full shrink-0"
+            aria-hidden={i !== current}
+            inert={i !== current}
+          >
+            <picture>
+              {s.srcMobile && <source media="(max-width: 639px)" srcSet={s.srcMobile} />}
+              <img src={s.src} alt={s.alt} className="absolute inset-0 h-full w-full object-cover" />
+            </picture>
 
-      {/* Caption — overlaid top-left on mobile, vertically centred on desktop */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 px-[var(--spacing-gutter)] pt-[18%] sm:inset-0 sm:flex sm:items-center sm:px-0 sm:pt-0">
-        <div className="mx-auto w-full sm:max-w-[1260px] sm:px-[var(--spacing-gutter)]">
-          <div className="pointer-events-auto max-w-[15rem] sm:max-w-[30rem]">
-            <p className="eyebrow">{slide.eyebrow}</p>
-            <h2
-              className="mt-2 font-display font-medium leading-[1.05] text-olive-900"
-              style={{ fontSize: 'clamp(1.95rem, 1.3rem + 2.8vw, 3.4rem)' }}
-            >
-              {slide.title}
-            </h2>
-            <p
-              className="mt-2.5 leading-snug text-text-soft sm:max-w-[38ch]"
-              style={{ fontSize: 'clamp(0.9rem, 0.86rem + 0.25vw, 1.05rem)' }}
-            >
-              {slide.text}
-            </p>
+            {/* legibility wash — desktop only, from the left */}
+            <div
+              className="pointer-events-none absolute inset-0 hidden sm:block"
+              style={{
+                background:
+                  'linear-gradient(90deg, rgba(233,240,228,0.78) 0%, rgba(233,240,228,0.34) 36%, rgba(233,240,228,0) 58%)',
+              }}
+            />
 
-            {/* mobile-only process steps — per slide */}
-            <ol className="mt-4 space-y-2 sm:hidden">
-              {slide.steps.map((step, i) => (
-                <li key={step} className="flex items-center gap-2.5 leading-tight text-text-soft"
-                    style={{ fontSize: '0.9rem' }}>
-                  <span className="grid h-[1.35rem] w-[1.35rem] shrink-0 place-items-center rounded-full bg-olive-900 text-[0.62rem] font-semibold text-paper">
-                    {i + 1}
-                  </span>
-                  {step}
-                </li>
-              ))}
-            </ol>
-            <a href={slide.href} className="btn btn-primary mt-4 sm:mt-6">
-              Shop {slide.title} <ArrowRight size={15} strokeWidth={2} />
-            </a>
+            {/* Caption — overlaid top-left on mobile, vertically centred on desktop */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 px-[var(--spacing-gutter)] pt-[18%] sm:inset-0 sm:flex sm:items-center sm:px-0 sm:pt-0">
+              <div className="mx-auto w-full sm:max-w-[1260px] sm:px-[var(--spacing-gutter)]">
+                <div className="pointer-events-auto max-w-[15rem] sm:max-w-[30rem]">
+                  <p className="eyebrow">{s.eyebrow}</p>
+                  <h2
+                    className="mt-2 font-display font-medium leading-[1.05] text-olive-900"
+                    style={{ fontSize: 'clamp(1.95rem, 1.3rem + 2.8vw, 3.4rem)' }}
+                  >
+                    {s.title}
+                  </h2>
+                  <p
+                    className="mt-2.5 leading-snug text-text-soft sm:max-w-[38ch]"
+                    style={{ fontSize: 'clamp(0.9rem, 0.86rem + 0.25vw, 1.05rem)' }}
+                  >
+                    {s.text}
+                  </p>
+
+                  {/* mobile-only process steps */}
+                  <ol className="mt-4 space-y-2 sm:hidden">
+                    {s.steps.map((step, n) => (
+                      <li key={step} className="flex items-center gap-2.5 leading-tight text-text-soft"
+                          style={{ fontSize: '0.9rem' }}>
+                        <span className="grid h-[1.35rem] w-[1.35rem] shrink-0 place-items-center rounded-full bg-olive-900 text-[0.62rem] font-semibold text-paper">
+                          {n + 1}
+                        </span>
+                        {step}
+                      </li>
+                    ))}
+                  </ol>
+
+                  <a href={s.href} className="btn btn-primary mt-4 sm:mt-6">
+                    Shop {s.title} <ArrowRight size={15} strokeWidth={2} />
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
 
       {/* Arrows — desktop only */}

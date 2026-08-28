@@ -9,7 +9,7 @@ export default function About() {
           {/* Left: image */}
           <div className="relative h-[clamp(340px,40vw,500px)] overflow-hidden rounded-2xl bg-paper-3 shadow-md max-[768px]:h-[62vw] max-[768px]:min-h-[280px]">
             <img
-              src="https://i.pinimg.com/1200x/8e/aa/7f/8eaa7f18cfaedb369dc392453e6ba4a0.jpg"
+              src="https://i.pinimg.com/1200x/49/27/81/492781048f8345b774b53472caba0bcd.jpg"
               alt="Samaha olive grove on a terraced hillside"
               className="h-full w-full object-cover"
             />
@@ -32,7 +32,7 @@ export default function About() {
               the oil we made.
             </p>
 
-            <a href="#groves" className="btn btn-ghost group mt-7">
+            <a href="/about" className="btn btn-ghost group mt-7">
               About us
               <ArrowUpRight
                 size={15}

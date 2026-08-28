@@ -21,9 +21,10 @@ function Home() {
     <>
       <ImageSlider />
       <main>
+        
+        <Products />
         <About />
         <TrustBar />
-        <Products />
         <Benefits />
         <WhySamaha />
         <Faq />
