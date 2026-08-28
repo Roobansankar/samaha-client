@@ -70,8 +70,12 @@ export default function Navbar() {
 
   return (
     <header className={`nav-header ${scrolled ? 'is-scrolled' : ''}`} data-open={menuOpen}>
-      <div className="nav-header__inner grid grid-cols-[1fr_auto_1fr] items-center gap-3 min-[901px]:grid-cols-[auto_1fr_auto] min-[901px]:gap-4"
-           style={{ paddingInline: 'var(--spacing-gutter)', paddingBlock: scrolled ? '0.8rem' : '1.35rem', transition: 'padding-block var(--duration-2) var(--ease-default)' }}>
+      <div className={`nav-header__inner grid grid-cols-[1fr_auto_1fr] items-center gap-3 min-[901px]:grid-cols-[auto_1fr_auto] min-[901px]:gap-4 ${
+             scrolled
+               ? 'py-1.5 min-[901px]:py-[0.6rem]'
+               : 'py-2 min-[901px]:py-[0.9rem]'
+           }`}
+           style={{ paddingInline: 'var(--spacing-gutter)', transition: 'padding var(--duration-2) var(--ease-default)' }}>
 
         {/* Burger — mobile only, pinned left */}
         <button

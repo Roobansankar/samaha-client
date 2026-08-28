@@ -16,6 +16,7 @@ const SLIDES = [
   },
   {
     src: '/slide2.png',
+    srcMobile: '/slidem2.png',
     alt: 'Samaha wood-pressed groundnut oil on a stone plinth',
     eyebrow: 'Wood-pressed · Small batch',
     title: 'Groundnut Oil',
@@ -24,6 +25,7 @@ const SLIDES = [
   },
   {
     src: '/slide3.png',
+    srcMobile: '/slidem3.png',
     alt: 'Samaha cold-pressed peanut oil on a stone plinth',
     eyebrow: 'Small batch · High-heat ready',
     title: 'Peanut Oil',
@@ -79,7 +81,7 @@ export default function ImageSlider() {
           />
 
           {/* caption — upper area on mobile, vertically centred on desktop */}
-          <div className="absolute inset-x-0 top-0 pt-24 sm:bottom-0 sm:flex sm:items-center sm:pt-0">
+          <div className="absolute inset-x-0 top-0 pt-[32%] sm:bottom-0 sm:flex sm:items-center sm:pt-0">
             <div className="container-site">
               <div className="max-w-[24rem]">
                 <p className="eyebrow">{slide.eyebrow}</p>
