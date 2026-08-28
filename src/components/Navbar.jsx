@@ -105,8 +105,9 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* Right: icons */}
-        <div className="flex items-center justify-end min-w-0 gap-1 min-[901px]:pr-6">
+        {/* Right: icons — -mr-2 lets the last icon glyph sit flush with the
+            page content edge (mirrors the burger's -ml-2 on the left) */}
+        <div className="-mr-2.5 flex items-center justify-end min-w-0 gap-1 min-[901px]:pr-6">
           <button type="button"
                   className="grid place-items-center w-[42px] h-[42px] rounded-full bg-transparent text-olive-800 cursor-pointer hover:bg-olive-100 hover:text-olive-950 transition-colors duration-150"
                   aria-label="Search">
