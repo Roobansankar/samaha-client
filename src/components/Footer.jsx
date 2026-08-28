@@ -1,31 +1,32 @@
 import { Leaf, AtSign, Globe } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const COLS = [
   {
     title: 'Shop',
     links: [
-      ['All oils', '#shop'],
-      ['Coconut oil', '#coconut-oil'],
-      ['Groundnut oil', '#groundnut-oil'],
-      ['Peanut oil', '#peanut-oil'],
+      ['All oils', '/'],
+      ['Coconut oil', '/'],
+      ['Groundnut oil', '/'],
+      ['Peanut oil', '/'],
     ],
   },
   {
     title: 'Samaha',
     links: [
-      ['Our story', '#groves'],
-      ['Why Samaha', '#why'],
-      ['Journal', '#blog'],
-      ['Reviews', '#reviews'],
+      ['Our story', '/about'],
+      ['Why Samaha', '/'],
+      ['Journal', '/'],
+      ['Reviews', '/'],
     ],
   },
   {
     title: 'Help',
     links: [
-      ['FAQ', '#faq'],
-      ['Shipping & returns', '#faq'],
-      ['Contact', '#contact'],
-      ['Wholesale', '#contact'],
+      ['FAQ', '/'],
+      ['Shipping & returns', '/'],
+      ['Contact', '/contact'],
+      ['Wholesale', '/contact'],
     ],
   },
 ]
@@ -38,7 +39,7 @@ export default function Footer() {
 
           {/* Brand */}
           <div>
-            <a href="#top" className="inline-flex items-center gap-2.5" aria-label="Samaha — home">
+            <Link to="/" className="inline-flex items-center gap-2.5" aria-label="Samaha — home">
               <span className="grid h-[30px] w-[30px] place-items-center rounded-full border border-line-on-olive text-gold-300">
                 <Leaf size={15} strokeWidth={2} />
               </span>
@@ -48,7 +49,7 @@ export default function Footer() {
                   Extra Virgin Olive Oil
                 </span>
               </span>
-            </a>
+            </Link>
             <p className="mt-5 max-w-[32ch] text-sm leading-relaxed text-on-olive-mute">
               Single-origin oils, cold-pressed within hours of harvest and bottled
               by hand in small, dated lots.
@@ -75,9 +76,9 @@ export default function Footer() {
               <ul className="mt-4 flex flex-col gap-2.5">
                 {col.links.map(([label, href]) => (
                   <li key={label}>
-                    <a href={href} className="text-sm text-on-olive-soft transition-colors duration-200 hover:text-on-olive">
+                    <Link to={href} className="text-sm text-on-olive-soft transition-colors duration-200 hover:text-on-olive">
                       {label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

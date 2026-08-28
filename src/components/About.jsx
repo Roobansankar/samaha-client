@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 export default function About() {
   return (
     <section className="bg-paper" id="groves">
-      <div className="py-[clamp(3.5rem,9vw,7rem)] px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
+      <div className="py-[clamp(2rem,4vw,3rem)] px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
         <div className="grid grid-cols-[1fr_1.05fr] items-center gap-[clamp(2rem,6vw,5rem)] max-[768px]:!grid-cols-1 max-[768px]:!gap-8">
 
           {/* Left: image */}

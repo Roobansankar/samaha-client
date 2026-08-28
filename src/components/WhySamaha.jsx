@@ -1,4 +1,4 @@
-import { Clock, MapPin, Sparkles, Package, ArrowRight } from 'lucide-react'
+import { Clock, MapPin, Sparkles, Package } from 'lucide-react'
 
 const REASONS = [
   {
@@ -25,55 +25,41 @@ const REASONS = [
 
 export default function WhySamaha() {
   return (
-    <section className="bg-paper" id="why" aria-label="Why choose Samaha">
-      <div className="py-[clamp(3.5rem,9vw,7rem)] px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
-        <div className="grid gap-x-16 gap-y-12 lg:grid-cols-[0.82fr_1.18fr]">
+    <section className="bg-paper-inset" id="why" aria-label="Why choose Samaha">
+      <div className="py-[clamp(2rem,4vw,3rem)] px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
 
-          {/* Left — sticky statement */}
-          <div className="lg:sticky lg:top-28 lg:self-start">
-            <p className="eyebrow">Why Samaha</p>
-            <h2 className="mt-3 font-display font-medium leading-[1.08] text-olive-900"
-                style={{ fontSize: 'clamp(1.9rem, 1.3rem + 2.4vw, 3rem)' }}>
-              Four things we won&rsquo;t compromise on
-            </h2>
-            <p className="mt-5 max-w-[38ch] leading-relaxed text-text-soft"
-               style={{ fontSize: 'clamp(0.95rem, 0.9rem + 0.2vw, 1.05rem)' }}>
-              From the first pick at dawn to the last numbered bottle, every step is
-              decided by flavour &mdash; never by margin.
-            </p>
-            <a href="#shop" className="btn btn-primary mt-8">
-              Shop the harvest <ArrowRight size={16} strokeWidth={2} />
-            </a>
-          </div>
-
-          {/* Right — connected rail */}
-          <ol>
-            {REASONS.map((r, i) => (
-              <li key={r.title} className="relative flex gap-5 pb-10 last:pb-0 sm:gap-6">
-                <div className="flex flex-col items-center">
-                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-olive-900 text-paper">
-                    <r.Icon size={19} strokeWidth={1.8} />
-                  </span>
-                  {i < REASONS.length - 1 && (
-                    <span className="mt-2 w-px flex-1 bg-line-2" aria-hidden="true" />
-                  )}
-                </div>
-
-                <div className="pt-1">
-                  <p className="font-display text-xs tracking-[0.25em] text-gold-600">
-                    {String(i + 1).padStart(2, '0')}
-                  </p>
-                  <h3 className="mt-1 font-display font-medium text-olive-900" style={{ fontSize: '1.3rem' }}>
-                    {r.title}
-                  </h3>
-                  <p className="mt-2 max-w-[52ch] leading-relaxed text-text-soft">
-                    {r.text}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
+        {/* Header */}
+        <div className="max-w-[42rem]">
+          <p className="eyebrow">Why Samaha</p>
+          <h2 className="mt-3 font-display font-medium leading-[1.08] text-olive-900"
+              style={{ fontSize: 'clamp(1.9rem, 1.3rem + 2.4vw, 3rem)' }}>
+            Four things we won&rsquo;t compromise on
+          </h2>
         </div>
+
+        {/* Cards - horizontal scroll on mobile, grid on desktop */}
+        <div className="mt-12 flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-4 md:overflow-visible md:pb-0">
+          {REASONS.map((r, i) => (
+            <div
+              key={r.title}
+              className="group min-w-[260px] sm:min-w-[280px] md:min-w-0 snap-start p-6 rounded-2xl bg-paper border border-line transition-all duration-300 hover:shadow-md hover:border-olive-300"
+            >
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-olive-100 text-olive-800 group-hover:bg-olive-900 group-hover:text-paper transition-colors duration-300">
+                <r.Icon size={20} strokeWidth={1.8} />
+              </span>
+              <p className="mt-4 font-display text-xs tracking-[0.25em] text-gold-600">
+                {String(i + 1).padStart(2, '0')}
+              </p>
+              <h3 className="mt-2 font-display font-medium text-olive-900" style={{ fontSize: '1.15rem' }}>
+                {r.title}
+              </h3>
+              <p className="mt-3 leading-relaxed text-text-soft" style={{ fontSize: '0.95rem' }}>
+                {r.text}
+              </p>
+            </div>
+          ))}
+        </div>
+
       </div>
     </section>
   )

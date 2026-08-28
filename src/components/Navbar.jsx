@@ -4,12 +4,12 @@ import { useScrolled } from '../hooks/useScrolled'
 import { Search, User, ShoppingCart, Menu, X, Leaf, ChevronRight } from 'lucide-react'
 
 const LINKS = [
-  { label: 'Home', href: '/', isLink: true },
-  { label: 'Shop', href: '#shop' },
-  { label: 'Health Benefits', href: '#benefits' },
+  { label: 'Home', href: '/', isLink: true, exact: true },
+  { label: 'Shop', href: '/shop', isLink: true },
+  { label: 'Health Benefits', href: '/', isLink: true },
   { label: 'About', href: '/about', isLink: true },
-  { label: 'Press', href: '#press' },
-  { label: 'Blog', href: '#blog' },
+  { label: 'Press', href: '/', isLink: true },
+  { label: 'Blog', href: '/', isLink: true },
   { label: 'Contact', href: '/contact', isLink: true },
 ]
 
@@ -17,7 +17,7 @@ const CART_COUNT = 2
 
 function Wordmark({ light = false, hideTaglineOnMobile = false }) {
   return (
-    <a className="inline-flex shrink-0 items-center gap-2.5" href="#top" aria-label="Samaha — home">
+    <Link className="inline-flex shrink-0 items-center gap-2.5" to="/" aria-label="Samaha — home">
       <span
         className="grid place-items-center w-[30px] h-[30px] rounded-full shrink-0"
         style={{
@@ -46,14 +46,13 @@ function Wordmark({ light = false, hideTaglineOnMobile = false }) {
           Extra Virgin Olive Oil
         </span>
       </span>
-    </a>
+    </Link>
   )
 }
 
 export default function Navbar() {
   const scrolled = useScrolled(8)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [active, setActive] = useState('#top')
   const location = useLocation()
 
   useEffect(() => {
@@ -97,23 +96,12 @@ export default function Navbar() {
         {/* Center: primary links */}
         <nav className="nav-links max-[900px]:hidden flex justify-center gap-8" aria-label="Primary">
           {LINKS.map((link) => (
-            link.isLink ? (
-              <Link key={link.href}
-                 className={`nav-link font-medium tracking-wide text-olive-700 hover:text-olive-950 ${(link.href === '/' ? location.pathname === '/' : location.pathname.startsWith(link.href)) ? 'is-active text-olive-950' : ''}`}
-                 style={{ fontSize: 'clamp(0.83rem, 0.8rem + 0.15vw, 0.92rem)' }}
-                 to={link.href}>
-                {link.label}
-              </Link>
-            ) : (
-              <a key={link.href}
-                 className={`nav-link font-medium tracking-wide text-olive-700 hover:text-olive-950 ${active === link.href ? 'is-active text-olive-950' : ''}`}
-                 style={{ fontSize: 'clamp(0.83rem, 0.8rem + 0.15vw, 0.92rem)' }}
-                 href={link.href}
-                 aria-current={active === link.href ? 'page' : undefined}
-                 onClick={() => setActive(link.href)}>
-                {link.label}
-              </a>
-            )
+            <Link key={link.label}
+               className={`nav-link font-medium tracking-wide text-olive-700 hover:text-olive-950 ${(link.exact && location.pathname === '/') || (!link.exact && location.pathname === link.href && link.href !== '/') ? 'is-active text-olive-950' : ''}`}
+               style={{ fontSize: 'clamp(0.83rem, 0.8rem + 0.15vw, 0.92rem)' }}
+               to={link.href}>
+              {link.label}
+            </Link>
           ))}
         </nav>
 
@@ -163,9 +151,8 @@ export default function Navbar() {
         {/* Links */}
         <nav className="flex flex-col flex-grow px-6 py-4" aria-label="Mobile">
           {LINKS.map((link, i) => (
-            link.isLink ? (
               <Link
-                key={link.href}
+                key={link.label}
                 to={link.href}
                 className="nav-drawer-link flex items-center justify-between py-4 border-b border-olive-100 text-olive-900 hover:text-olive-700 transition-colors"
                 style={{ animationDelay: `${0.12 + i * 0.06}s` }}
@@ -174,18 +161,6 @@ export default function Navbar() {
                 <span className="font-sans font-semibold text-lg tracking-tight">{link.label}</span>
                 <ChevronRight size={18} strokeWidth={2} className="text-olive-400" />
               </Link>
-            ) : (
-              <a
-                key={link.href}
-                href={link.href}
-                className="nav-drawer-link flex items-center justify-between py-4 border-b border-olive-100 text-olive-900 hover:text-olive-700 transition-colors"
-                style={{ animationDelay: `${0.12 + i * 0.06}s` }}
-                onClick={() => setMenuOpen(false)}
-              >
-                <span className="font-sans font-semibold text-lg tracking-tight">{link.label}</span>
-                <ChevronRight size={18} strokeWidth={2} className="text-olive-400" />
-              </a>
-            )
           ))}
         </nav>
 

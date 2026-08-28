@@ -1,4 +1,5 @@
 import { Leaf, Droplet, Wind, Smile, Flame } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const BENEFITS = [
   {
@@ -42,7 +43,7 @@ export default function Benefits() {
   return (
     <section className="bg-paper" id="benefits" aria-label="Coconut oil benefits">
       <div className="mx-auto w-full max-w-[1520px] px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)] 
-py-[clamp(2.5rem,6vw,5rem)]">
+py-[clamp(2rem,4vw,3rem)]">
         <div className="rounded-[clamp(1.25rem,3vw,2rem)] bg-olive-900 px-[clamp(1.5rem,5vw,5.5rem)] py-[clamp(2.5rem,6vw,4.5rem)] text-on-olive">
 
           {/* Header */}
@@ -58,10 +59,10 @@ py-[clamp(2.5rem,6vw,5rem)]">
 
             <div className="mt-6 flex items-center justify-center gap-3">
               <Squiggle className="h-12 w-14 -translate-y-1 text-gold-300 max-[560px]:hidden" />
-              <a href="#shop"
+              <Link to="/"
                  className="inline-flex items-center rounded-pill bg-paper px-6 py-2.5 text-sm font-semibold text-olive-900 transition-transform duration-200 hover:scale-[1.03]">
                 Shop Now
-              </a>
+              </Link>
             </div>
           </div>
 

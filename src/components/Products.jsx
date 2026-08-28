@@ -1,4 +1,5 @@
 import { ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const PRODUCTS = [
   {
@@ -53,7 +54,7 @@ function PalmFrond({ className }) {
 export default function Products() {
   return (
     <section className="relative overflow-clip bg-paper-inset" id="shop">
-      <div className="container-site relative py-[clamp(3.5rem,9vw,7rem)]">
+      <div className="container-site relative py-[clamp(2rem,4vw,3rem)]">
 
         {/* Heading */}
         <div className="mx-auto max-w-[42rem] text-center">
@@ -65,20 +66,20 @@ export default function Products() {
              style={{ fontSize: 'clamp(1rem, 0.95rem + 0.3vw, 1.2rem)' }}>
             Cold-pressed, unrefined, and bottled by hand.
           </p>
-          <a href="#shop" className="btn btn-primary mt-7">
+          <Link to="/" className="btn btn-primary mt-7">
             Shop all oils <ArrowRight size={16} strokeWidth={2} />
-          </a>
+          </Link>
         </div>
 
         {/* Three products — staggered cards */}
-        <div className="mt-[clamp(2.5rem,6vw,4.5rem)] grid gap-x-6 gap-y-12 sm:gap-y-16 grid-cols-1 sm:grid-cols-3">
+        <div className="mt-[clamp(2rem,5vw,3.5rem)] grid gap-x-6 gap-y-12 sm:gap-y-16 grid-cols-1 sm:grid-cols-3">
           {PRODUCTS.map((p) => (
             <article
               key={p.name}
               id={p.slug}
               className={`group relative mx-auto flex w-full max-w-[18rem] sm:max-w-none scroll-mt-24 sm:scroll-mt-28 flex-col ${p.offset}`}
             >
-              <a href={`#${p.slug}`} className="relative block" aria-label={p.name}>
+              <div className="relative block" aria-label={p.name}>
                 <div
                   className="product-card relative grid place-items-center overflow-hidden"
                   style={{ background: p.tint }}
@@ -102,7 +103,7 @@ export default function Products() {
                     {p.n}
                   </span>
                 </div>
-              </a>
+              </div>
 
               <p className="mt-2 text-center text-sm leading-relaxed text-text-mute">
                 {p.desc}

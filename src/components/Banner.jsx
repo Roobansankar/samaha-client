@@ -1,4 +1,5 @@
 import { ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export default function Banner() {
   return (
@@ -23,9 +24,9 @@ export default function Banner() {
              style={{ fontSize: 'clamp(0.95rem, 0.9rem + 0.2vw, 1.1rem)' }}>
             Simple ingredients. Thoughtful preparation. Authentic goodness.
           </p>
-          <a href="#shop" className="btn btn-cream mt-8">
+          <Link to="/" className="btn btn-cream mt-8">
             Shop Samaha oils <ArrowRight size={16} strokeWidth={2} />
-          </a>
+          </Link>
         </div>
       </div>
     </section>

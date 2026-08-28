@@ -1,4 +1,5 @@
 import { ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const HEADLINE = ['Olive', 'oil', 'worth', 'slowing', 'down', 'for.']
 
@@ -51,12 +52,12 @@ export default function Hero() {
           </p>
 
           <div className="hero-rise mt-8 flex flex-wrap gap-3" style={{ '--d': '650ms' }}>
-            <a className="btn btn-primary" href="#shop">
+            <Link className="btn btn-primary" to="/">
               Shop the harvest <ArrowRight size={17} strokeWidth={2} />
-            </a>
-            <a className="btn btn-ghost" href="#groves">
+            </Link>
+            <Link className="btn btn-ghost" to="/about">
               Our story
-            </a>
+            </Link>
           </div>
         </div>
 

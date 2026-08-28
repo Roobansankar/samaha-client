@@ -7,6 +7,7 @@ import TrustBar from './components/TrustBar'
 import About from './components/About'
 import AboutPage from './components/AboutPage'
 import ContactPage from './components/ContactPage'
+import ShopPage from './components/ShopPage'
 import Products from './components/Products'
 import Benefits from './components/Benefits'
 import WhySamaha from './components/WhySamaha'
@@ -15,6 +16,7 @@ import Reviews from './components/Reviews'
 import Banner from './components/Banner'
 import Cta from './components/Cta'
 import Footer from './components/Footer'
+import NotFound from './components/NotFound'
 
 function Home() {
   return (
@@ -46,8 +48,10 @@ export default function App() {
       </div>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/shop" element={<ShopPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
     </BrowserRouter>

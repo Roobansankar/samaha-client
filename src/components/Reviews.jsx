@@ -34,7 +34,7 @@ function Stars({ size = 15 }) {
 export default function Reviews() {
   return (
     <section className="bg-paper" id="reviews" aria-label="Customer reviews">
-      <div className="container-site py-[clamp(3.5rem,9vw,7rem)]">
+      <div className="container-site py-[clamp(2rem,4vw,3rem)]">
 
         <div className="mx-auto max-w-[40rem] text-center">
           <p className="eyebrow">Kind words</p>

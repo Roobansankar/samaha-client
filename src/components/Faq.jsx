@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Plus, ArrowUpRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const FAQS = [
   {
@@ -29,7 +30,7 @@ export default function Faq() {
 
   return (
     <section className="bg-paper-2" id="faq" aria-label="Frequently asked questions">
-      <div className="container-site py-[clamp(3.5rem,9vw,7rem)]">
+      <div className="container-site py-[clamp(2rem,4vw,3rem)]">
         <div className="grid gap-x-16 gap-y-10 lg:grid-cols-[0.8fr_1.2fr]">
 
           {/* Left — heading */}
@@ -39,12 +40,12 @@ export default function Faq() {
                 style={{ fontSize: 'clamp(1.9rem, 1.3rem + 2.4vw, 3rem)' }}>
               Questions, answered
             </h2>
-            <a href="#contact"
+            <Link to="/contact"
                className="group mt-6 inline-flex items-center gap-2 text-sm font-semibold text-olive-800 transition-colors duration-200 hover:text-olive-950">
               <span className="underline decoration-1 underline-offset-[5px]">Still stuck? Talk to us</span>
               <ArrowUpRight size={15} strokeWidth={2}
                 className="transition-transform duration-200 ease-out group-hover:translate-x-[2px] group-hover:-translate-y-[2px]" />
-            </a>
+            </Link>
           </div>
 
           {/* Right — accordion */}
