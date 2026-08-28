@@ -158,7 +158,7 @@ export default function ShopPage() {
               >
                 <div
                   className="relative grid place-items-center overflow-hidden"
-                  style={{ background: p.tint, aspectRatio: '4 / 5' }}
+                  style={{ background: p.tint, aspectRatio: '1 / 1' }}
                 >
                   {p.badge && (
                     <span className="absolute left-3 top-3 rounded-pill bg-olive-900 px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-paper">
