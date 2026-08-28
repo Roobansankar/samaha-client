@@ -62,14 +62,7 @@ export default function ImageSlider() {
         </picture>
       ))}
 
-      {/* legibility wash — from the top on mobile, from the left on desktop */}
-      <div
-        className="pointer-events-none absolute inset-0 sm:hidden"
-        style={{
-          background:
-            'linear-gradient(180deg, rgba(233,240,228,0.96) 0%, rgba(233,240,228,0.78) 34%, rgba(233,240,228,0.35) 58%, rgba(233,240,228,0) 78%)',
-        }}
-      />
+      {/* legibility wash — desktop only, from the left */}
       <div
         className="pointer-events-none absolute inset-0 hidden sm:block"
         style={{
