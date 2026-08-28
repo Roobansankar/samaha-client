@@ -27,9 +27,10 @@ function Home() {
         <TrustBar />
         <Benefits />
         <WhySamaha />
+        <Banner />
         <Faq />
         <Reviews />
-        <Banner />
+        
         <Cta />
       </main>
     </>

@@ -1,4 +1,5 @@
 import { ArrowUpRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export default function About() {
   return (
@@ -21,7 +22,7 @@ export default function About() {
             <h2 className="font-sans font-bold text-olive-900 tracking-tight leading-[1.08]"
                 style={{ fontSize: 'clamp(1.9rem, 1.3rem + 2.6vw, 3.2rem)' }}>
               Grown around the way you{' '}
-              <span className="text-gold-600">cook, taste and share</span>
+              <span className="text-clay-500">cook, taste and share</span>
             </h2>
 
             <p className="mt-5 text-text-soft leading-[1.7]"
@@ -32,14 +33,14 @@ export default function About() {
               the oil we made.
             </p>
 
-            <a href="/about" className="btn btn-ghost group mt-7">
+            <Link to="/about" className="btn btn-ghost group mt-7">
               About us
               <ArrowUpRight
                 size={15}
                 strokeWidth={2}
                 className="transition-transform duration-200 ease-out group-hover:translate-x-[2px] group-hover:-translate-y-[2px]"
               />
-            </a>
+            </Link>
           </div>
 
         </div>

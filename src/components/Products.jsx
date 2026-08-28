@@ -71,12 +71,12 @@ export default function Products() {
         </div>
 
         {/* Three products — staggered cards */}
-        <div className="mt-[clamp(2.5rem,6vw,4.5rem)] grid gap-x-6 gap-y-16 md:grid-cols-3">
+        <div className="mt-[clamp(2.5rem,6vw,4.5rem)] grid gap-x-6 gap-y-12 sm:gap-y-16 grid-cols-1 sm:grid-cols-3">
           {PRODUCTS.map((p) => (
             <article
               key={p.name}
               id={p.slug}
-              className={`group relative mx-auto flex w-full max-w-[24rem] scroll-mt-28 flex-col md:max-w-none ${p.offset}`}
+              className={`group relative mx-auto flex w-full max-w-[18rem] sm:max-w-none scroll-mt-24 sm:scroll-mt-28 flex-col ${p.offset}`}
             >
               <a href={`#${p.slug}`} className="relative block" aria-label={p.name}>
                 <div
@@ -88,13 +88,13 @@ export default function Products() {
                     src={p.img}
                     alt={p.name}
                     onError={(e) => { e.currentTarget.style.display = 'none' }}
-                    className="absolute inset-0 h-full w-full object-contain p-6 transition-transform duration-700 ease-out group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full object-contain p-4 sm:p-6 transition-transform duration-700 ease-out group-hover:scale-105"
                   />
                 </div>
 
                 {/* label below card */}
-                <div className="mt-5 text-center">
-                  <span className="font-display text-lg font-medium tracking-wide text-olive-900">
+                <div className="mt-3 sm:mt-5 text-center">
+                  <span className="font-display text-base sm:text-lg font-medium tracking-wide text-olive-900">
                     {p.name}
                   </span>
                   <span className="mx-3 inline-block h-px w-5 align-middle bg-gold-500" />

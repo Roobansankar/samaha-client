@@ -518,6 +518,12 @@
       transform var(--duration-2) var(--ease-default);
   }
 
+  @media (max-width: 639px) {
+    .product-card {
+      aspect-ratio: 4 / 5;
+    }
+  }
+
   .product-card:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-4px);
