@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ArrowRight, Leaf } from 'lucide-react'
 
 // `src`       — landscape image for >=640px, exported 8:3 (2048x768 / 2560x960)
 // `srcMobile` — portrait image for <640px, exported ~3:4 (1080x1440). Keep the
@@ -82,6 +82,10 @@ export default function ImageSlider() {
       <div className="pointer-events-none absolute inset-x-0 top-0 px-[var(--spacing-gutter)] pt-[36%] sm:inset-0 sm:flex sm:items-center sm:px-0 sm:pt-0">
         <div className="mx-auto w-full sm:max-w-[1260px] sm:px-[var(--spacing-gutter)]">
           <div className="pointer-events-auto max-w-[15rem] sm:max-w-[30rem]">
+            {/* brand accent above the eyebrow — mobile only, same on every slide */}
+            <span className="mb-4 grid h-9 w-9 place-items-center rounded-full border border-olive-400/60 bg-paper/40 text-olive-700 sm:hidden">
+              <Leaf size={15} strokeWidth={1.8} />
+            </span>
             <p className="eyebrow">{slide.eyebrow}</p>
             <h2
               className="mt-2 font-display font-medium leading-[1.05] text-olive-900"
