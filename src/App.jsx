@@ -18,6 +18,7 @@ import Banner from './components/Banner'
 import Cta from './components/Cta'
 import Footer from './components/Footer'
 import NotFound from './components/NotFound'
+import ScrollToTop from './components/ScrollToTop'
 
 function Home() {
   return (
@@ -43,6 +44,7 @@ function Home() {
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <div className="site-top">
         <AnnouncementBar />
         <Navbar />
