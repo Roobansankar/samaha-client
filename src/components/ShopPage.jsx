@@ -111,11 +111,11 @@ export default function ShopPage() {
               >
                 <Link to={`/shop/${p.slug}`} className="block" aria-label={p.name}>
                   <div
-                    className="relative grid place-items-center overflow-hidden"
+                    className="relative overflow-hidden"
                     style={{ background: p.tint, aspectRatio: '1 / 1' }}
                   >
                     {p.badge && (
-                      <span className="absolute left-3 top-3 rounded-pill bg-olive-900 px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-paper">
+                      <span className="absolute left-3 top-3 z-10 rounded-pill bg-olive-900 px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-paper">
                         {p.badge}
                       </span>
                     )}
@@ -123,7 +123,7 @@ export default function ShopPage() {
                       src={p.images[0]}
                       alt={p.name}
                       onError={(e) => { e.currentTarget.style.visibility = 'hidden' }}
-                      className="h-[80%] w-auto object-contain transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+                      className="absolute inset-0 h-full w-full object-contain p-6 transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                     />
                   </div>
                 </Link>

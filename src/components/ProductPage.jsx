@@ -429,23 +429,27 @@ export default function ProductPage() {
                   to={`/shop/${o.slug}`}
                   className="group flex flex-col overflow-hidden rounded-[var(--radius-md)] border border-line bg-paper transition-shadow duration-200 hover:shadow-md"
                 >
-                  <div className="relative grid place-items-center overflow-hidden" style={{ background: o.tint, aspectRatio: '1 / 1' }}>
+                  <div className="relative overflow-hidden" style={{ background: o.tint, aspectRatio: '1 / 1' }}>
                     <img
                       src={o.images[0]}
                       alt={o.name}
                       onError={(e) => { e.currentTarget.style.visibility = 'hidden' }}
-                      className="h-[78%] w-auto object-contain transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+                      className="absolute inset-0 h-full w-full object-contain p-5 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
                     />
                   </div>
-                  <div className="flex items-center justify-between gap-2 p-3.5">
-                    <span className="font-display text-sm font-medium text-olive-900 sm:text-base">{o.name}</span>
-                    <span className="text-xs text-text-mute">from ₹{fromPrice(o)}</span>
+                  <div className="p-3.5">
+                    <p className="font-display text-sm font-medium leading-snug text-olive-900 sm:text-base">
+                      {o.name}
+                    </p>
+                    <p className="mt-1 text-xs text-text-mute">
+                      from <span className="font-semibold text-olive-800">₹{fromPrice(o)}</span>
+                    </p>
                   </div>
                 </Link>
               ))}
               <Link
                 to="/shop"
-                className="hidden items-center justify-center gap-2 rounded-[var(--radius-md)] border border-dashed border-olive-300 p-3 text-sm font-medium text-olive-800 transition-colors hover:bg-paper-2 sm:flex"
+                className="col-span-2 flex items-center justify-center gap-2 rounded-[var(--radius-md)] border border-dashed border-olive-300 p-4 text-sm font-medium text-olive-800 transition-colors hover:border-olive-400 hover:bg-paper-2 sm:col-span-1 sm:p-3"
               >
                 All oils <ArrowRight size={15} strokeWidth={2} />
               </Link>
