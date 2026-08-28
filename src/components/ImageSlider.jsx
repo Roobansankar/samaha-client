@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
 
 // `src`       — landscape image for >=640px, exported 8:3 (2048x768 / 2560x960)
-// `srcMobile` — optional portrait image for <640px, exported 3:4 (1080x1440)
-//               omit it and the landscape image is used (centre-cropped) on mobile
+// `srcMobile` — portrait image for <640px, exported ~3:4 (1080x1440). Keep the
+//               left third of it clear — the copy is overlaid there on mobile.
 const SLIDES = [
   {
     src: '/slide1.png',
@@ -36,6 +36,7 @@ const SLIDES = [
 
 export default function ImageSlider() {
   const [current, setCurrent] = useState(0)
+  const slide = SLIDES[current]
 
   const next = useCallback(() => setCurrent((c) => (c + 1) % SLIDES.length), [])
   const prev = useCallback(() => setCurrent((c) => (c - 1 + SLIDES.length) % SLIDES.length), [])
@@ -46,67 +47,62 @@ export default function ImageSlider() {
   }, [next])
 
   return (
-    // 3:4 portrait frame on phones, 8:3 strip from 640px up. object-cover fills
-    // each frame — the matching image is exported at that ratio so nothing crops.
+    // Fixed frame — the image stays put. 4:5 on mobile, 8:3 strip from 640px up.
     <section className="relative w-full overflow-hidden bg-paper aspect-[4/5] sm:aspect-[8/3]">
-      {SLIDES.map((slide, i) => (
-        <div
-          key={slide.src}
-          className="absolute inset-0 transition-opacity duration-700"
-          style={{ opacity: i === current ? 1 : 0 }}
-          aria-hidden={i !== current}
-          inert={i !== current}
-        >
-          <picture>
-            {slide.srcMobile && (
-              <source media="(max-width: 639px)" srcSet={slide.srcMobile} />
-            )}
-            <img src={slide.src} alt={slide.alt} className="absolute inset-0 h-full w-full object-cover" />
-          </picture>
-
-          {/* legibility wash — from the top on mobile, from the left on desktop */}
-          <div
-            className="pointer-events-none absolute inset-0 sm:hidden"
-            style={{
-              background:
-                'linear-gradient(180deg, rgba(233,240,228,0.94) 0%, rgba(233,240,228,0.5) 30%, rgba(233,240,228,0) 58%)',
-            }}
+      {SLIDES.map((s, i) => (
+        <picture key={s.src}>
+          {s.srcMobile && <source media="(max-width: 639px)" srcSet={s.srcMobile} />}
+          <img
+            src={s.src}
+            alt={s.alt}
+            aria-hidden={i !== current}
+            className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
+            style={{ opacity: i === current ? 1 : 0 }}
           />
-          <div
-            className="pointer-events-none absolute inset-0 hidden sm:block"
-            style={{
-              background:
-                'linear-gradient(90deg, rgba(233,240,228,0.74) 0%, rgba(233,240,228,0.32) 34%, rgba(233,240,228,0) 56%)',
-            }}
-          />
-
-          {/* caption — upper area on mobile, vertically centred on desktop */}
-          <div className="absolute inset-x-0 top-0 pt-[32%] sm:bottom-0 sm:flex sm:items-center sm:pt-0">
-            <div className="container-site">
-              <div className="max-w-[24rem]">
-                <p className="eyebrow">{slide.eyebrow}</p>
-                <h2
-                  className="mt-2 font-display font-medium leading-[1.04] text-olive-900"
-                  style={{ fontSize: 'clamp(1.5rem, 0.8rem + 3.4vw, 3.4rem)' }}
-                >
-                  {slide.title}
-                </h2>
-                <p
-                  className="mt-3 max-w-[34ch] leading-snug text-text-soft"
-                  style={{ fontSize: 'clamp(0.9rem, 0.85rem + 0.3vw, 1.05rem)' }}
-                >
-                  {slide.text}
-                </p>
-                <a href={slide.href} className="btn btn-primary mt-4 sm:mt-6">
-                  Shop {slide.title} <ArrowRight size={15} strokeWidth={2} />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+        </picture>
       ))}
 
-      {/* Nav arrows */}
+      {/* legibility wash — from the top on mobile, from the left on desktop */}
+      <div
+        className="pointer-events-none absolute inset-0 sm:hidden"
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(233,240,228,0.96) 0%, rgba(233,240,228,0.78) 34%, rgba(233,240,228,0.35) 58%, rgba(233,240,228,0) 78%)',
+        }}
+      />
+      <div
+        className="pointer-events-none absolute inset-0 hidden sm:block"
+        style={{
+          background:
+            'linear-gradient(90deg, rgba(233,240,228,0.78) 0%, rgba(233,240,228,0.34) 36%, rgba(233,240,228,0) 58%)',
+        }}
+      />
+
+      {/* Caption — overlaid top-left on mobile, vertically centred on desktop */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 px-[var(--spacing-gutter)] pt-[36%] sm:inset-0 sm:flex sm:items-center sm:px-0 sm:pt-0">
+        <div className="mx-auto w-full sm:max-w-[1260px] sm:px-[var(--spacing-gutter)]">
+          <div className="pointer-events-auto max-w-[15rem] sm:max-w-[30rem]">
+            <p className="eyebrow">{slide.eyebrow}</p>
+            <h2
+              className="mt-2 font-display font-medium leading-[1.05] text-olive-900"
+              style={{ fontSize: 'clamp(1.95rem, 1.3rem + 2.8vw, 3.4rem)' }}
+            >
+              {slide.title}
+            </h2>
+            <p
+              className="mt-2.5 leading-snug text-text-soft sm:max-w-[38ch]"
+              style={{ fontSize: 'clamp(0.9rem, 0.86rem + 0.25vw, 1.05rem)' }}
+            >
+              {slide.text}
+            </p>
+            <a href={slide.href} className="btn btn-primary mt-4 sm:mt-6">
+              Shop {slide.title} <ArrowRight size={15} strokeWidth={2} />
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Arrows — desktop only */}
       <button
         onClick={prev}
         className="absolute left-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-black/25 text-white backdrop-blur-sm transition-colors hover:bg-black/45 sm:grid cursor-pointer"
