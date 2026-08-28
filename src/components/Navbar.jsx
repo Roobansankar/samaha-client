@@ -6,7 +6,7 @@ import { Search, User, ShoppingCart, Menu, X, Leaf, ChevronRight } from 'lucide-
 const LINKS = [
   { label: 'Home', href: '/', isLink: true, exact: true },
   { label: 'Shop', href: '/shop', isLink: true },
-  { label: 'Health Benefits', href: '/', isLink: true },
+  { label: 'Health Benefits', href: '/health-benefits', isLink: true },
   { label: 'About', href: '/about', isLink: true },
   { label: 'Press', href: '/', isLink: true },
   { label: 'Blog', href: '/', isLink: true },
