@@ -76,7 +76,7 @@ export default function Products() {
               id={p.slug}
               className={`group relative mx-auto flex w-full max-w-[18rem] sm:max-w-none scroll-mt-24 sm:scroll-mt-28 flex-col ${p.offset}`}
             >
-              <div className="relative block" aria-label={p.name}>
+              <Link to={`/shop/${p.slug}`} className="relative block" aria-label={p.name}>
                 <div
                   className="product-card relative grid place-items-center overflow-hidden"
                   style={{ background: p.tint }}
@@ -100,7 +100,7 @@ export default function Products() {
                     {p.n}
                   </span>
                 </div>
-              </div>
+              </Link>
 
               <p className="mt-2 text-center text-sm leading-relaxed text-text-mute">
                 {p.desc}

@@ -1,46 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Leaf, ShieldCheck, Truck, Star } from 'lucide-react'
-
-const PRODUCTS = [
-  {
-    name: 'Coconut Oil',
-    slug: 'coconut-oil',
-    tag: 'Coconut',
-    desc: 'Cold-pressed from fresh white kernel — mild, clean and endlessly versatile.',
-    img: '/products/coconut-oil.png',
-    tint: '#e6e1d4',
-    price: 180,
-    size: '1 L',
-    rating: 4.9,
-    reviews: 214,
-    badge: 'Best seller',
-  },
-  {
-    name: 'Groundnut Oil',
-    slug: 'groundnut-oil',
-    tag: 'Groundnut',
-    desc: 'Wood-pressed the slow way. Deep, warm and nutty — the way it used to be made.',
-    img: '/products/groundnut-oil.png',
-    tint: '#e8d8ba',
-    price: 220,
-    size: '1 L',
-    rating: 4.8,
-    reviews: 156,
-  },
-  {
-    name: 'Peanut Oil',
-    slug: 'peanut-oil',
-    tag: 'Peanut',
-    desc: 'Small batch, light and stable enough for a hot pan without turning.',
-    img: '/products/peanut-oil.png',
-    tint: '#e3c8a3',
-    price: 250,
-    size: '1 L',
-    rating: 4.9,
-    reviews: 98,
-  },
-]
+import { PRODUCTS, fromPrice } from '../data/products'
 
 const FILTERS = ['All', 'Coconut', 'Groundnut', 'Peanut']
 
@@ -52,19 +13,11 @@ const PERKS = [
 
 export default function ShopPage() {
   const [activeFilter, setActiveFilter] = useState('All')
-  const [added, setAdded] = useState(() => new Set())
 
   const filtered =
     activeFilter === 'All'
       ? PRODUCTS
       : PRODUCTS.filter((p) => p.tag === activeFilter)
-
-  const toggleAdd = (slug) =>
-    setAdded((prev) => {
-      const nextSet = new Set(prev)
-      nextSet.has(slug) ? nextSet.delete(slug) : nextSet.add(slug)
-      return nextSet
-    })
 
   return (
     <div className="bg-paper-inset" id="shop-page">
@@ -109,7 +62,7 @@ export default function ShopPage() {
                  style={{ fontSize: '0.8rem', letterSpacing: '0.08em' }}>
               <span className="uppercase">3 varieties</span>
               <span aria-hidden="true">·</span>
-              <span className="uppercase">1 litre bottles</span>
+              <span className="uppercase">½, 1, 5 &amp; 16 L tins</span>
               <span aria-hidden="true">·</span>
               <span className="uppercase">Chekku cold-pressed</span>
             </div>
@@ -156,22 +109,24 @@ export default function ShopPage() {
                 id={p.slug}
                 className="group flex scroll-mt-28 flex-col overflow-hidden rounded-[var(--radius-lg)] border border-line bg-paper transition-shadow duration-200 hover:shadow-md"
               >
-                <div
-                  className="relative grid place-items-center overflow-hidden"
-                  style={{ background: p.tint, aspectRatio: '1 / 1' }}
-                >
-                  {p.badge && (
-                    <span className="absolute left-3 top-3 rounded-pill bg-olive-900 px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-paper">
-                      {p.badge}
-                    </span>
-                  )}
-                  <img
-                    src={p.img}
-                    alt={p.name}
-                    onError={(e) => { e.currentTarget.style.visibility = 'hidden' }}
-                    className="h-[80%] w-auto object-contain transition-transform duration-500 ease-out group-hover:scale-[1.06]"
-                  />
-                </div>
+                <Link to={`/shop/${p.slug}`} className="block" aria-label={p.name}>
+                  <div
+                    className="relative grid place-items-center overflow-hidden"
+                    style={{ background: p.tint, aspectRatio: '1 / 1' }}
+                  >
+                    {p.badge && (
+                      <span className="absolute left-3 top-3 rounded-pill bg-olive-900 px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-paper">
+                        {p.badge}
+                      </span>
+                    )}
+                    <img
+                      src={p.images[0]}
+                      alt={p.name}
+                      onError={(e) => { e.currentTarget.style.visibility = 'hidden' }}
+                      className="h-[80%] w-auto object-contain transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+                    />
+                  </div>
+                </Link>
 
                 <div className="flex flex-1 flex-col p-5">
                   <div className="flex items-center gap-1.5 text-gold-500">
@@ -181,27 +136,22 @@ export default function ShopPage() {
                   </div>
 
                   <h3 className="mt-1.5 font-display text-xl font-medium text-olive-900">
-                    {p.name}
+                    <Link to={`/shop/${p.slug}`} className="hover:text-olive-700">{p.name}</Link>
                   </h3>
                   <p className="mt-1.5 flex-1 text-sm leading-relaxed text-text-mute">
-                    {p.desc}
+                    {p.tagline}
                   </p>
 
                   <div className="mt-5 flex items-center justify-between gap-3">
                     <span className="font-sans text-lg font-semibold text-olive-900">
-                      ₹{p.price}
-                      <span className="ml-1 text-xs font-normal text-text-mute">/ {p.size}</span>
+                      from ₹{fromPrice(p)}
                     </span>
-                    <button
-                      onClick={() => toggleAdd(p.slug)}
-                      className={`rounded-pill px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] transition-colors duration-200 cursor-pointer ${
-                        added.has(p.slug)
-                          ? 'bg-olive-100 text-olive-900'
-                          : 'bg-olive-900 text-paper hover:bg-olive-800'
-                      }`}
+                    <Link
+                      to={`/shop/${p.slug}`}
+                      className="rounded-pill bg-olive-900 px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-paper transition-colors duration-200 hover:bg-olive-800"
                     >
-                      {added.has(p.slug) ? 'Added ✓' : 'Add to cart'}
-                    </button>
+                      View
+                    </Link>
                   </div>
                 </div>
               </article>

@@ -8,6 +8,7 @@ import About from './components/About'
 import AboutPage from './components/AboutPage'
 import ContactPage from './components/ContactPage'
 import ShopPage from './components/ShopPage'
+import ProductPage from './components/ProductPage'
 import Products from './components/Products'
 import Benefits from './components/Benefits'
 import WhySamaha from './components/WhySamaha'
@@ -49,6 +50,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/shop" element={<ShopPage />} />
+        <Route path="/shop/:slug" element={<ProductPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="*" element={<NotFound />} />
