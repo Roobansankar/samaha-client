@@ -50,7 +50,7 @@ py-[clamp(2rem,4vw,3rem)]">
           <div className="mx-auto max-w-[46rem] text-center">
             <h2 className="font-sans font-bold leading-[1.15] text-on-olive"
                 style={{ fontSize: 'clamp(1.55rem, 1.1rem + 2vw, 2.6rem)' }}>
-              Virgin Coconut Oil &mdash; inside-out goodness
+              Coconut Oil &mdash; inside-out goodness
             </h2>
             <p className="mt-3 font-display italic text-on-olive-soft"
                style={{ fontSize: 'clamp(0.95rem, 0.9rem + 0.25vw, 1.15rem)' }}>

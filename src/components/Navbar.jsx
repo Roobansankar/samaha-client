@@ -43,7 +43,7 @@ function Wordmark({ light = false, hideTaglineOnMobile = false }) {
             color: light ? 'var(--color-text-mute)' : 'var(--color-olive-500)',
           }}
         >
-          Extra Virgin Olive Oil
+          Pure Natural Healthy
         </span>
       </span>
     </Link>

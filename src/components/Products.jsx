@@ -66,9 +66,6 @@ export default function Products() {
              style={{ fontSize: 'clamp(1rem, 0.95rem + 0.3vw, 1.2rem)' }}>
             Cold-pressed, unrefined, and bottled by hand.
           </p>
-          <Link to="/" className="btn btn-primary mt-7">
-            Shop all oils <ArrowRight size={16} strokeWidth={2} />
-          </Link>
         </div>
 
         {/* Three products — staggered cards */}
@@ -110,6 +107,13 @@ export default function Products() {
               </p>
             </article>
           ))}
+        </div>
+
+        {/* Button below products */}
+        <div className="mt-10 text-center">
+          <Link to="/shop" className="btn btn-primary">
+            Shop all oils <ArrowRight size={16} strokeWidth={2} />
+          </Link>
         </div>
 
       </div>

@@ -46,7 +46,7 @@ export default function Footer() {
               <span className="flex flex-col items-start leading-none">
                 <span className="font-display text-[1.4rem] font-medium text-on-olive">Samaha</span>
                 <span className="mt-[2px] text-[0.48rem] font-semibold uppercase tracking-[0.2em] text-on-olive-mute">
-                  Extra Virgin Olive Oil
+                  Pure Natural Healthy
                 </span>
               </span>
             </Link>
