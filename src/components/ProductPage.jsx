@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useParams } from 'react-router-dom'
 import {
@@ -38,9 +38,39 @@ function Gallery({ product }) {
   const [active, setActive] = useState(0)
   const [broken, setBroken] = useState(() => new Set())
   const [zoom, setZoom] = useState(false)
+  const touchStart = useRef(null)
+  const lightboxTouchStart = useRef(null)
 
   const markBroken = (i) => setBroken((prev) => new Set(prev).add(i))
   const go = (dir) => setActive((a) => (a + dir + count) % count)
+
+  // Touch swipe for main image
+  const onTouchStart = (e) => {
+    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+  const onTouchEnd = (e) => {
+    if (!touchStart.current) return
+    const dx = e.changedTouches[0].clientX - touchStart.current.x
+    const dy = e.changedTouches[0].clientY - touchStart.current.y
+    touchStart.current = null
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+      dx < 0 ? go(1) : go(-1)
+    }
+  }
+
+  // Touch swipe for lightbox
+  const onLightboxTouchStart = (e) => {
+    lightboxTouchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+  const onLightboxTouchEnd = (e) => {
+    if (!lightboxTouchStart.current) return
+    const dx = e.changedTouches[0].clientX - lightboxTouchStart.current.x
+    const dy = e.changedTouches[0].clientY - lightboxTouchStart.current.y
+    lightboxTouchStart.current = null
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+      dx < 0 ? go(1) : go(-1)
+    }
+  }
 
   useEffect(() => {
     setActive(0)
@@ -72,6 +102,8 @@ function Gallery({ product }) {
       <div
         className="group relative overflow-hidden rounded-[var(--radius-lg)] border border-line"
         style={{ aspectRatio: '1 / 1' }}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
       >
         {broken.has(active) ? (
           <Placeholder tint={product.tint} />
@@ -153,6 +185,8 @@ function Gallery({ product }) {
           <div
             className="relative flex flex-1 items-center justify-center px-4 pb-2"
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={onLightboxTouchStart}
+            onTouchEnd={onLightboxTouchEnd}
           >
             {broken.has(active) ? (
               <div
