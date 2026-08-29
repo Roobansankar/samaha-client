@@ -7,7 +7,7 @@ export default function OliveBottle({ className }) {
       className={className}
       viewBox="0 0 360 470"
       role="img"
-      aria-label="A dark glass bottle of Samaha extra virgin olive oil beside an olive branch"
+      aria-label="A dark glass bottle of Samaha olive oil beside an olive branch"
     >
       <defs>
         <linearGradient id="sm-glass" x1="0" y1="0" x2="1" y2="0">
