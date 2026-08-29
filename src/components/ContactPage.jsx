@@ -14,7 +14,7 @@ export default function ContactPage() {
       {/* Hero banner */}
       <div className="relative h-[clamp(280px,40vw,400px)] overflow-hidden">
         <img
-          src="/contact.png"
+          src="/contact.webp"
           alt="Contact Samaha"
           className="h-full w-full object-cover"
         />
