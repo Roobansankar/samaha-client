@@ -95,10 +95,6 @@ export default function Products() {
                   <span className="font-display text-base sm:text-lg font-medium tracking-wide text-olive-900">
                     {p.name}
                   </span>
-                  <span className="mx-3 inline-block h-px w-5 align-middle bg-gold-500" />
-                  <span className="font-display text-xs tracking-widest text-text-mute">
-                    {p.n}
-                  </span>
                 </div>
               </Link>
 

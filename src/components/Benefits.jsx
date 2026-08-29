@@ -59,7 +59,7 @@ py-[clamp(2rem,4vw,3rem)]">
 
             <div className="mt-6 flex items-center justify-center gap-3">
               <Squiggle className="h-12 w-14 -translate-y-1 text-gold-300 max-[560px]:hidden" />
-              <Link to="/"
+              <Link to="/shop/coconut-oil"
                  className="inline-flex items-center rounded-pill bg-paper px-6 py-2.5 text-sm font-semibold text-olive-900 transition-transform duration-200 hover:scale-[1.03]">
                 Shop Now
               </Link>

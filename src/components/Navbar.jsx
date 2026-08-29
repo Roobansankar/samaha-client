@@ -8,8 +8,8 @@ const LINKS = [
   { label: 'Shop', href: '/shop', isLink: true },
   { label: 'Health Benefits', href: '/health-benefits', isLink: true },
   { label: 'About', href: '/about', isLink: true },
-  { label: 'Press', href: '/', isLink: true },
-  { label: 'Blog', href: '/', isLink: true },
+  { label: 'Why Us', href: '/whyus', isLink: true },
+  { label: 'Blog', href: '/blog', isLink: true },
   { label: 'Contact', href: '/contact', isLink: true },
 ]
 

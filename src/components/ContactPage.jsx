@@ -1,7 +1,7 @@
 import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react'
 
 const CONTACT_INFO = [
-  { Icon: Phone, label: 'Phone', value: '+91 98765 43210', href: 'tel:+919876543210' },
+  { Icon: Phone, label: 'Phone', value: '+91 99430 97030', href: 'tel:+919943097030' },
   { Icon: Mail, label: 'Email', value: 'hello@samaha.in', href: 'mailto:hello@samaha.in' },
   { Icon: MapPin, label: 'Address', value: 'Sulur, Coimbatore, Tamil Nadu', href: '#' },
   { Icon: Clock, label: 'Hours', value: 'Mon – Sat, 9 AM – 6 PM', href: '#' },

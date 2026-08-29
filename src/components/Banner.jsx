@@ -24,7 +24,7 @@ export default function Banner() {
              style={{ fontSize: 'clamp(0.95rem, 0.9rem + 0.2vw, 1.1rem)' }}>
             Simple ingredients. Thoughtful preparation. Authentic goodness.
           </p>
-          <Link to="/" className="btn btn-cream mt-8">
+          <Link to="/shop" className="btn btn-cream mt-8">
             Shop Samaha oils <ArrowRight size={16} strokeWidth={2} />
           </Link>
         </div>

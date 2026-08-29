@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 // `src`       — landscape image for >=640px, exported 8:3 (2048x768 / 2560x960)
 // `srcMobile` — portrait image for <640px, exported ~3:4 (1080x1440). Keep the
@@ -12,7 +13,7 @@ const SLIDES = [
     eyebrow: 'Cold-pressed · Unrefined',
     title: 'Coconut Oil',
     text: 'Pressed from fresh white kernel within hours of cracking.',
-    href: '#coconut-oil',
+    href: '/shop/coconut-oil',
     steps: ['Fresh kernel, milled same day', 'Cold-pressed below 27°C', 'Unfiltered, bottled by hand'],
   },
   {
@@ -22,7 +23,7 @@ const SLIDES = [
     eyebrow: 'Wood-pressed · Small batch',
     title: 'Groundnut Oil',
     text: 'Deep, warm and nutty — the way it was always meant to be made.',
-    href: '#groundnut-oil',
+    href: '/shop/groundnut-oil',
     steps: ['Sun-dried groundnuts', 'Wood-pressed the slow way', 'Small, dated lots'],
   },
   {
@@ -32,7 +33,7 @@ const SLIDES = [
     eyebrow: 'Small batch · High-heat ready',
     title: 'Peanut Oil',
     text: 'Clean, light and stable enough for a hot pan.',
-    href: '#peanut-oil',
+    href: '/shop/peanut-oil',
     steps: ['Hand-sorted peanuts', 'Cold-pressed in small batches', 'Clean, high-heat ready'],
   },
 ]
@@ -136,9 +137,9 @@ export default function ImageSlider() {
                     ))}
                   </ol>
 
-                  <a href={s.href} className="btn btn-primary mt-4 sm:mt-6">
+                  <Link to={s.href} className="btn btn-primary mt-4 sm:mt-6">
                     Shop {s.title} <ArrowRight size={15} strokeWidth={2} />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

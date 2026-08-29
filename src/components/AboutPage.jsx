@@ -96,16 +96,17 @@ export default function AboutPage() {
           </div>
 
           {/* story */}
-          <div className="mt-[clamp(3rem,7vw,5rem)] grid gap-x-16 gap-y-8 lg:grid-cols-[0.8fr_1.2fr]">
-            <div className="lg:sticky lg:top-24 lg:self-start">
+          <div className="mt-[clamp(3rem,7vw,5rem)] grid gap-x-16 gap-y-8 lg:grid-cols-[1fr_1.5fr]">
+            <div>
               <p className="eyebrow">Since 1985</p>
               <h2 className="mt-3 font-display font-medium leading-[1.1] text-olive-900"
                   style={{ fontSize: 'clamp(1.6rem, 1.15rem + 1.8vw, 2.4rem)' }}>
                 Four decades of cold-pressed oil
               </h2>
               <p className="mt-4 text-sm text-text-mute">— N. Rangasamy&rsquo;s mill, now Samaha</p>
+              <img src="/mill.png" alt="Samaha oil mill" className="mt-6 w-full rounded-xl object-cover aspect-[4/3]" />
             </div>
-            <div className="space-y-5 leading-[1.8] text-text-soft"
+            <div className="space-y-5 leading-[1.8] text-text-soft pt-[0.5rem]"
                  style={{ fontSize: 'clamp(0.98rem, 0.92rem + 0.2vw, 1.05rem)' }}>
               {STORY.map((para) => <p key={para}>{para}</p>)}
             </div>
