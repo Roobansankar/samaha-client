@@ -14,14 +14,14 @@ export default function ContactPage() {
       {/* Hero banner */}
       <div className="relative h-[clamp(280px,40vw,400px)] overflow-hidden">
         <img
-          src="https://i.pinimg.com/1200x/8e/aa/7f/8eaa7f18cfaedb369dc392453e6ba4a0.jpg"
+          src="/contact.png"
           alt="Contact Samaha"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-olive-950/80 via-olive-950/30 to-transparent" />
-        <div className="absolute inset-0 flex items-end">
+        <div className="absolute inset-0 flex items-center sm:items-end">
           <div className="w-full py-10 px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
-            <p className="eyebrow" style={{ color: 'var(--color-gold-400)' }}>Contact Us</p>
+            <p className="eyebrow" style={{ color: 'var(--color-paper)' }}>Contact Us</p>
             <h1 className="mt-3 font-display font-medium leading-[1.08] text-paper max-w-[36rem]"
                 style={{ fontSize: 'clamp(2rem, 1.4rem + 2.8vw, 3.6rem)' }}>
               Let&rsquo;s start a conversation
