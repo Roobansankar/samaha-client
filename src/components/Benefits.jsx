@@ -76,7 +76,7 @@ py-[clamp(2rem,4vw,3rem)]">
                 aria-hidden="true"
               />
               <img
-                src="/coconut.png"
+                src="/coconut.webp"
                 alt="Samaha organic virgin coconut oil with fresh coconut and palm leaves"
                 className="relative w-full object-contain drop-shadow-[0_24px_44px_rgba(0,0,0,0.4)]"
               />

@@ -15,7 +15,7 @@ const BENEFITS = [
 const OILS = [
   {
     name: 'Coconut Oil',
-    img: '/products/coconut-oil.png',
+    img: '/products/coconut-oil.webp',
     tint: '#e6e1d4',
     fat: 'Medium-chain triglycerides',
     smoke: '~177°C',
@@ -23,7 +23,7 @@ const OILS = [
   },
   {
     name: 'Groundnut Oil',
-    img: '/products/groundnut-oil.png',
+    img: '/products/groundnut-oil.webp',
     tint: '#e8d8ba',
     fat: 'Monounsaturated fat',
     smoke: '~230°C',
@@ -31,7 +31,7 @@ const OILS = [
   },
   {
     name: 'Peanut Oil',
-    img: '/products/peanut-oil.png',
+    img: '/products/peanut-oil.webp',
     tint: '#e3c8a3',
     fat: 'Balanced fats',
     smoke: '~225°C',

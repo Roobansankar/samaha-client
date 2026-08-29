@@ -7,8 +7,8 @@ import { Link } from 'react-router-dom'
 //               left third of it clear — the copy is overlaid there on mobile.
 const SLIDES = [
   {
-    src: '/slide1.png',
-    srcMobile: '/slidem1.png',
+    src: '/slide1.webp',
+    srcMobile: '/slidem1.webp',
     alt: 'Samaha cold-pressed coconut oil on a stone plinth',
     eyebrow: 'Cold-pressed · Unrefined',
     title: 'Coconut Oil',
@@ -17,8 +17,8 @@ const SLIDES = [
     steps: ['Fresh kernel, milled same day', 'Cold-pressed below 27°C', 'Unfiltered, bottled by hand'],
   },
   {
-    src: '/slide2.png',
-    srcMobile: '/slidem2.png',
+    src: '/slide2.webp',
+    srcMobile: '/slidem2.webp',
     alt: 'Samaha wood-pressed groundnut oil on a stone plinth',
     eyebrow: 'Wood-pressed · Small batch',
     title: 'Groundnut Oil',
@@ -27,8 +27,8 @@ const SLIDES = [
     steps: ['Sun-dried groundnuts', 'Wood-pressed the slow way', 'Small, dated lots'],
   },
   {
-    src: '/slide3.png',
-    srcMobile: '/slidem3.png',
+    src: '/slide3.webp',
+    srcMobile: '/slidem3.webp',
     alt: 'Samaha cold-pressed peanut oil on a stone plinth',
     eyebrow: 'Small batch · High-heat ready',
     title: 'Peanut Oil',

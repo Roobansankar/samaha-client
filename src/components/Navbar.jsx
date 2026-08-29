@@ -17,7 +17,7 @@ const CART_COUNT = 2
 
 function Wordmark({ light = false, hideTaglineOnMobile = false }) {
   return (
-    <Link className="inline-flex shrink-0 items-center gap-2.5" to="/" aria-label="Samaha — home">
+    <Link className="inline-flex shrink-0 items-center gap-2.5" to="/" aria-label="Samaha — home" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
       <span
         className="grid place-items-center w-[30px] h-[30px] rounded-full shrink-0"
         style={{

@@ -33,6 +33,8 @@ const STORY = [
   'Since our establishment we supplied coconut oil under the brand name MRS. After 2016 we introduced the chekku oil concept and launched three cooking oils — groundnut, coconut and gingelly — under the brand name Samaha.',
   'We started a second unit in Madampatti in 2016 to procure quality raw materials from the Western Ghats region, and became a major coconut and copra buyer in that area.',
   'We buy coconuts directly from farmers in the Velliangiri Hills and bring them to our Sulur unit, where we process them into copra ourselves.',
+  'Every batch is cold-pressed in traditional wooden chekku machines, preserving the natural flavour and nutritional value that modern refining strips away.',
+  'From farm to bottle, we keep every step in-house — ensuring complete traceability and the purest oil for your family.',
 ]
 
 export default function AboutPage() {
@@ -42,7 +44,7 @@ export default function AboutPage() {
       {/* ---------- Hero ---------- */}
       <section className="relative overflow-hidden">
         <img
-          src="/about1.png"
+          src="/about1.webp"
           alt="Samaha oil mill in Coimbatore"
           className="h-[clamp(320px,42vw,440px)] w-full object-cover"
         />
@@ -104,7 +106,7 @@ export default function AboutPage() {
                 Four decades of cold-pressed oil
               </h2>
               <p className="mt-4 text-sm text-text-mute">— N. Rangasamy&rsquo;s mill, now Samaha</p>
-              <img src="/mill.png" alt="Samaha oil mill" className="mt-6 w-full rounded-xl object-cover aspect-[4/3]" />
+              <img src="/mill.webp" alt="Samaha oil mill" className="mt-6 w-full rounded-xl object-cover aspect-[4/3]" />
             </div>
             <div className="space-y-5 leading-[1.8] text-text-soft pt-[0.5rem]"
                  style={{ fontSize: 'clamp(0.98rem, 0.92rem + 0.2vw, 1.05rem)' }}>
@@ -130,7 +132,7 @@ export default function AboutPage() {
               </div>
               <div className="relative hidden min-h-[220px] lg:block">
                 <img
-                  src="/banner.jpg"
+                  src="/banner.webp"
                   alt="Cold-pressed oil"
                   className="absolute inset-0 h-full w-full object-cover"
                 />

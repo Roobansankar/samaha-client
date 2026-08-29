@@ -6,11 +6,11 @@ const withImages = (slug, data) => ({
   // First image is the existing product cut-out; 2–5 are optional extra angles.
   // Any that 404 fall back to a placeholder in the gallery.
   images: [
-    `/products/${slug}.png`,
-    `/products/${slug}-2.png`,
-    `/products/${slug}-3.png`,
-    `/products/${slug}-4.png`,
-    `/products/${slug}-5.png`,
+    `/products/${slug}.webp`,
+    `/products/${slug}-2.webp`,
+    `/products/${slug}-3.webp`,
+    `/products/${slug}-4.webp`,
+    `/products/${slug}-5.webp`,
   ],
   ...data,
 })

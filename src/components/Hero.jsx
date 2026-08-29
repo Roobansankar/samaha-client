@@ -64,7 +64,7 @@ export default function Hero() {
         {/* ---- Product ---- */}
         <div className="flex items-center justify-center max-lg:order-1 lg:h-full lg:justify-end">
           <img
-            src="/hero.png"
+            src="/hero.webp"
             alt="Samaha cold-pressed oils"
             className="hero-bottle w-full max-w-[33rem] object-contain lg:max-w-[44rem]"
           />

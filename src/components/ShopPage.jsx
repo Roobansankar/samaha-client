@@ -25,7 +25,7 @@ export default function ShopPage() {
       {/* ---------- Hero ---------- */}
       <section className="relative overflow-hidden">
         <img
-          src="/banner.jpg"
+          src="/banner.webp"
           alt="Golden cold-pressed oil poured into a glass bowl beside coconut and peanuts"
           width={1920}
           height={912}
