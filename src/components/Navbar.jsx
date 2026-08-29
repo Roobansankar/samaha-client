@@ -166,13 +166,10 @@ export default function Navbar() {
         </nav>
 
         {/* Footer */}
-        <div className="px-6 pb-8 pt-4 border-t border-olive-200 flex flex-col gap-4">
-          <a href="#account" className="inline-flex items-center gap-3 font-medium text-sm text-olive-700 hover:text-olive-900 transition-colors">
-            <User size={18} strokeWidth={1.8} /> My Account
-          </a>
-          <p className="text-xs text-olive-500 leading-relaxed">
-            Grown on terraced hillside groves · Bottled 2025
-          </p>
+        <div className="px-6 pb-8 pt-4 border-t border-olive-200">
+          <button type="button" className="btn btn-primary w-full text-sm py-3">
+            Login / Register
+          </button>
         </div>
       </aside>
     </header>

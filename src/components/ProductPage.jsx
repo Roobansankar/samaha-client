@@ -399,38 +399,16 @@ export default function ProductPage() {
                   {added ? <>Added to cart <Check size={16} strokeWidth={2.5} /></> : <>Add to cart — ₹{total}</>}
                 </button>
               </div>
-
-              {/* highlights */}
-              <ul className="mt-8 grid gap-3 border-t border-line pt-7 sm:grid-cols-2">
-                {HIGHLIGHTS.map((h) => (
-                  <li key={h} className="flex items-center gap-2.5 text-sm text-text-soft">
-                    <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-olive-100 text-olive-800">
-                      <Check size={12} strokeWidth={3} />
-                    </span>
-                    {h}
-                  </li>
-                ))}
-              </ul>
-
-              {/* delivery */}
-              <ul className="mt-6 space-y-2.5 rounded-[var(--radius-md)] bg-paper-2 p-4">
-                {DELIVERY.map(({ Icon, text }) => (
-                  <li key={text} className="flex items-start gap-3 text-[0.82rem] leading-relaxed text-text-mute">
-                    <Icon size={16} className="mt-0.5 shrink-0 text-olive-700" />
-                    {text}
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
 
-          {/* details */}
-          <div className="mt-[clamp(3.5rem,8vw,6rem)] grid gap-x-16 gap-y-12 border-t border-line pt-[clamp(2.5rem,5vw,4rem)] lg:grid-cols-2">
+          {/* about + specs */}
+          <div className="mt-[clamp(2rem,5vw,3.5rem)] grid gap-x-16 gap-y-10 lg:grid-cols-2">
             <div>
               <h2 className="font-display font-medium text-olive-900" style={{ fontSize: headingSize }}>
                 About this oil
               </h2>
-              <div className="mt-5 space-y-4 leading-[1.75] text-text-soft"
+              <div className="mt-4 space-y-4 leading-[1.75] text-text-soft"
                    style={{ fontSize: 'clamp(0.98rem, 0.92rem + 0.2vw, 1.05rem)' }}>
                 {product.description.map((para) => <p key={para}>{para}</p>)}
               </div>
@@ -438,11 +416,11 @@ export default function ProductPage() {
 
             <div>
               <h2 className="font-display font-medium text-olive-900" style={{ fontSize: headingSize }}>
-                Details
+                Specifications
               </h2>
-              <dl className="mt-5 divide-y divide-line">
+              <dl className="mt-4 rounded-xl border border-line divide-y divide-line overflow-hidden">
                 {product.specs.map(([label, value]) => (
-                  <div key={label} className="flex justify-between gap-6 py-3.5 text-sm">
+                  <div key={label} className="flex justify-between gap-6 px-5 py-4 text-sm bg-paper-inset">
                     <dt className="text-text-mute">{label}</dt>
                     <dd className="text-right font-medium text-olive-900">{value}</dd>
                   </div>
@@ -451,8 +429,37 @@ export default function ProductPage() {
             </div>
           </div>
 
+          {/* why samaha + shipping */}
+          <div className="mt-[clamp(2rem,5vw,3.5rem)] border-t border-line pt-[clamp(2rem,5vw,3.5rem)] space-y-6 lg:grid lg:grid-cols-2 lg:gap-x-16 lg:space-y-0">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-text-mute mb-3">Why Samaha</p>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                {HIGHLIGHTS.map((h) => (
+                  <div key={h} className="flex items-center gap-3 rounded-lg bg-paper-inset px-4 py-3">
+                    <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-olive-900 text-paper">
+                      <Check size={12} strokeWidth={3} />
+                    </span>
+                    <span className="text-sm font-medium text-olive-900">{h}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-paper-2 p-5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-text-mute mb-3">Shipping & Returns</p>
+              <ul className="space-y-3">
+                {DELIVERY.map(({ Icon, text }) => (
+                  <li key={text} className="flex items-start gap-3 text-sm text-text-soft">
+                    <Icon size={16} className="mt-0.5 shrink-0 text-olive-700" />
+                    {text}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
           {/* related */}
-          <div className="mt-[clamp(3.5rem,8vw,6rem)] border-t border-line pt-[clamp(2.5rem,5vw,4rem)]">
+          <div className="mt-[clamp(2rem,5vw,3.5rem)] border-t border-line pt-[clamp(2rem,5vw,3.5rem)]">
             <h2 className="font-display font-medium text-olive-900" style={{ fontSize: headingSize }}>
               More from Samaha
             </h2>
