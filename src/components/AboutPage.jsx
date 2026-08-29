@@ -46,7 +46,10 @@ export default function AboutPage() {
         <img
           src="/about1.webp"
           alt="Samaha oil mill in Coimbatore"
-          className="h-[clamp(320px,42vw,440px)] w-full object-cover"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          className="img-shimmer h-[clamp(320px,42vw,440px)] w-full object-cover"
         />
         <div
           className="pointer-events-none absolute inset-0"
@@ -106,7 +109,7 @@ export default function AboutPage() {
                 Four decades of cold-pressed oil
               </h2>
               <p className="mt-4 text-sm text-text-mute">— N. Rangasamy&rsquo;s mill, now Samaha</p>
-              <img src="/mill.webp" alt="Samaha oil mill" className="mt-6 w-full rounded-xl object-cover aspect-[4/3]" />
+              <img src="/mill.webp" alt="Samaha oil mill" loading="lazy" decoding="async" className="img-shimmer mt-6 w-full rounded-xl object-cover aspect-[4/3]" />
             </div>
             <div className="space-y-5 leading-[1.8] text-text-soft pt-[0.5rem]"
                  style={{ fontSize: 'clamp(0.98rem, 0.92rem + 0.2vw, 1.05rem)' }}>
@@ -134,6 +137,8 @@ export default function AboutPage() {
                 <img
                   src="/banner.webp"
                   alt="Cold-pressed oil"
+                  loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 h-full w-full object-cover"
                 />
               </div>

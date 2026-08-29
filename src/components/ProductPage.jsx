@@ -111,6 +111,8 @@ function Gallery({ product }) {
           <img
             src={images[active]}
             alt={`${product.name} — view ${active + 1}`}
+            fetchPriority="high"
+            decoding="async"
             onError={() => markBroken(active)}
             onClick={() => setZoom(true)}
             className="absolute inset-0 h-full w-full cursor-zoom-in object-contain p-8 sm:p-12"
@@ -150,6 +152,8 @@ function Gallery({ product }) {
               <img
                 src={src}
                 alt=""
+                loading="lazy"
+                decoding="async"
                 onError={() => markBroken(i)}
                 className="absolute inset-0 h-full w-full object-contain p-2"
                 style={{ background: product.tint }}
@@ -201,6 +205,7 @@ function Gallery({ product }) {
               <img
                 src={images[active]}
                 alt={`${product.name} — view ${active + 1}`}
+                decoding="async"
                 onError={() => markBroken(active)}
                 className="max-h-[76vh] max-w-full rounded-[var(--radius-md)] object-contain"
                 style={{ background: product.tint }}
@@ -239,7 +244,7 @@ function Gallery({ product }) {
                 {broken.has(i) ? (
                   <span className="block h-full w-full" style={{ background: product.tint }} />
                 ) : (
-                  <img src={src} alt="" className="h-full w-full object-contain" style={{ background: product.tint }} />
+                  <img src={src} alt="" loading="lazy" decoding="async" className="h-full w-full object-contain" style={{ background: product.tint }} />
                 )}
               </button>
             ))}
@@ -474,6 +479,8 @@ export default function ProductPage() {
                     <img
                       src={o.images[0]}
                       alt={o.name}
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => { e.currentTarget.style.visibility = 'hidden' }}
                       className="absolute inset-0 h-full w-full object-contain p-6 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
                     />

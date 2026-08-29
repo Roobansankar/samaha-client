@@ -108,6 +108,8 @@ export default function CartPage() {
                         <img
                           src={l.product.images[0]}
                           alt={l.product.name}
+                          loading="lazy"
+                          decoding="async"
                           onError={(e) => { e.currentTarget.style.visibility = 'hidden' }}
                           className="absolute inset-0 h-full w-full object-contain p-3"
                         />

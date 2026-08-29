@@ -16,7 +16,10 @@ export default function ContactPage() {
         <img
           src="/contact.webp"
           alt="Contact Samaha"
-          className="h-full w-full object-cover"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          className="img-shimmer h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-olive-950/80 via-olive-950/30 to-transparent" />
         <div className="absolute inset-0 flex items-center sm:items-end">

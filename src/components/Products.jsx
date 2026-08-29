@@ -85,6 +85,8 @@ export default function Products() {
                   <img
                     src={p.img}
                     alt={p.name}
+                    loading="lazy"
+                    decoding="async"
                     onError={(e) => { e.currentTarget.style.display = 'none' }}
                     className="absolute inset-0 h-full w-full object-contain p-4 sm:p-6 transition-transform duration-700 ease-out group-hover:scale-105"
                   />

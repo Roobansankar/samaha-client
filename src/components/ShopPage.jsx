@@ -29,7 +29,10 @@ export default function ShopPage() {
           alt="Golden cold-pressed oil poured into a glass bowl beside coconut and peanuts"
           width={1920}
           height={912}
-          className="h-[clamp(400px,46vw,480px)] w-full object-cover"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          className="img-shimmer h-[clamp(400px,46vw,480px)] w-full object-cover"
         />
         <div
           className="absolute inset-0"
@@ -122,6 +125,8 @@ export default function ShopPage() {
                     <img
                       src={p.images[0]}
                       alt={p.name}
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => { e.currentTarget.style.visibility = 'hidden' }}
                       className="absolute inset-0 h-full w-full object-contain p-6 transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                     />

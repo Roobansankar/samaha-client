@@ -94,7 +94,14 @@ export default function ImageSlider() {
           >
             <picture>
               {s.srcMobile && <source media="(max-width: 639px)" srcSet={s.srcMobile} />}
-              <img src={s.src} alt={s.alt} className="absolute inset-0 h-full w-full object-cover" />
+              <img
+                src={s.src}
+                alt={s.alt}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                fetchPriority={i === 0 ? 'high' : 'low'}
+                decoding="async"
+                className="img-shimmer absolute inset-0 h-full w-full object-cover"
+              />
             </picture>
 
             {/* legibility wash — desktop only, from the left */}

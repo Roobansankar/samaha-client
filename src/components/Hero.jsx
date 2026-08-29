@@ -66,6 +66,9 @@ export default function Hero() {
           <img
             src="/hero.webp"
             alt="Samaha cold-pressed oils"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             className="hero-bottle w-full max-w-[33rem] object-contain lg:max-w-[44rem]"
           />
         </div>
