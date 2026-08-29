@@ -16,12 +16,12 @@ const FAQS = [
     a: 'Groundnut and peanut oils are happy at frying temperatures. Coconut oil is best for medium heat, sautéing and baking. None are refined, so treat them gently for the fullest flavour.',
   },
   {
-    q: 'What does “single origin” actually mean here?',
-    a: 'Each oil comes from one farm and one crop — never blended with cheaper oils to bulk it out. The lot number on your bottle traces straight back to that pressing.',
+    q: 'What does \u2018single origin\u2019 actually mean here?',
+    a: 'Each oil comes from one farm and one crop \u2014 never blended with cheaper oils to bulk it out. The lot number on your bottle traces straight back to that pressing.',
   },
   {
     q: 'How does shipping and returns work?',
-    a: 'Orders are packed within two working days, with complimentary shipping over $60. If the taste isn’t for you, tell us within 30 days and we’ll refund it — no need to send the bottle back.',
+    a: 'Orders are packed within two working days, with complimentary shipping over \u20B9600. If the taste isn\u2019t for you, tell us within 30 days and we\u2019ll refund it \u2014 no need to send the bottle back.',
   },
 ]
 
@@ -60,23 +60,21 @@ export default function Faq() {
                     aria-expanded={isOpen}
                     className="flex w-full items-center justify-between gap-5 py-5 text-left"
                   >
-                    <span className="font-display text-olive-900" style={{ fontSize: '1.15rem' }}>
+                    <span className="font-display text-lg" style={{ fontSize: '1.15rem' }}>
                       {item.q}
                     </span>
                     <Plus
                       size={20}
                       strokeWidth={2}
-                      className={`shrink-0 text-olive-600 transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}
+                      className={`shrink-0 text-olive-600 transition-transform duration-300 ease-out ${isOpen ? 'rotate-45' : ''}`}
                       aria-hidden="true"
                     />
                   </button>
                   <div
-                    className={`grid transition-[grid-template-rows] duration-300 ease-out ${
-                      isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-                    }`}
+                    className={`grid transition-[grid-template-rows] duration-300 ease-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
                   >
                     <div className="overflow-hidden">
-                      <p className="max-w-[60ch] pb-5 pr-6 leading-relaxed text-text-soft">
+                      <p className="max-w-[60ch] pb-6 pr-6 leading-relaxed text-text-soft">
                         {item.a}
                       </p>
                     </div>

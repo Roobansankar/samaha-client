@@ -42,7 +42,7 @@ export default function AboutPage() {
       {/* ---------- Hero ---------- */}
       <section className="relative overflow-hidden">
         <img
-          src="/about.png"
+          src="/about1.png"
           alt="Samaha oil mill in Coimbatore"
           className="h-[clamp(320px,42vw,440px)] w-full object-cover"
         />
