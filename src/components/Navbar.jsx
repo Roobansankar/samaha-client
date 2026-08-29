@@ -113,21 +113,22 @@ export default function Navbar() {
                   aria-label="Search">
             <Search size={20} strokeWidth={1.8} />
           </button>
-          <button type="button"
-                  className="nav-account max-[900px]:hidden grid place-items-center w-[42px] h-[42px] rounded-full bg-transparent text-olive-800 cursor-pointer hover:bg-olive-100 hover:text-olive-950 transition-colors duration-150"
-                  aria-label="Account">
+          <Link
+            to="/account"
+            className="nav-account max-[900px]:hidden grid place-items-center w-[42px] h-[42px] rounded-full bg-transparent text-olive-800 cursor-pointer hover:bg-olive-100 hover:text-olive-950 transition-colors duration-150"
+            aria-label="Account">
             <User size={20} strokeWidth={1.8} />
-          </button>
-          <button type="button"
-                  className="nav-bag relative grid place-items-center w-[42px] h-[42px] rounded-full bg-transparent text-olive-800 cursor-pointer hover:bg-olive-100 hover:text-olive-950 transition-colors duration-150"
-                  aria-label={`Cart, ${CART_COUNT} items`}>
+          </Link>
+          <Link to="/cart"
+                className="nav-bag relative grid place-items-center w-[42px] h-[42px] rounded-full bg-transparent text-olive-800 cursor-pointer hover:bg-olive-100 hover:text-olive-950 transition-colors duration-150"
+                aria-label={`Cart, ${CART_COUNT} items`}>
             <ShoppingCart size={20} strokeWidth={1.8} />
             {CART_COUNT > 0 && (
               <span className="absolute top-0.5 right-0.5 min-w-[16px] h-[16px] px-[3px] grid place-items-center text-[10px] font-bold leading-none text-on-olive bg-gold-500 rounded-full">
                 {CART_COUNT}
               </span>
             )}
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -167,9 +168,13 @@ export default function Navbar() {
 
         {/* Footer */}
         <div className="px-6 pb-8 pt-4 border-t border-olive-200">
-          <button type="button" className="btn btn-primary w-full text-sm py-3">
+          <Link
+            to="/account"
+            onClick={() => setMenuOpen(false)}
+            className="btn btn-primary w-full text-sm py-3 text-center"
+          >
             Login / Register
-          </button>
+          </Link>
         </div>
       </aside>
     </header>

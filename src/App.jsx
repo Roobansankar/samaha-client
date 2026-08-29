@@ -10,8 +10,10 @@ import ContactPage from './components/ContactPage'
 import ShopPage from './components/ShopPage'
 import ProductPage from './components/ProductPage'
 import HealthBenefitsPage from './components/HealthBenefitsPage'
+import CartPage from './components/CartPage'
 import WhyUsPage from './components/WhyUsPage'
 import BlogPage from './components/BlogPage'
+import LoginPage from './components/LoginPage'
 import Products from './components/Products'
 import Benefits from './components/Benefits'
 import WhySamaha from './components/WhySamaha'
@@ -59,6 +61,8 @@ export default function App() {
         <Route path="/health-benefits" element={<HealthBenefitsPage />} />
         <Route path="/whyus" element={<WhyUsPage />} />
         <Route path="/blog" element={<BlogPage />} />
+        <Route path="/account" element={<LoginPage />} />
+        <Route path="/cart" element={<CartPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="*" element={<NotFound />} />
