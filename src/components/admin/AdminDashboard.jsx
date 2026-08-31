@@ -1,50 +1,55 @@
 import { Link } from 'react-router-dom'
 import {
-  DollarSign,
+  IndianRupee,
   ShoppingBag,
   Users,
-  Receipt,
+  TrendingUp,
+  TrendingDown,
   ArrowUpRight,
-  AlertTriangle,
+  Package,
+  Clock,
+  CheckCircle2,
+  XCircle,
 } from 'lucide-react'
-import { PageHeader, StatCard, StatusBadge } from './ui'
+import { StatusBadge } from './ui'
+import { useAdminTheme } from './theme'
 
 const KPIS = [
-  { label: 'Revenue · 30d', value: '$18,420', delta: 12.4, hint: 'vs. prev 30d', icon: DollarSign },
-  { label: 'Orders · 30d', value: '284', delta: 8.1, hint: 'vs. prev 30d', icon: ShoppingBag },
-  { label: 'New customers', value: '96', delta: 5.7, hint: 'this month', icon: Users },
-  { label: 'Avg. order value', value: '$64.85', delta: -2.3, hint: 'vs. prev 30d', icon: Receipt },
+  { label: 'Revenue', value: '₹18,420', delta: 12.4, icon: IndianRupee, color: '#1a1a1a' },
+  { label: 'Orders', value: '284', delta: 8.1, icon: ShoppingBag, color: '#2563eb' },
+  { label: 'Customers', value: '96', delta: 5.7, icon: Users, color: '#7c3aed' },
+  { label: 'Avg Order', value: '₹64.85', delta: -2.3, icon: TrendingUp, color: '#0891b2' },
 ]
 
 const REVENUE = [820, 940, 760, 1180, 1020, 1340, 1240, 1560, 1420, 1680, 1580, 1920]
 const WEEKS = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10', 'W11', 'W12']
 
 const RECENT_ORDERS = [
-  { id: 'SAM-1042', customer: 'Aarti Menon', total: '$78.00', status: 'Paid', date: 'Aug 31' },
-  { id: 'SAM-1041', customer: 'Daniel Rowe', total: '$46.50', status: 'Processing', date: 'Aug 31' },
-  { id: 'SAM-1040', customer: 'Priya Shah', total: '$122.00', status: 'Shipped', date: 'Aug 30' },
-  { id: 'SAM-1039', customer: 'Karthik Rao', total: '$31.00', status: 'Paid', date: 'Aug 30' },
-  { id: 'SAM-1038', customer: 'Lena Fischer', total: '$88.00', status: 'Pending', date: 'Aug 29' },
-  { id: 'SAM-1037', customer: 'Omar Haddad', total: '$54.00', status: 'Cancelled', date: 'Aug 29' },
+  { id: 'SAM-1042', customer: 'Aarti Menon', total: '₹78.00', status: 'Paid', date: 'Aug 31' },
+  { id: 'SAM-1041', customer: 'Daniel Rowe', total: '₹46.50', status: 'Processing', date: 'Aug 31' },
+  { id: 'SAM-1040', customer: 'Priya Shah', total: '₹122.00', status: 'Shipped', date: 'Aug 30' },
+  { id: 'SAM-1039', customer: 'Karthik Rao', total: '₹31.00', status: 'Paid', date: 'Aug 30' },
+  { id: 'SAM-1038', customer: 'Lena Fischer', total: '₹88.00', status: 'Pending', date: 'Aug 29' },
 ]
 
 const TOP_PRODUCTS = [
-  { name: 'Virgin Coconut Oil · 500 ml', sold: 412, revenue: '$6,180' },
-  { name: 'Wood-pressed Groundnut Oil · 1 L', sold: 288, revenue: '$4,320' },
-  { name: 'Cold-pressed Peanut Oil · 500 ml', sold: 201, revenue: '$2,613' },
-  { name: 'Virgin Coconut Oil · 250 ml', sold: 174, revenue: '$1,392' },
+  { name: 'Virgin Coconut Oil · 500 ml', sold: 412, revenue: '₹6,180', pct: 100 },
+  { name: 'Wood-pressed Groundnut Oil · 1 L', sold: 288, revenue: '₹4,320', pct: 70 },
+  { name: 'Cold-pressed Peanut Oil · 500 ml', sold: 201, revenue: '₹2,613', pct: 49 },
+  { name: 'Virgin Coconut Oil · 250 ml', sold: 174, revenue: '₹1,392', pct: 42 },
 ]
 
-const LOW_STOCK = [
-  { name: 'Groundnut Oil · 1 L', left: 6 },
-  { name: 'Peanut Oil · 500 ml', left: 9 },
-  { name: 'Coconut Oil · 250 ml', left: 12 },
+const QUICK_STATS = [
+  { label: 'Pending orders', value: '12', icon: Clock, color: '#d97706' },
+  { label: 'Delivered today', value: '8', icon: CheckCircle2, color: '#16a34a' },
+  { label: 'Cancelled', value: '3', icon: XCircle, color: '#dc2626' },
+  { label: 'Products', value: '24', icon: Package, color: '#6366f1' },
 ]
 
 function RevenueChart({ data, labels }) {
   const w = 640
-  const h = 200
-  const pad = 8
+  const h = 180
+  const pad = 12
   const max = Math.max(...data) * 1.1
   const step = (w - pad * 2) / (data.length - 1)
   const pt = (v, i) => [pad + i * step, h - pad - (v / max) * (h - pad * 2)]
@@ -52,10 +57,10 @@ function RevenueChart({ data, labels }) {
   const area = `${pad},${h - pad} ${line} ${w - pad},${h - pad}`
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="h-[200px] w-full" preserveAspectRatio="none">
+    <svg viewBox={`0 0 ${w} ${h}`} className="h-[180px] w-full" preserveAspectRatio="none">
       <defs>
         <linearGradient id="adm-rev" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="var(--a-accent)" stopOpacity="0.28" />
+          <stop offset="0" stopColor="var(--a-accent)" stopOpacity="0.15" />
           <stop offset="1" stopColor="var(--a-accent)" stopOpacity="0" />
         </linearGradient>
       </defs>
@@ -67,7 +72,7 @@ function RevenueChart({ data, labels }) {
           y1={pad + f * (h - pad * 2)}
           y2={pad + f * (h - pad * 2)}
           stroke="var(--a-border)"
-          strokeWidth="1"
+          strokeWidth="0.5"
         />
       ))}
       <polygon points={area} fill="url(#adm-rev)" />
@@ -80,10 +85,6 @@ function RevenueChart({ data, labels }) {
         strokeLinecap="round"
         vectorEffect="non-scaling-stroke"
       />
-      {data.map((v, i) => {
-        const [x, y] = pt(v, i)
-        return <circle key={i} cx={x} cy={y} r="2.5" fill="var(--a-accent)" />
-      })}
       {labels.map((l, i) => (
         <text
           key={l}
@@ -101,72 +102,84 @@ function RevenueChart({ data, labels }) {
 }
 
 export default function AdminDashboard() {
+  const { theme } = useAdminTheme()
+  const hc = theme === 'dark' ? '#ffffff' : undefined
+
   return (
-    <div>
-      <PageHeader
-        title="Dashboard"
-        subtitle="Store performance for the last 30 days."
-        actions={
-          <Link to="/admin/orders" className="a-btn a-btn-primary">
-            View all orders <ArrowUpRight size={15} />
-          </Link>
-        }
-      />
-
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {KPIS.map((k) => (
-          <StatCard key={k.label} {...k} />
-        ))}
+    <div className="space-y-6">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-[1.5rem] font-semibold tracking-tight" style={{ fontFamily: "'Inter', sans-serif", color: hc }}>Dashboard</h1>
+          <p className="text-[0.85rem] a-dim">Welcome back. Here's your store overview.</p>
+        </div>
+        <Link to="/admin/orders" className="a-btn a-btn-primary mt-3 sm:mt-0">
+          View orders <ArrowUpRight size={14} />
+        </Link>
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
-        {/* Revenue */}
-        <div className="a-card">
-          <div className="flex items-center justify-between px-5 pt-4">
-            <div>
-              <h2 className="a-h2">Revenue</h2>
-              <p className="a-sub">Weekly, last 12 weeks</p>
-            </div>
-            <span className="text-[0.78rem] font-semibold a-mono" style={{ color: '#1a7f47' }}>
-              +12.4%
-            </span>
-          </div>
-          <div className="px-3 pb-3 pt-4">
-            <RevenueChart data={REVENUE} labels={WEEKS} />
-          </div>
-        </div>
-
-        {/* Top products */}
-        <div className="a-card">
-          <div className="px-5 pt-4">
-            <h2 className="a-h2">Top products</h2>
-            <p className="a-sub">By units sold this month</p>
-          </div>
-          <div className="mt-2 px-5 pb-4">
-            {TOP_PRODUCTS.map((p, i) => (
-              <div
-                key={p.name}
-                className="flex items-center gap-3 py-2.5"
-                style={{ borderTop: i ? '1px solid var(--a-border)' : 'none' }}
-              >
-                <span className="a-avatar h-8 w-8 text-[0.72rem]">{i + 1}</span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[0.83rem] font-medium">{p.name}</p>
-                  <p className="text-[0.75rem] a-mute">{p.sold} units</p>
-                </div>
-                <p className="text-[0.83rem] font-semibold a-mono">{p.revenue}</p>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {KPIS.map((k) => {
+          const Icon = k.icon
+          const up = k.delta >= 0
+          return (
+            <div key={k.label} className="a-card" style={{ padding: '1.1rem 1.25rem' }}>
+              <div className="flex items-center justify-between">
+                <span className="text-[0.78rem] font-medium a-dim">{k.label}</span>
+                <span
+                  className="grid h-8 w-8 place-items-center rounded-lg"
+                  style={{ background: `${k.color}10`, color: k.color }}
+                >
+                  <Icon size={15} />
+                </span>
               </div>
-            ))}
+              <p className="mt-2 text-[1.6rem] font-semibold tracking-tight">{k.value}</p>
+              <span
+                className="mt-1 inline-flex items-center gap-1 text-[0.75rem] font-medium"
+                style={{ color: up ? '#16a34a' : 'var(--a-danger)' }}
+              >
+                {up ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                {up ? '+' : ''}{k.delta}% this month
+              </span>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
+        <div className="a-card" style={{ padding: '1.25rem' }}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[0.95rem] font-semibold" style={{ color: hc }}>Revenue</h2>
+            <span className="text-[0.72rem] font-medium a-dim">Last 12 weeks</span>
           </div>
+          <RevenueChart data={REVENUE} labels={WEEKS} />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2">
+          {QUICK_STATS.map((s) => {
+            const Icon = s.icon
+            return (
+              <div key={s.label} className="a-card flex items-center gap-3" style={{ padding: '1rem 1.1rem' }}>
+                <span
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-lg"
+                  style={{ background: `${s.color}12`, color: s.color }}
+                >
+                  <Icon size={17} />
+                </span>
+                <div>
+                  <p className="text-[1.15rem] font-semibold leading-tight">{s.value}</p>
+                  <p className="text-[0.72rem] a-dim leading-tight">{s.label}</p>
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
-        {/* Recent orders */}
+      <div className="grid gap-4 lg:grid-cols-[1fr_380px]">
         <div className="a-card overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4">
-            <h2 className="a-h2">Recent orders</h2>
-            <Link to="/admin/orders" className="text-[0.8rem] font-medium text-[var(--a-accent)] hover:underline">
+          <div className="flex items-center justify-between px-5 py-3.5" style={{ borderBottom: '1px solid var(--a-border)' }}>
+            <h2 className="text-[0.95rem] font-semibold" style={{ color: hc }}>Recent orders</h2>
+            <Link to="/admin/orders" className="text-[0.78rem] font-medium text-[var(--a-accent)] hover:underline">
               View all
             </Link>
           </div>
@@ -196,33 +209,27 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Low stock */}
-        <div className="a-card a-card-pad">
-          <div className="flex items-center gap-2">
-            <span
-              className="grid h-7 w-7 place-items-center rounded-md"
-              style={{ background: 'rgba(183,121,31,0.14)', color: '#b7791f' }}
-            >
-              <AlertTriangle size={15} />
-            </span>
-            <h2 className="a-h2">Low stock</h2>
-          </div>
-          <p className="a-sub mt-1">Below the 15-unit reorder point</p>
-          <div className="mt-3">
-            {LOW_STOCK.map((s, i) => (
-              <div
-                key={s.name}
-                className="flex items-center justify-between py-2.5 text-[0.83rem]"
-                style={{ borderTop: i ? '1px solid var(--a-border)' : 'none' }}
-              >
-                <span className="truncate pr-3">{s.name}</span>
-                <span className="a-badge a-badge--amber">{s.left} left</span>
+        <div className="a-card" style={{ padding: '1.25rem' }}>
+          <h2 className="text-[0.95rem] font-semibold mb-4" style={{ color: hc }}>Top products</h2>
+          <div className="space-y-3.5">
+            {TOP_PRODUCTS.map((p, i) => (
+              <div key={p.name}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[0.82rem] font-medium truncate pr-3">{p.name}</span>
+                  <span className="text-[0.78rem] font-semibold a-mono shrink-0">{p.revenue}</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full" style={{ background: 'var(--a-surface-3)' }}>
+                    <div
+                      className="h-full rounded-full"
+                      style={{ width: `${p.pct}%`, background: 'var(--a-accent)' }}
+                    />
+                  </div>
+                  <span className="text-[0.7rem] a-mute shrink-0">{p.sold}</span>
+                </div>
               </div>
             ))}
           </div>
-          <Link to="/admin/products" className="a-btn a-btn-sm mt-3 w-full">
-            Manage inventory
-          </Link>
         </div>
       </div>
     </div>
