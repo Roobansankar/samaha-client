@@ -6,112 +6,111 @@ const PRODUCTS = [
     n: '01',
     name: 'Coconut Oil',
     slug: 'coconut-oil',
-    desc: 'Cold-pressed from fresh white kernel',
+    tag: 'Coconut',
+    desc: 'Cold-pressed from fresh white kernel — mild, clean and versatile.',
     img: '/products/coconut-oil.webp',
     tint: '#e6e1d4',
-    offset: 'md:mt-0',
   },
   {
     n: '02',
     name: 'Groundnut Oil',
     slug: 'groundnut-oil',
-    desc: 'Wood-pressed — deep, warm and nutty',
+    tag: 'Groundnut',
+    desc: 'Wood-pressed the slow way — deep, warm and nutty.',
     img: '/products/groundnut-oil.webp',
     tint: '#e8d8ba',
-    offset: 'md:mt-16',
   },
   {
     n: '03',
     name: 'Peanut Oil',
     slug: 'peanut-oil',
-    desc: 'Small batch, clean and high-heat ready',
+    tag: 'Peanut',
+    desc: 'Small batch, light and clean — stable enough for a hot pan.',
     img: '/products/peanut-oil.webp',
     tint: '#e3c8a3',
-    offset: 'md:mt-7',
+  },
+  {
+    n: '04',
+    name: 'Sesame Oil',
+    slug: 'sesame-oil',
+    tag: 'Sesame',
+    desc: 'Rich, aromatic and deeply nutty — the finishing oil of choice.',
+    img: '/products/sesame-oil.webp',
+    tint: '#d4b896',
   },
 ]
 
-function BottleGlyph(props) {
-  return (
-    <svg viewBox="0 0 48 96" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true" {...props}>
-      <path d="M19 5h10v9c0 3 6 6 6 14v52a6 6 0 0 1-6 6H19a6 6 0 0 1-6-6V28c0-8 6-11 6-14V5Z" />
-      <path d="M13.5 46h21" />
-    </svg>
-  )
-}
-
-function PalmFrond({ className }) {
-  return (
-    <svg viewBox="0 0 220 220" className={className} fill="none" stroke="currentColor"
-         strokeWidth="3" strokeLinecap="round" aria-hidden="true">
-      <path d="M214 214C168 190 133 150 116 96" />
-      <path d="M116 96c22 5 47 0 70-17M126 120c24 7 50 4 74-10M138 146c24 9 51 8 75-4M152 172c22 11 47 14 70 6" />
-      <path d="M116 96c-9 21-8 47 5 74M138 146c-6 23-1 48 12 70M158 182c-2 19 3 38 15 52" />
-    </svg>
-  )
-}
-
 export default function Products() {
   return (
-    <section className="relative overflow-clip bg-paper-inset" id="shop">
-      <div className="container-site relative py-[clamp(2rem,4vw,3rem)]">
+    <section className="relative bg-[#f4f1eb]" id="shop">
+      <div className="container-site py-[clamp(3rem,6vw,5rem)]">
 
         {/* Heading */}
-        <div className="mx-auto max-w-[42rem] text-center">
-          <h2 className="font-display font-medium leading-[1.1] text-olive-900"
-              style={{ fontSize: 'clamp(1.9rem, 1.3rem + 2.4vw, 3rem)' }}>
-            Three oils. One honest press.
-          </h2>
-          <p className="mt-3 font-display italic text-text-soft"
-             style={{ fontSize: 'clamp(1rem, 0.95rem + 0.3vw, 1.2rem)' }}>
-            Cold-pressed, unrefined, and bottled by hand.
-          </p>
-        </div>
-
-        {/* Three products — staggered cards */}
-        <div className="mt-[clamp(2rem,5vw,3.5rem)] grid gap-x-6 gap-y-12 sm:gap-y-16 grid-cols-1 sm:grid-cols-3">
-          {PRODUCTS.map((p) => (
-            <article
-              key={p.name}
-              id={p.slug}
-              className={`group relative mx-auto flex w-full max-w-[18rem] sm:max-w-none scroll-mt-24 sm:scroll-mt-28 flex-col ${p.offset}`}
-            >
-              <Link to={`/shop/${p.slug}`} className="relative block" aria-label={p.name}>
-                <div
-                  className="product-card relative grid place-items-center overflow-hidden"
-                  style={{ background: p.tint }}
-                >
-                  <BottleGlyph className="h-2/5 w-auto text-olive-900/15" />
-                  <img
-                    src={p.img}
-                    alt={p.name}
-                    loading="lazy"
-                    decoding="async"
-                    onError={(e) => { e.currentTarget.style.display = 'none' }}
-                    className="absolute inset-0 h-full w-full object-contain p-4 sm:p-6 transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                </div>
-
-                {/* label below card */}
-                <div className="mt-3 sm:mt-5 text-center">
-                  <span className="font-display text-base sm:text-lg font-medium tracking-wide text-olive-900">
-                    {p.name}
-                  </span>
-                </div>
-              </Link>
-
-              <p className="mt-2 text-center text-sm leading-relaxed text-text-mute">
-                {p.desc}
-              </p>
-            </article>
-          ))}
-        </div>
-
-        {/* Button below products */}
-        <div className="mt-10 text-center">
-          <Link to="/shop" className="btn btn-primary">
-            Shop all oils <ArrowRight size={16} strokeWidth={2} />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-[0.75rem] uppercase tracking-[0.18em] text-olive-700/60 font-medium">
+              Our Oils
+            </p>
+            <h2 className="mt-2 font-display font-medium text-olive-900 leading-[1.1]"
+                style={{ fontSize: 'clamp(1.75rem, 1.2rem + 2.2vw, 2.8rem)' }}>
+              Four oils.<br className="hidden sm:block" /> One honest press.
+            </h2>
+          </div>
+          <Link
+            to="/shop"
+            className="group inline-flex items-center gap-2 text-[0.85rem] font-medium text-olive-800 hover:text-olive-600 transition-colors"
+          >
+            View all products
+            <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
           </Link>
+        </div>
+
+        {/* Product grid */}
+        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {PRODUCTS.map((p) => (
+            <Link
+              key={p.name}
+              to={`/shop/${p.slug}`}
+              className="group relative flex flex-col"
+            >
+              {/* Card */}
+              <div
+                className="relative aspect-[3/4] overflow-hidden rounded-2xl transition-shadow duration-300 group-hover:shadow-lg"
+                style={{ background: p.tint }}
+              >
+                {/* Number watermark */}
+                <span className="absolute top-4 left-4 text-[0.7rem] font-semibold tracking-widest text-olive-900/30 uppercase">
+                  {p.n}
+                </span>
+
+                {/* Product image */}
+                <img
+                  src={p.img}
+                  alt={p.name}
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => { e.currentTarget.style.display = 'none' }}
+                  className="absolute inset-0 h-full w-full object-contain p-6 transition-transform duration-500 ease-out group-hover:scale-105"
+                />
+
+                {/* Bottom gradient overlay */}
+                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/10 to-transparent" />
+              </div>
+
+              {/* Info */}
+              <div className="mt-3.5 px-0.5">
+                <span className="text-[0.68rem] uppercase tracking-[0.14em] text-olive-600/60 font-medium">
+                  {p.tag}
+                </span>
+                <h3 className="mt-0.5 font-display text-base font-medium text-olive-900 group-hover:text-olive-700 transition-colors">
+                  {p.name}
+                </h3>
+                <p className="mt-1 text-[0.82rem] leading-relaxed text-olive-700/60 line-clamp-2">
+                  {p.desc}
+                </p>
+              </div>
+            </Link>
+          ))}
         </div>
 
       </div>

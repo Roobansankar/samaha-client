@@ -52,7 +52,7 @@ export default function ShopPage() {
               className="mt-3 max-w-[16ch] font-display font-medium leading-[1.04] text-on-olive"
               style={{ fontSize: 'clamp(2.4rem, 1.5rem + 4.5vw, 4.25rem)' }}
             >
-              Three oils, pressed the slow way
+              Four oils, pressed the slow way
             </h1>
             <p
               className="mt-4 max-w-[46ch] leading-relaxed text-on-olive-soft"
@@ -63,7 +63,7 @@ export default function ShopPage() {
             </p>
             <div className="mt-6 hidden flex-wrap items-center gap-x-5 gap-y-2 text-on-olive-mute sm:flex"
                  style={{ fontSize: '0.8rem', letterSpacing: '0.08em' }}>
-              <span className="uppercase">3 varieties</span>
+              <span className="uppercase">4 varieties</span>
               <span aria-hidden="true">·</span>
               <span className="uppercase">½, 1, 5 &amp; 16 L tins</span>
               <span aria-hidden="true">·</span>

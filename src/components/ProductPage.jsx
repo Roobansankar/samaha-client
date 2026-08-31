@@ -404,33 +404,32 @@ export default function ProductPage() {
                   {added ? <>Added to cart <Check size={16} strokeWidth={2.5} /></> : <>Add to cart — ₹{total}</>}
                 </button>
               </div>
-            </div>
-          </div>
 
-          {/* about + specs */}
-          <div className="mt-[clamp(2rem,5vw,3.5rem)] grid gap-x-16 gap-y-10 lg:grid-cols-2">
-            <div>
-              <h2 className="font-display font-medium text-olive-900" style={{ fontSize: headingSize }}>
-                About this oil
-              </h2>
-              <div className="mt-4 space-y-4 leading-[1.75] text-text-soft"
-                   style={{ fontSize: 'clamp(0.98rem, 0.92rem + 0.2vw, 1.05rem)' }}>
-                {product.description.map((para) => <p key={para}>{para}</p>)}
-              </div>
-            </div>
+              {/* about */}
+              <section className="mt-10 border-t border-line pt-8">
+                <h2 className="font-display font-medium text-olive-900" style={{ fontSize: headingSize }}>
+                  About this oil
+                </h2>
+                <div className="mt-4 space-y-4 leading-[1.75] text-text-soft"
+                     style={{ fontSize: 'clamp(0.98rem, 0.92rem + 0.2vw, 1.05rem)' }}>
+                  {product.description.map((para) => <p key={para}>{para}</p>)}
+                </div>
+              </section>
 
-            <div>
-              <h2 className="font-display font-medium text-olive-900" style={{ fontSize: headingSize }}>
-                Specifications
-              </h2>
-              <dl className="mt-4 rounded-xl border border-line divide-y divide-line overflow-hidden">
-                {product.specs.map(([label, value]) => (
-                  <div key={label} className="flex justify-between gap-6 px-5 py-4 text-sm bg-paper-inset">
-                    <dt className="text-text-mute">{label}</dt>
-                    <dd className="text-right font-medium text-olive-900">{value}</dd>
-                  </div>
-                ))}
-              </dl>
+              {/* specifications */}
+              <section className="mt-8">
+                <h2 className="font-display font-medium text-olive-900" style={{ fontSize: headingSize }}>
+                  Specifications
+                </h2>
+                <dl className="mt-4 overflow-hidden rounded-xl border border-line divide-y divide-line">
+                  {product.specs.map(([label, value]) => (
+                    <div key={label} className="flex justify-between gap-6 px-5 py-4 text-sm bg-paper-inset">
+                      <dt className="text-text-mute">{label}</dt>
+                      <dd className="text-right font-medium text-olive-900">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
             </div>
           </div>
 
@@ -451,7 +450,7 @@ export default function ProductPage() {
             </div>
 
             <div className="rounded-xl bg-paper-2 p-5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-text-mute mb-3">Shipping & Returns</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-text-mute mb-3">Shipping &amp; Returns</p>
               <ul className="space-y-3">
                 {DELIVERY.map(({ Icon, text }) => (
                   <li key={text} className="flex items-start gap-3 text-sm text-text-soft">
@@ -468,7 +467,7 @@ export default function ProductPage() {
             <h2 className="font-display font-medium text-olive-900" style={{ fontSize: headingSize }}>
               More from Samaha
             </h2>
-            <div className="mt-6 grid grid-cols-2 gap-4 sm:max-w-[600px] sm:gap-6">
+            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6">
               {others.map((o) => (
                 <Link
                   key={o.slug}

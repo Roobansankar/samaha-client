@@ -10,12 +10,14 @@ const PRODUCTS = [
   { sku: 'GN-500', name: 'Wood-pressed Groundnut Oil', variant: '500 ml', category: 'Groundnut', price: 11, stock: 92, status: 'Active' },
   { sku: 'PN-500', name: 'Cold-pressed Peanut Oil', variant: '500 ml', category: 'Peanut', price: 13, stock: 9, status: 'Active' },
   { sku: 'PN-1000', name: 'Cold-pressed Peanut Oil', variant: '1 L', category: 'Peanut', price: 22, stock: 41, status: 'Active' },
+  { sku: 'SS-500', name: 'Stone-ground Sesame Oil', variant: '500 ml', category: 'Sesame', price: 17, stock: 73, status: 'Active' },
+  { sku: 'SS-1000', name: 'Stone-ground Sesame Oil', variant: '1 L', category: 'Sesame', price: 30, stock: 35, status: 'Active' },
   { sku: 'GB-TRIO', name: 'Gift Box · Trio', variant: '3 × 250 ml', category: 'Bundle', price: 32, stock: 0, status: 'Draft' },
   { sku: 'CO-SOAP', name: 'Coconut Oil Soap Bar', variant: '100 g', category: 'Coconut', price: 6, stock: 210, status: 'Active' },
   { sku: 'GN-OLD', name: 'Groundnut Oil (old label)', variant: '500 ml', category: 'Groundnut', price: 10, stock: 0, status: 'Archived' },
 ]
 
-const TINT = { Coconut: '#e6e1d4', Groundnut: '#e8d8ba', Peanut: '#e3c8a3', Bundle: '#dfe6da' }
+const TINT = { Coconut: '#e6e1d4', Groundnut: '#e8d8ba', Peanut: '#e3c8a3', Sesame: '#d4b896', Bundle: '#dfe6da' }
 const PER_PAGE = 8
 
 function stockStatus(s) {
@@ -61,6 +63,7 @@ export default function AdminProducts() {
             <option value="Coconut">Coconut</option>
             <option value="Groundnut">Groundnut</option>
             <option value="Peanut">Peanut</option>
+            <option value="Sesame">Sesame</option>
             <option value="Bundle">Bundle</option>
           </select>
           <div className="flex-1" />

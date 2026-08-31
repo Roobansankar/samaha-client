@@ -290,6 +290,8 @@
 .a-badge--blue  { background: rgba(37, 99, 235, 0.12); color: #2563eb; }
 .a-badge--red   { background: rgba(214, 69, 69, 0.13); color: #d64545; }
 .a-badge--gray  { background: var(--a-surface-3); color: var(--a-text-dim); }
+.a-badge--active { background: var(--a-accent); color: var(--a-accent-fg); cursor: pointer; }
+.a-badge:not(.a-badge--active):hover { opacity: 0.8; cursor: pointer; }
 .admin.theme-dark .a-badge--green { background: rgba(74, 222, 128, 0.14); color: #6ee7a0; }
 .admin.theme-dark .a-badge--amber { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
 .admin.theme-dark .a-badge--blue  { background: rgba(96, 165, 250, 0.16); color: #7cb2fb; }

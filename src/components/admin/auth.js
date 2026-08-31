@@ -1,39 +1,78 @@
-// Lightweight client-side gate for the demo admin console.
-// Swap these for a real auth call + httpOnly cookie/session in production.
+const API_URL = '/api'
 
-const KEY = 'adminAuth'
+async function request(url, options = {}) {
+  const token = getToken()
+  const headers = { 'Content-Type': 'application/json', Accept: 'application/json' }
+  if (token) headers['Authorization'] = `Bearer ${token}`
 
-export const DEMO_CREDENTIALS = {
-  email: 'admin@samaha.com',
-  password: 'samaha123',
+  const response = await fetch(url, { headers: { ...headers, ...options.headers }, ...options })
+
+  const text = await response.text()
+  let data = {}
+  if (text) {
+    try { data = JSON.parse(text) } catch { throw new Error('Server returned an invalid response. Is the backend running?') }
+  }
+
+  if (!response.ok) {
+    throw new Error(data.message || data.errors?.email?.[0] || 'Request failed')
+  }
+
+  return data
+}
+
+export async function signIn(email, password) {
+  const data = await request(`${API_URL}/admin/login`, {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  })
+
+  localStorage.setItem('adminToken', data.token)
+  localStorage.setItem('adminUser', JSON.stringify(data.user))
+
+  return data
 }
 
 export function isAuthed() {
-  try {
-    return localStorage.getItem(KEY) === 'true'
-  } catch {
-    return false
-  }
+  return !!localStorage.getItem('adminToken')
 }
 
-export function signIn(email, password) {
-  const ok =
-    email.trim().toLowerCase() === DEMO_CREDENTIALS.email &&
-    password === DEMO_CREDENTIALS.password
-  if (ok) {
-    try {
-      localStorage.setItem(KEY, 'true')
-    } catch {
-      /* storage unavailable — session lives for this tab only */
-    }
-  }
-  return ok
+export function getToken() {
+  return localStorage.getItem('adminToken')
 }
 
-export function signOut() {
-  try {
-    localStorage.removeItem(KEY)
-  } catch {
-    /* ignore */
-  }
+export function getUser() {
+  try { return JSON.parse(localStorage.getItem('adminUser')) } catch { return null }
+}
+
+export function isAdmin() {
+  return getUser()?.role === 'admin'
+}
+
+export function hasPermission(page) {
+  const user = getUser()
+  if (!user) return false
+  if (user.role === 'admin') return true
+  return user.permissions?.includes(page) || user.permissions?.includes('*')
+}
+
+export async function signOut() {
+  try { await request(`${API_URL}/admin/logout`, { method: 'POST' }) } catch {}
+  localStorage.removeItem('adminToken')
+  localStorage.removeItem('adminUser')
+}
+
+export async function fetchStaff() {
+  return request(`${API_URL}/admin/staff`)
+}
+
+export async function createStaff(staff) {
+  return request(`${API_URL}/admin/staff`, { method: 'POST', body: JSON.stringify(staff) })
+}
+
+export async function updateStaff(id, staff) {
+  return request(`${API_URL}/admin/staff/${id}`, { method: 'PUT', body: JSON.stringify(staff) })
+}
+
+export async function deleteStaff(id) {
+  return request(`${API_URL}/admin/staff/${id}`, { method: 'DELETE' })
 }

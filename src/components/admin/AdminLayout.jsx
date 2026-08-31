@@ -6,6 +6,7 @@ import {
   Package,
   Users,
   Settings,
+  UserCog,
   LogOut,
   Menu,
   Bell,
@@ -13,14 +14,15 @@ import {
   Moon,
   ExternalLink,
 } from 'lucide-react'
-import { signOut } from './auth'
+import { signOut, getUser, isAdmin, hasPermission } from './auth'
 import { AdminThemeContext } from './theme'
 
 const NAV = [
-  { to: '/admin', end: true, label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/admin/orders', label: 'Orders', icon: ShoppingBag },
-  { to: '/admin/products', label: 'Products', icon: Package },
-  { to: '/admin/customers', label: 'Customers', icon: Users },
+  { to: '/admin', end: true, label: 'Dashboard', icon: LayoutDashboard, page: 'dashboard' },
+  { to: '/admin/orders', label: 'Orders', icon: ShoppingBag, page: 'orders' },
+  { to: '/admin/products', label: 'Products', icon: Package, page: 'products' },
+  { to: '/admin/customers', label: 'Customers', icon: Users, page: 'customers' },
+  { to: '/admin/staff', label: 'Staff', icon: UserCog, page: 'staff', adminOnly: true },
 ]
 
 const isDesktop = () =>
@@ -28,33 +30,22 @@ const isDesktop = () =>
 
 export default function AdminLayout() {
   const navigate = useNavigate()
+  const user = getUser()
 
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [navCollapsed, setNavCollapsed] = useState(() => {
-    try {
-      return localStorage.getItem('adminNavCollapsed') === 'true'
-    } catch {
-      return false
-    }
+    try { return localStorage.getItem('adminNavCollapsed') === 'true' } catch { return false }
   })
   const [theme, setTheme] = useState(() => {
-    try {
-      return localStorage.getItem('adminTheme') || 'light'
-    } catch {
-      return 'light'
-    }
+    try { return localStorage.getItem('adminTheme') || 'light' } catch { return 'light' }
   })
 
   useEffect(() => {
-    try {
-      localStorage.setItem('adminTheme', theme)
-    } catch { /* ignore */ }
+    try { localStorage.setItem('adminTheme', theme) } catch {}
   }, [theme])
 
   useEffect(() => {
-    try {
-      localStorage.setItem('adminNavCollapsed', String(navCollapsed))
-    } catch { /* ignore */ }
+    try { localStorage.setItem('adminNavCollapsed', String(navCollapsed)) } catch {}
   }, [navCollapsed])
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
@@ -65,12 +56,18 @@ export default function AdminLayout() {
   }
   const navExpanded = isDesktop() ? !navCollapsed : drawerOpen
 
-  const handleSignOut = () => {
-    signOut()
+  const handleSignOut = async () => {
+    await signOut()
     navigate('/admin/login', { replace: true })
   }
 
   const navLinkClass = ({ isActive }) => `a-navitem ${isActive ? 'is-active' : ''}`
+
+  const visibleNav = NAV.filter((item) => {
+    if (item.adminOnly && !isAdmin()) return false
+    if (item.page && !hasPermission(item.page)) return false
+    return true
+  })
 
   return (
     <AdminThemeContext.Provider value={{ theme, toggle: toggleTheme }}>
@@ -108,7 +105,7 @@ export default function AdminLayout() {
 
               {/* Nav */}
               <nav className="flex-1 space-y-1.5 overflow-y-auto px-3 pt-3">
-                {NAV.map(({ to, end, label, icon: Icon }) => (
+                {visibleNav.map(({ to, end, label, icon: Icon }) => (
                   <NavLink key={to} to={to} end={end} onClick={closeDrawer} className={navLinkClass}>
                     <Icon size={16} />
                     {label}
@@ -118,15 +115,22 @@ export default function AdminLayout() {
 
               {/* Footer */}
               <div className="space-y-1.5 px-3 py-2">
-                <NavLink to="/admin/settings" onClick={closeDrawer} className={navLinkClass}>
-                  <Settings size={16} />
-                  Settings
-                </NavLink>
+                {isAdmin() || hasPermission('settings') ? (
+                  <NavLink to="/admin/settings" onClick={closeDrawer} className={navLinkClass}>
+                    <Settings size={16} />
+                    Settings
+                  </NavLink>
+                ) : null}
               </div>
 
               <div className="flex items-center gap-2 border-t px-3 py-2.5" style={{ borderColor: 'var(--a-border)' }}>
-                <span className="a-avatar h-7 w-7 text-[0.68rem]">SA</span>
-                <p className="min-w-0 flex-1 truncate text-[0.8rem] font-medium">admin@samaha.com</p>
+                <span className="a-avatar h-7 w-7 text-[0.68rem]">
+                  {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[0.8rem] font-medium">{user?.name || 'User'}</p>
+                  <p className="truncate text-[0.65rem] a-mute">{user?.email || ''}</p>
+                </div>
                 <button className="a-iconbtn h-7 w-7" onClick={handleSignOut} aria-label="Sign out" title="Sign out">
                   <LogOut size={15} />
                 </button>

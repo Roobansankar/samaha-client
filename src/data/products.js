@@ -95,6 +95,32 @@ export const PRODUCTS = [
       ['Shelf life', '9 months from pressing'],
     ],
   }),
+  withImages('sesame-oil', {
+    name: 'Sesame Oil',
+    tag: 'Sesame',
+    tagline: 'Rich, aromatic and deeply nutty — the finishing oil of choice.',
+    tint: '#d4b896',
+    rating: 4.8,
+    reviews: 87,
+    description: [
+      'Stone-ground from whole, unhulled sesame seeds and cold-pressed to preserve the deep, roasted aroma that makes sesame oil irreplaceable in Asian and Indian kitchens.',
+      'A little goes a long way — drizzle over finished dishes, use in marinades, or add depth to stir-fries and dressings.',
+    ],
+    sizes: [
+      { label: '1/2 L', price: 160 },
+      { label: '1 L', price: 290 },
+      { label: '5 L', price: 1340 },
+      { label: '16 L tin', price: 4080 },
+    ],
+    specs: [
+      ['Extraction', 'Stone-ground, cold-pressed'],
+      ['Pressed at', 'Below 30°C'],
+      ['Filtering', 'Unrefined, naturally settled'],
+      ['Smoke point', '~210°C'],
+      ['Best for', 'Finishing, marinades, stir-fries, dressings'],
+      ['Shelf life', '12 months from pressing'],
+    ],
+  }),
 ]
 
 export const HIGHLIGHTS = [

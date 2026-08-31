@@ -419,20 +419,10 @@
   }
 
   /* ---- Sticky top group ----
-     Mobile: display:contents, so AnnouncementBar + Navbar behave as direct
-     children and only .nav-header sticks (announcement scrolls away).
-     Laptop (>=901px): the whole group sticks, announcement bar included. */
+     Always display:contents so AnnouncementBar + Navbar are direct children
+     of the root flow. The navbar sticks via its own position:sticky. */
   .site-top {
     display: contents;
-  }
-
-  @media (min-width: 901px) {
-    .site-top {
-      display: block;
-      position: sticky;
-      top: 0;
-      z-index: var(--z-nav);
-    }
   }
 
   /* ---- Navbar ---- */

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation, Navigate } from 'react-router-dom'
 import { Eye, EyeOff, Loader2, Sun, Moon, Leaf } from 'lucide-react'
-import { isAuthed, signIn, DEMO_CREDENTIALS } from './auth'
+import { isAuthed, signIn } from './auth'
 
 export default function AdminLogin() {
   const navigate = useNavigate()
@@ -33,12 +33,13 @@ export default function AdminLogin() {
     e.preventDefault()
     setError('')
     setLoading(true)
-    await new Promise((r) => setTimeout(r, 650))
 
-    if (signIn(email, password)) {
+    try {
+      await signIn(email, password)
       navigate(redirectTo, { replace: true })
-    } else {
-      setError('Those credentials don’t match an admin account.')
+    } catch (err) {
+      setError(err.message || 'Invalid credentials. Please try again.')
+    } finally {
       setLoading(false)
     }
   }
@@ -129,10 +130,6 @@ export default function AdminLogin() {
             </button>
           </form>
         </div>
-
-        <p className="mt-4 text-center text-[0.75rem] a-mute">
-          Demo · {DEMO_CREDENTIALS.email} · {DEMO_CREDENTIALS.password}
-        </p>
       </div>
     </div>
   )
