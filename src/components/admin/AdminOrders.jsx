@@ -1,23 +1,26 @@
 import { useMemo, useState } from 'react'
-import { Search, Download, Plus, Eye, MoreHorizontal } from 'lucide-react'
-import { PageHeader, StatusBadge, Pagination, EmptyRow } from './ui'
+import { Search, Download, Plus, ListFilter } from 'lucide-react'
+import { Panel, StatusBadge, EmptyRow, ResultCount, Pager } from './ui'
 
 const ORDERS = [
-  { id: 'SAM-1042', customer: 'Aarti Menon', email: 'aarti@example.com', items: 3, total: 78.0, payment: 'Paid', fulfillment: 'Unfulfilled', date: '2026-08-31' },
-  { id: 'SAM-1041', customer: 'Daniel Rowe', email: 'daniel@example.com', items: 2, total: 46.5, payment: 'Paid', fulfillment: 'Processing', date: '2026-08-31' },
-  { id: 'SAM-1040', customer: 'Priya Shah', email: 'priya@example.com', items: 4, total: 122.0, payment: 'Paid', fulfillment: 'Shipped', date: '2026-08-30' },
-  { id: 'SAM-1039', customer: 'Karthik Rao', email: 'karthik@example.com', items: 1, total: 31.0, payment: 'Paid', fulfillment: 'Delivered', date: '2026-08-30' },
-  { id: 'SAM-1038', customer: 'Lena Fischer', email: 'lena@example.com', items: 3, total: 88.0, payment: 'Pending', fulfillment: 'Unfulfilled', date: '2026-08-29' },
-  { id: 'SAM-1037', customer: 'Omar Haddad', email: 'omar@example.com', items: 2, total: 54.0, payment: 'Refunded', fulfillment: 'Cancelled', date: '2026-08-29' },
-  { id: 'SAM-1036', customer: 'Grace Liu', email: 'grace@example.com', items: 5, total: 164.0, payment: 'Paid', fulfillment: 'Delivered', date: '2026-08-28' },
-  { id: 'SAM-1035', customer: 'Mateo Silva', email: 'mateo@example.com', items: 1, total: 15.0, payment: 'Paid', fulfillment: 'Delivered', date: '2026-08-28' },
-  { id: 'SAM-1034', customer: 'Hannah Berg', email: 'hannah@example.com', items: 2, total: 62.0, payment: 'Failed', fulfillment: 'Cancelled', date: '2026-08-27' },
-  { id: 'SAM-1033', customer: 'Ravi Kapoor', email: 'ravi@example.com', items: 3, total: 93.0, payment: 'Paid', fulfillment: 'Shipped', date: '2026-08-27' },
-  { id: 'SAM-1032', customer: 'Sofia Marín', email: 'sofia@example.com', items: 2, total: 48.0, payment: 'Paid', fulfillment: 'Delivered', date: '2026-08-26' },
-  { id: 'SAM-1031', customer: 'Tom Becker', email: 'tom@example.com', items: 6, total: 210.0, payment: 'Paid', fulfillment: 'Delivered', date: '2026-08-25' },
+  { id: '#1042', customer: 'Aarti Menon', email: 'aarti@example.com', channel: 'Samaha Coimbatore', payment: 'Captured', fulfillment: 'Not fulfilled', total: 1416, date: '2026-08-31' },
+  { id: '#1041', customer: 'Daniel Rowe', email: 'daniel@example.com', channel: 'Samaha Online', payment: 'Authorized', fulfillment: 'Not fulfilled', total: 1416, date: '2026-08-31' },
+  { id: '#1040', customer: 'Priya Shah', email: 'priya@example.com', channel: 'Samaha Online', payment: 'Captured', fulfillment: 'Shipped', total: 4248, date: '2026-08-30' },
+  { id: '#1039', customer: 'Karthik Rao', email: 'karthik@example.com', channel: 'Samaha Coimbatore', payment: 'Captured', fulfillment: 'Delivered', total: 1652, date: '2026-08-30' },
+  { id: '#1038', customer: 'Lena Fischer', email: 'lena@example.com', channel: 'Samaha Online', payment: 'Authorized', fulfillment: 'Not fulfilled', total: 1416, date: '2026-08-29' },
+  { id: '#1037', customer: 'Omar Haddad', email: 'omar@example.com', channel: 'Samaha Coimbatore', payment: 'Refunded', fulfillment: 'Canceled', total: 1652, date: '2026-08-29' },
+  { id: '#1036', customer: 'Grace Liu', email: 'grace@example.com', channel: 'Samaha Online', payment: 'Captured', fulfillment: 'Delivered', total: 3510, date: '2026-08-28' },
+  { id: '#1035', customer: 'Mateo Silva', email: 'mateo@example.com', channel: 'Samaha Online', payment: 'Captured', fulfillment: 'Delivered', total: 890, date: '2026-08-28' },
+  { id: '#1034', customer: 'Hannah Berg', email: 'hannah@example.com', channel: 'Samaha Coimbatore', payment: 'Failed', fulfillment: 'Canceled', total: 1240, date: '2026-08-27' },
+  { id: '#1033', customer: 'Ravi Kapoor', email: 'ravi@example.com', channel: 'Samaha Online', payment: 'Captured', fulfillment: 'Shipped', total: 2085, date: '2026-08-27' },
+  { id: '#1032', customer: 'Sofia Marín', email: 'sofia@example.com', channel: 'Samaha Online', payment: 'Captured', fulfillment: 'Delivered', total: 960, date: '2026-08-26' },
+  { id: '#1031', customer: 'Tom Becker', email: 'tom@example.com', channel: 'Samaha Coimbatore', payment: 'Captured', fulfillment: 'Delivered', total: 4620, date: '2026-08-25' },
 ]
 
 const PER_PAGE = 8
+const inr = (n) => `₹ ${n.toLocaleString('en-IN', { minimumFractionDigits: 2 })} INR`
+const fmtDate = (d) =>
+  new Date(d).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
 
 export default function AdminOrders() {
   const [q, setQ] = useState('')
@@ -40,101 +43,82 @@ export default function AdminOrders() {
   const pageCount = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
   const safePage = Math.min(page, pageCount)
   const rows = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
-
   const reset = (fn) => (v) => {
     fn(v)
     setPage(1)
   }
 
   return (
-    <div>
-      <PageHeader
-        title="Orders"
-        subtitle={`${ORDERS.length} orders · ${ORDERS.filter((o) => o.fulfillment === 'Unfulfilled').length} awaiting fulfillment`}
-        actions={
-          <>
-            <button className="a-btn">
-              <Download size={15} /> Export
-            </button>
-            <button className="a-btn a-btn-primary">
-              <Plus size={15} /> Create order
-            </button>
-          </>
-        }
-      />
-
-      <div className="a-card overflow-hidden">
-        <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-          <div className="a-input-wrap flex-1">
+    <Panel
+      title="Orders"
+      actions={
+        <>
+          <button className="a-btn a-btn-sm">
+            <Download size={14} /> Export
+          </button>
+          <button className="a-btn a-btn-sm a-btn-primary">
+            <Plus size={14} /> Create
+          </button>
+        </>
+      }
+      toolbar={
+        <>
+          <select className="a-select a-select-sm sm:w-40" value={status} onChange={(e) => reset(setStatus)(e.target.value)}>
+            <option value="all">Add filter</option>
+            <option value="not fulfilled">Not fulfilled</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="canceled">Canceled</option>
+          </select>
+          <div className="flex-1" />
+          <div className="a-input-wrap w-full sm:w-64">
             <Search size={15} />
             <input
-              className="a-input"
-              placeholder="Search by order, customer or email…"
+              className="a-input a-input-sm"
+              placeholder="Search"
               value={q}
               onChange={(e) => reset(setQ)(e.target.value)}
             />
           </div>
-          <select
-            className="a-select sm:w-48"
-            value={status}
-            onChange={(e) => reset(setStatus)(e.target.value)}
-          >
-            <option value="all">All statuses</option>
-            <option value="unfulfilled">Unfulfilled</option>
-            <option value="processing">Processing</option>
-            <option value="shipped">Shipped</option>
-            <option value="delivered">Delivered</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-        </div>
-
-        <div className="a-tablewrap" style={{ borderTop: '1px solid var(--a-border)' }}>
-          <table className="a-table">
-            <thead>
-              <tr>
-                <th>Order</th>
-                <th>Customer</th>
-                <th>Items</th>
-                <th>Payment</th>
-                <th>Fulfillment</th>
-                <th>Date</th>
-                <th className="text-right">Total</th>
-                <th aria-label="Actions" />
-              </tr>
-            </thead>
-            <tbody>
-              {rows.length === 0 && <EmptyRow colSpan={8} label="No orders match your filters" />}
-              {rows.map((o) => (
-                <tr key={o.id}>
-                  <td className="font-semibold a-mono">{o.id}</td>
-                  <td>
-                    <p className="font-medium">{o.customer}</p>
-                    <p className="text-[0.75rem] a-mute">{o.email}</p>
-                  </td>
-                  <td className="a-dim">{o.items}</td>
-                  <td><StatusBadge status={o.payment} /></td>
-                  <td><StatusBadge status={o.fulfillment} /></td>
-                  <td className="a-dim">{o.date}</td>
-                  <td className="text-right font-semibold a-mono">${o.total.toFixed(2)}</td>
-                  <td>
-                    <div className="flex justify-end gap-1">
-                      <button className="a-iconbtn" aria-label="View order"><Eye size={15} /></button>
-                      <button className="a-iconbtn" aria-label="More"><MoreHorizontal size={15} /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <Pagination
-          page={safePage}
-          pageCount={pageCount}
-          total={filtered.length}
-          onPage={setPage}
-        />
-      </div>
-    </div>
+          <button className="a-iconbtn a-iconbtn--box border shrink-0" aria-label="Sort">
+            <ListFilter size={15} />
+          </button>
+        </>
+      }
+      footer={
+        <>
+          <ResultCount page={safePage} perPage={PER_PAGE} total={filtered.length} />
+          <Pager page={safePage} pageCount={pageCount} onPage={setPage} />
+        </>
+      }
+    >
+      <table className="a-table">
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Sales Channel</th>
+            <th>Payment</th>
+            <th>Fulfillment</th>
+            <th className="text-right">Order Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.length === 0 && <EmptyRow colSpan={7} label="No orders match your filters" />}
+          {rows.map((o) => (
+            <tr key={o.id}>
+              <td className="font-medium">{o.id}</td>
+              <td className="a-dim">{fmtDate(o.date)}</td>
+              <td>{o.customer}</td>
+              <td className="a-dim">{o.channel}</td>
+              <td><StatusBadge status={o.payment} /></td>
+              <td><StatusBadge status={o.fulfillment} /></td>
+              <td className="text-right a-mono a-dim">{inr(o.total)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </Panel>
   )
 }

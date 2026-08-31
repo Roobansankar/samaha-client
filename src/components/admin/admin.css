@@ -5,31 +5,30 @@
    ============================================================ */
 
 .admin {
-  --a-bg: #f6f7f8;
+  --a-bg: #f9f9fb;
   --a-surface: #ffffff;
-  --a-surface-2: #f2f3f5;
-  --a-surface-3: #eceef0;
-  --a-border: #e5e7eb;
-  --a-border-strong: #d7dae0;
-  --a-text: #1d2630;
-  --a-text-dim: #5b6472;
-  --a-text-mute: #8996a4;
-  --a-accent: #1a1a1a;
-  --a-accent-hover: #2d2d2d;
+  --a-surface-2: #f4f4f6;
+  --a-surface-3: #ececef;
+  --a-border: #e4e4e8;
+  --a-border-strong: #d5d5db;
+  --a-text: #1a1a1f;
+  --a-text-dim: #5b5b66;
+  --a-text-mute: #9a9aa6;
+  --a-accent: #1a1a1f;
+  --a-accent-hover: #333338;
   --a-accent-fg: #ffffff;
-  --a-accent-soft: #eef0f2;
-  --a-ring: rgba(26, 26, 26, 0.2);
+  --a-accent-soft: #eeeef1;
+  --a-ring: rgba(26, 26, 31, 0.16);
   --a-teal: #0ca678;
-  --a-teal-soft: #e6f6f0;
-  --a-pos: #16a34a;
-  --a-pos-soft: rgba(22, 163, 74, 0.12);
-  --a-warn: #e0902c;
-  --a-warn-soft: #fbf1e2;
+  --a-pos: #3f9142;
+  --a-warn: #c77f1a;
   --a-danger: #d64545;
-  --a-radius: 12px;
-  --a-radius-sm: 8px;
-  --a-shadow: 0 1px 2px rgba(20, 33, 61, 0.04), 0 2px 8px -2px rgba(20, 33, 61, 0.06);
-  --a-shadow-lg: 0 14px 40px -14px rgba(20, 33, 61, 0.18);
+  --a-info: #2f6feb;
+  --a-radius: 8px;
+  --a-radius-sm: 6px;
+  --a-radius-lg: 12px;
+  --a-shadow: 0 1px 2px rgba(20, 20, 30, 0.05);
+  --a-shadow-lg: 0 12px 36px -12px rgba(20, 20, 30, 0.16);
 
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
   font-size: 14px;
@@ -41,41 +40,44 @@
 }
 
 .admin.theme-dark {
-  --a-bg: #0e1013;
-  --a-surface: #16191e;
-  --a-surface-2: #1d2127;
-  --a-surface-3: #242932;
-  --a-border: #272c34;
-  --a-border-strong: #333a44;
-  --a-text: #e7e9ec;
-  --a-text-dim: #98a1ae;
-  --a-text-mute: #69727e;
-  --a-accent: #e0e0e0;
-  --a-accent-hover: #f0f0f0;
-  --a-accent-fg: #0e1013;
-  --a-accent-soft: #23272e;
-  --a-ring: rgba(224, 224, 224, 0.28);
-  --a-teal: #38d9a9;
-  --a-teal-soft: rgba(56, 217, 169, 0.14);
-  --a-pos: #4ade80;
-  --a-pos-soft: rgba(74, 222, 128, 0.14);
-  --a-warn: #f0a94e;
-  --a-warn-soft: rgba(240, 169, 78, 0.14);
+  --a-bg: #0a0a0a;
+  --a-surface: #121213;
+  --a-surface-2: #1a1a1c;
+  --a-surface-3: #222224;
+  --a-border: #242426;
+  --a-border-strong: #34343a;
+  --a-text: #f2f2f2;
+  --a-text-dim: #a1a1a6;
+  --a-text-mute: #6b6b72;
+  --a-accent: #f2f2f2;
+  --a-accent-hover: #ffffff;
+  --a-accent-fg: #0a0a0a;
+  --a-accent-soft: #1f1f21;
+  --a-ring: rgba(242, 242, 242, 0.2);
+  --a-teal: #2dd4a7;
+  --a-pos: #57ab5a;
+  --a-warn: #d99a3c;
   --a-danger: #e5706e;
-  --a-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 8px -2px rgba(0, 0, 0, 0.45);
-  --a-shadow-lg: 0 16px 40px -14px rgba(0, 0, 0, 0.65);
+  --a-info: #5b8def;
+  --a-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --a-shadow-lg: 0 16px 40px -14px rgba(0, 0, 0, 0.7);
 }
 
 .admin *,
 .admin *::before,
 .admin *::after {
   box-sizing: border-box;
-  border-color: var(--a-border);
 }
 
 .admin h1, .admin h2, .admin h3, .admin h4, .admin h5, .admin h6 {
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+  color: var(--a-text);
+  letter-spacing: -0.011em;
+  line-height: 1.3;
+  text-wrap: normal;
+  font-optical-sizing: auto;
 }
+.admin p { text-wrap: normal; }
 
 .admin ::selection {
   background: var(--a-accent);
@@ -150,7 +152,8 @@
 .a-btn-ghost:hover { background: var(--a-surface-2); }
 .a-btn-danger { color: var(--a-danger); border-color: transparent; background: transparent; }
 .a-btn-danger:hover { background: rgba(214, 69, 69, 0.1); }
-.a-btn-sm { height: 2rem; padding: 0 0.7rem; font-size: 0.8rem; }
+.a-btn-sm { height: 2.15rem; padding: 0 0.75rem; font-size: 0.82rem; }
+.a-input-sm, .a-select-sm { height: 2.15rem; font-size: 0.83rem; }
 .a-btn-block { width: 100%; }
 
 .a-iconbtn {
@@ -284,20 +287,16 @@
 }
 .a-table th {
   text-align: left;
-  padding: 0.7rem 1rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--a-text-mute);
+  padding: 0.8rem 1.25rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--a-text-dim);
   background: var(--a-surface);
   border-bottom: 1px solid var(--a-border);
-  position: sticky;
-  top: 0;
   white-space: nowrap;
 }
 .a-table td {
-  padding: 0.8rem 1rem;
+  padding: 0.95rem 1.25rem;
   border-bottom: 1px solid var(--a-border);
   color: var(--a-text);
   vertical-align: middle;
@@ -305,6 +304,48 @@
 .a-table tbody tr:last-child td { border-bottom: 0; }
 .a-table tbody tr { transition: background-color 0.12s ease; }
 .a-table tbody tr:hover td { background: var(--a-surface-2); }
+
+/* ---- Inline status: colored square + label ---- */
+.a-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.83rem;
+  color: var(--a-text-dim);
+  white-space: nowrap;
+}
+.a-status::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 3px;
+  background: var(--_dot, var(--a-text-mute));
+  flex-shrink: 0;
+}
+.a-status--green  { --_dot: var(--a-pos); }
+.a-status--orange { --_dot: var(--a-warn); }
+.a-status--red    { --_dot: var(--a-danger); }
+.a-status--blue   { --_dot: var(--a-info); }
+.a-status--gray   { --_dot: var(--a-text-mute); }
+
+/* ---- Sidebar nav ---- */
+.a-navitem {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  border-radius: 7px;
+  padding: 0.42rem 0.6rem;
+  font-size: 0.85rem;
+  color: var(--a-text-dim);
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+.a-navitem:hover { background: var(--a-surface-2); color: var(--a-text); }
+.a-navitem.is-active {
+  background: var(--a-surface-2);
+  color: var(--a-text);
+  font-weight: 550;
+}
 
 /* ---- Misc ---- */
 .a-divider { height: 1px; background: var(--a-border); border: 0; }
@@ -354,8 +395,8 @@
   font-variant-numeric: tabular-nums;
   line-height: 1.4;
 }
-.a-delta--up   { background: var(--a-pos-soft);  color: var(--a-pos); }
-.a-delta--down { background: var(--a-warn-soft); color: var(--a-warn); }
+.a-delta--up   { color: var(--a-pos); }
+.a-delta--down { color: var(--a-warn); }
 
 /* ---- Segmented toggle (Month / Week) ---- */
 .a-seg {
