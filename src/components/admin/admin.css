@@ -14,18 +14,18 @@
   --a-text: #16181d;
   --a-text-dim: #5b6472;
   --a-text-mute: #9198a4;
-  --a-accent: #2f5028;
-  --a-accent-hover: #3a6332;
-  --a-accent-fg: #f4f7f2;
-  --a-accent-soft: #eaf0e7;
-  --a-ring: rgba(47, 80, 40, 0.28);
+  --a-accent: #1a1a1a;
+  --a-accent-hover: #2d2d2d;
+  --a-accent-fg: #ffffff;
+  --a-accent-soft: #e8e8e8;
+  --a-ring: rgba(26, 26, 26, 0.28);
   --a-danger: #d64545;
   --a-radius: 10px;
   --a-radius-sm: 7px;
   --a-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.07);
   --a-shadow-lg: 0 10px 30px -12px rgba(16, 24, 40, 0.22);
 
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
   font-size: 14px;
   line-height: 1.5;
   color: var(--a-text);
@@ -44,11 +44,11 @@
   --a-text: #e7e9ec;
   --a-text-dim: #98a1ae;
   --a-text-mute: #69727e;
-  --a-accent: #7aa96e;
-  --a-accent-hover: #8bba7f;
+  --a-accent: #e0e0e0;
+  --a-accent-hover: #f0f0f0;
   --a-accent-fg: #0e1013;
-  --a-accent-soft: #1a2318;
-  --a-ring: rgba(122, 169, 110, 0.35);
+  --a-accent-soft: #1f2328;
+  --a-ring: rgba(224, 224, 224, 0.35);
   --a-danger: #e5706e;
   --a-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.4);
   --a-shadow-lg: 0 12px 34px -12px rgba(0, 0, 0, 0.6);
@@ -59,6 +59,10 @@
 .admin *::after {
   box-sizing: border-box;
   border-color: var(--a-border);
+}
+
+.admin h1, .admin h2, .admin h3, .admin h4, .admin h5, .admin h6 {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
 }
 
 .admin ::selection {
