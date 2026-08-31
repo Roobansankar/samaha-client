@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { NavLink, Outlet, useLocation, useNavigate, Link } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom'
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -7,8 +7,7 @@ import {
   Users,
   Settings,
   LogOut,
-  PanelLeftClose,
-  PanelLeftOpen,
+  Menu,
   Bell,
   Sun,
   Moon,
@@ -28,7 +27,6 @@ const isDesktop = () =>
   typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches
 
 export default function AdminLayout() {
-  const location = useLocation()
   const navigate = useNavigate()
 
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -67,11 +65,6 @@ export default function AdminLayout() {
   }
   const navExpanded = isDesktop() ? !navCollapsed : drawerOpen
 
-  const current =
-    [...NAV, { to: '/admin/settings', label: 'Settings' }].find((n) =>
-      n.end ? location.pathname === n.to : location.pathname.startsWith(n.to),
-    ) || {}
-
   const handleSignOut = () => {
     signOut()
     navigate('/admin/login', { replace: true })
@@ -98,7 +91,10 @@ export default function AdminLayout() {
               style={{ background: 'var(--a-bg)', borderRight: '1px solid var(--a-border)' }}
             >
               {/* Brand */}
-              <div className="flex h-14 items-center px-3">
+              <div
+                className="flex h-14 shrink-0 items-center px-3"
+                style={{ borderBottom: '1px solid var(--a-border)' }}
+              >
                 <Link to="/admin" onClick={closeDrawer} className="flex min-w-0 items-center gap-2.5">
                   <span
                     className="grid h-7 w-7 shrink-0 place-items-center rounded-[7px] text-[0.78rem] font-bold"
@@ -111,7 +107,7 @@ export default function AdminLayout() {
               </div>
 
               {/* Nav */}
-              <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 pt-2">
+              <nav className="flex-1 space-y-1.5 overflow-y-auto px-3 pt-3">
                 {NAV.map(({ to, end, label, icon: Icon }) => (
                   <NavLink key={to} to={to} end={end} onClick={closeDrawer} className={navLinkClass}>
                     <Icon size={16} />
@@ -121,7 +117,7 @@ export default function AdminLayout() {
               </nav>
 
               {/* Footer */}
-              <div className="space-y-0.5 px-3 py-2">
+              <div className="space-y-1.5 px-3 py-2">
                 <NavLink to="/admin/settings" onClick={closeDrawer} className={navLinkClass}>
                   <Settings size={16} />
                   Settings
@@ -150,9 +146,8 @@ export default function AdminLayout() {
                 aria-label="Toggle navigation"
                 aria-expanded={navExpanded}
               >
-                {navExpanded ? <PanelLeftClose size={17} /> : <PanelLeftOpen size={17} />}
+                <Menu size={18} />
               </button>
-              <span className="text-[0.9rem] font-medium">{current.label || 'Dashboard'}</span>
 
               <div className="flex-1" />
 
@@ -179,9 +174,7 @@ export default function AdminLayout() {
             </header>
 
             <main className="w-full flex-1 p-4 sm:p-6">
-              <div className="mx-auto w-full max-w-[1360px]">
-                <Outlet />
-              </div>
+              <Outlet />
             </main>
           </div>
         </div>
