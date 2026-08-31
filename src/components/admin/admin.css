@@ -88,6 +88,11 @@
   outline: 2px solid var(--a-accent);
   outline-offset: 2px;
 }
+.admin input:focus-visible,
+.admin select:focus-visible,
+.admin textarea:focus-visible {
+  outline: none;
+}
 
 /* ---- Scrollbars ---- */
 .admin *::-webkit-scrollbar {
@@ -198,8 +203,8 @@
 .a-input:focus,
 .a-select:focus,
 .a-textarea:focus {
-  border-color: var(--a-accent);
-  box-shadow: 0 0 0 3px var(--a-ring);
+  border-color: var(--a-text-dim);
+  box-shadow: none;
 }
 .a-input::placeholder,
 .a-textarea::placeholder { color: var(--a-text-mute); }

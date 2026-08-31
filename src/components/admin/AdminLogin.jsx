@@ -58,14 +58,17 @@ export default function AdminLogin() {
       </button>
 
       <div className="w-full max-w-[360px]">
-        <div className="mb-5 flex items-center justify-center gap-2">
-          <Leaf size={17} style={{ color: 'var(--a-text-dim)' }} />
-          <span className="text-[1.1rem] font-semibold tracking-tight">Samaha</span>
-        </div>
-
         <div className="a-card" style={{ borderRadius: 'var(--a-radius-lg)', padding: '1.5rem' }}>
-          <h1 className="text-[1.15rem] font-semibold tracking-tight">Sign in</h1>
-          <p className="a-sub mt-1">Use your admin account to continue.</p>
+          <div className="mb-4 flex justify-center">
+            <span
+              className="grid h-11 w-11 place-items-center rounded-[12px]"
+              style={{ background: 'var(--a-accent)', color: 'var(--a-accent-fg)' }}
+            >
+              <Leaf size={19} />
+            </span>
+          </div>
+          <h1 className="text-center text-[1.15rem] font-semibold tracking-tight">Sign in</h1>
+          <p className="a-sub mt-1 text-center">Use your admin account to continue.</p>
 
           <form onSubmit={handleSubmit} className="mt-5 space-y-3.5" noValidate>
             <div className="a-field">
