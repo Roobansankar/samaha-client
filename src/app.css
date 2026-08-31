@@ -551,6 +551,60 @@
 }
 
 /* ============================================================
+   Scroll-reveal — only active once <ScrollReveal> adds .js-anim,
+   so no-JS / crawlers / reduced-motion always get visible content.
+   ============================================================ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* the section as a whole eases up */
+  .js-anim .sr-section {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  }
+  .js-anim .sr-section.is-revealed {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* its top-level content blocks stagger in behind it */
+  .js-anim .sr-section > * > * {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+  }
+  .js-anim .sr-section.is-revealed > * > * {
+    opacity: 1;
+    transform: none;
+  }
+  .js-anim .sr-section.is-revealed > * > *:nth-child(2)   { transition-delay: 0.08s; }
+  .js-anim .sr-section.is-revealed > * > *:nth-child(3)   { transition-delay: 0.16s; }
+  .js-anim .sr-section.is-revealed > * > *:nth-child(4)   { transition-delay: 0.24s; }
+  .js-anim .sr-section.is-revealed > * > *:nth-child(n+5) { transition-delay: 0.32s; }
+
+  /* cards / list items inside a revealed section cascade */
+  .js-anim .sr-section [class*="grid-cols"] > *,
+  .js-anim .sr-section > * > ul > li {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.55s var(--ease-out), transform 0.55s var(--ease-out);
+  }
+  .js-anim .sr-section.is-revealed [class*="grid-cols"] > *,
+  .js-anim .sr-section.is-revealed > * > ul > li {
+    opacity: 1;
+    transform: none;
+  }
+  .js-anim .sr-section.is-revealed [class*="grid-cols"] > *:nth-child(2),
+  .js-anim .sr-section.is-revealed > * > ul > li:nth-child(2) { transition-delay: 0.10s; }
+  .js-anim .sr-section.is-revealed [class*="grid-cols"] > *:nth-child(3),
+  .js-anim .sr-section.is-revealed > * > ul > li:nth-child(3) { transition-delay: 0.18s; }
+  .js-anim .sr-section.is-revealed [class*="grid-cols"] > *:nth-child(4),
+  .js-anim .sr-section.is-revealed > * > ul > li:nth-child(4) { transition-delay: 0.26s; }
+  .js-anim .sr-section.is-revealed [class*="grid-cols"] > *:nth-child(n+5),
+  .js-anim .sr-section.is-revealed > * > ul > li:nth-child(n+5) { transition-delay: 0.34s; }
+}
+
+/* ============================================================
    Reduced-motion overrides
    ============================================================ */
 
