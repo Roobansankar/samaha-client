@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import AnnouncementBar from './components/AnnouncementBar'
 import Navbar from './components/Navbar'
 import ImageSlider from './components/ImageSlider'
@@ -26,6 +26,16 @@ import NotFound from './components/NotFound'
 import ScrollToTop from './components/ScrollToTop'
 import ScrollReveal from './components/ScrollReveal'
 
+// Admin imports
+import AdminLayout from './components/admin/AdminLayout'
+import AdminLogin from './components/admin/AdminLogin'
+import AdminDashboard from './components/admin/AdminDashboard'
+import AdminOrders from './components/admin/AdminOrders'
+import AdminCustomers from './components/admin/AdminCustomers'
+import AdminProducts from './components/admin/AdminProducts'
+import AdminSettings from './components/admin/AdminSettings'
+import ProtectedRoute from './components/admin/ProtectedRoute'
+
 function Home() {
   return (
     <>
@@ -50,12 +60,25 @@ function Home() {
 export default function App() {
   return (
     <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  )
+}
+
+function AppContent() {
+  const location = useLocation()
+  const isAdmin = location.pathname.startsWith('/admin')
+
+  return (
+    <>
       <ScrollToTop />
       <ScrollReveal />
-      <div className="site-top">
-        <AnnouncementBar />
-        <Navbar />
-      </div>
+      {!isAdmin && (
+        <div className="site-top">
+          <AnnouncementBar />
+          <Navbar />
+        </div>
+      )}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/shop" element={<ShopPage />} />
@@ -67,9 +90,27 @@ export default function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
+
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="customers" element={<AdminCustomers />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="settings" element={<AdminSettings />} />
+        </Route>
+
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <Footer />
-    </BrowserRouter>
+      {!isAdmin && <Footer />}
+    </>
   )
 }

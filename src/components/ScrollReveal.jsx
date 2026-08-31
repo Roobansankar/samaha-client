@@ -13,12 +13,13 @@ export default function ScrollReveal() {
 
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+    if (pathname.startsWith('/admin')) return // admin has its own styling
 
     document.documentElement.classList.add('js-anim')
 
     const targets = Array.from(document.querySelectorAll('section')).filter(
       (el) =>
-        !el.closest('header, footer, .site-top, [data-no-reveal]') &&
+        !el.closest('header, footer, .site-top, .admin, [data-no-reveal]') &&
         !el.parentElement?.closest('section'), // skip nested sections
     )
     if (!targets.length) return
