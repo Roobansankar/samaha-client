@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown } from 'lucide-react'
 
 export function PageHeader({ title, subtitle, actions }) {
   return (
@@ -12,34 +12,42 @@ export function PageHeader({ title, subtitle, actions }) {
   )
 }
 
-export function StatCard({ label, value, delta, hint, icon: Icon }) {
-  const positive = typeof delta === 'number' ? delta >= 0 : null
+export function Delta({ value }) {
+  if (typeof value !== 'number') return null
+  const up = value >= 0
+  return (
+    <span className={`a-delta a-delta--${up ? 'up' : 'down'}`}>
+      {up ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+      {Math.abs(value)}%
+    </span>
+  )
+}
+
+export function StatCard({ label, value, delta, extra, icon: Icon }) {
   return (
     <div className="a-card a-card-pad">
-      <div className="flex items-start justify-between">
-        <p className="text-[0.8rem] font-medium a-dim">{label}</p>
+      <div className="flex items-center justify-between">
+        <p className="text-[0.82rem] font-medium a-dim">{label}</p>
         {Icon && (
           <span
-            className="grid h-7 w-7 place-items-center rounded-md text-[var(--a-accent)]"
-            style={{ background: 'var(--a-accent-soft)' }}
+            className="grid h-8 w-8 place-items-center rounded-[9px]"
+            style={{ background: 'var(--a-accent-soft)', color: 'var(--a-accent)' }}
           >
-            <Icon size={15} />
+            <Icon size={16} />
           </span>
         )}
       </div>
-      <p className="mt-2 text-[1.5rem] font-semibold tracking-tight a-mono">{value}</p>
-      {(delta != null || hint) && (
-        <p className="mt-1.5 flex items-center gap-1.5 text-[0.78rem]">
-          {delta != null && (
-            <span
-              className="font-semibold a-mono"
-              style={{ color: positive ? '#1a7f47' : 'var(--a-danger)' }}
-            >
-              {positive ? '+' : ''}
-              {delta}%
-            </span>
-          )}
-          {hint && <span className="a-mute">{hint}</span>}
+      <div className="mt-2 flex items-center gap-2.5">
+        <p className="text-[1.55rem] font-semibold tracking-tight a-mono">{value}</p>
+        <Delta value={delta} />
+      </div>
+      {extra && (
+        <p className="mt-3 border-t pt-3 text-[0.78rem] a-dim" style={{ borderColor: 'var(--a-border)' }}>
+          You gained an extra{' '}
+          <span className="font-semibold" style={{ color: 'var(--a-teal)' }}>
+            {extra}
+          </span>{' '}
+          this month
         </p>
       )}
     </div>

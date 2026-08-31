@@ -11,19 +11,25 @@
   --a-surface-3: #eceef0;
   --a-border: #e5e7eb;
   --a-border-strong: #d7dae0;
-  --a-text: #16181d;
+  --a-text: #1d2630;
   --a-text-dim: #5b6472;
-  --a-text-mute: #9198a4;
+  --a-text-mute: #8996a4;
   --a-accent: #1a1a1a;
   --a-accent-hover: #2d2d2d;
   --a-accent-fg: #ffffff;
-  --a-accent-soft: #e8e8e8;
-  --a-ring: rgba(26, 26, 26, 0.28);
+  --a-accent-soft: #eef0f2;
+  --a-ring: rgba(26, 26, 26, 0.2);
+  --a-teal: #0ca678;
+  --a-teal-soft: #e6f6f0;
+  --a-pos: #16a34a;
+  --a-pos-soft: rgba(22, 163, 74, 0.12);
+  --a-warn: #e0902c;
+  --a-warn-soft: #fbf1e2;
   --a-danger: #d64545;
-  --a-radius: 10px;
-  --a-radius-sm: 7px;
-  --a-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.07);
-  --a-shadow-lg: 0 10px 30px -12px rgba(16, 24, 40, 0.22);
+  --a-radius: 12px;
+  --a-radius-sm: 8px;
+  --a-shadow: 0 1px 2px rgba(20, 33, 61, 0.04), 0 2px 8px -2px rgba(20, 33, 61, 0.06);
+  --a-shadow-lg: 0 14px 40px -14px rgba(20, 33, 61, 0.18);
 
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
   font-size: 14px;
@@ -47,11 +53,17 @@
   --a-accent: #e0e0e0;
   --a-accent-hover: #f0f0f0;
   --a-accent-fg: #0e1013;
-  --a-accent-soft: #1f2328;
-  --a-ring: rgba(224, 224, 224, 0.35);
+  --a-accent-soft: #23272e;
+  --a-ring: rgba(224, 224, 224, 0.28);
+  --a-teal: #38d9a9;
+  --a-teal-soft: rgba(56, 217, 169, 0.14);
+  --a-pos: #4ade80;
+  --a-pos-soft: rgba(74, 222, 128, 0.14);
+  --a-warn: #f0a94e;
+  --a-warn-soft: rgba(240, 169, 78, 0.14);
   --a-danger: #e5706e;
-  --a-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.4);
-  --a-shadow-lg: 0 12px 34px -12px rgba(0, 0, 0, 0.6);
+  --a-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 8px -2px rgba(0, 0, 0, 0.45);
+  --a-shadow-lg: 0 16px 40px -14px rgba(0, 0, 0, 0.65);
 }
 
 .admin *,
@@ -320,6 +332,66 @@
 
 .a-scrollbar-none { scrollbar-width: none; }
 .a-scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* ---- Sidebar section label ---- */
+.a-navgroup {
+  padding: 0.9rem 0.75rem 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--a-text-mute);
+}
+
+/* ---- Delta pill (trend) ---- */
+.a-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.12rem 0.42rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+}
+.a-delta--up   { background: var(--a-pos-soft);  color: var(--a-pos); }
+.a-delta--down { background: var(--a-warn-soft); color: var(--a-warn); }
+
+/* ---- Segmented toggle (Month / Week) ---- */
+.a-seg {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+.a-seg button {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--a-text-dim);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 550;
+  padding: 0.3rem 0.75rem;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background-color 0.14s ease, color 0.14s ease, border-color 0.14s ease;
+}
+.a-seg button[data-active='true'] {
+  background: var(--a-accent-soft);
+  color: var(--a-accent);
+  border-color: color-mix(in srgb, var(--a-accent) 30%, transparent);
+}
+
+/* ---- Icon button, boxed ---- */
+.a-iconbtn--box {
+  border-color: var(--a-border-strong);
+  background: var(--a-surface);
+  color: var(--a-text-dim);
+}
+.a-iconbtn--box:hover { background: var(--a-surface-2); color: var(--a-text); }
+
+/* ---- Progress bar ---- */
+.a-progress { height: 6px; border-radius: 999px; background: var(--a-surface-3); overflow: hidden; }
+.a-progress > span { display: block; height: 100%; border-radius: 999px; background: var(--a-accent); }
 
 @media (prefers-reduced-motion: reduce) {
   .admin *, .admin *::before, .admin *::after { transition: none !important; }
