@@ -203,6 +203,18 @@
 }
 .a-input::placeholder,
 .a-textarea::placeholder { color: var(--a-text-mute); }
+
+/* Kill the browser autofill background (pale blue/yellow) so inputs keep the theme */
+.admin input:-webkit-autofill,
+.admin input:-webkit-autofill:hover,
+.admin input:-webkit-autofill:focus,
+.admin input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--a-text);
+  -webkit-box-shadow: 0 0 0 1000px var(--a-surface) inset;
+  box-shadow: 0 0 0 1000px var(--a-surface) inset;
+  caret-color: var(--a-text);
+  transition: background-color 100000s ease-out 0s;
+}
 .a-select {
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239198a4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");

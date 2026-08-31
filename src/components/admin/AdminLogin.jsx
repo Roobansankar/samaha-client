@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useLocation, Navigate } from 'react-router-dom'
-import { Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react'
+import { Eye, EyeOff, Loader2, Sun, Moon, Leaf } from 'lucide-react'
 import { isAuthed, signIn, DEMO_CREDENTIALS } from './auth'
 
 export default function AdminLogin() {
@@ -11,9 +11,21 @@ export default function AdminLogin() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [remember, setRemember] = useState(true)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem('adminTheme') || 'light'
+    } catch {
+      return 'light'
+    }
+  })
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('adminTheme', theme)
+    } catch { /* ignore */ }
+  }, [theme])
 
   if (isAuthed()) return <Navigate to={redirectTo} replace />
 
@@ -32,91 +44,92 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="admin flex min-h-screen items-center justify-center px-5" style={{ fontFamily: "'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" }}>
-      <div className="w-full max-w-[380px]">
-        <h1 className="a-h1 text-center" style={{ fontFamily: "'Inter', sans-serif" }}>Sign in</h1>
-        <p className="a-sub mt-1 text-center">Enter your admin credentials to continue.</p>
+    <div
+      className={`admin ${theme === 'dark' ? 'theme-dark' : ''} relative flex min-h-screen items-center justify-center px-5`}
+      style={{ background: 'var(--a-bg)' }}
+    >
+      <button
+        type="button"
+        onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+        className="a-iconbtn a-iconbtn--box border absolute right-4 top-4"
+        aria-label="Toggle theme"
+      >
+        {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+      </button>
 
-        <form onSubmit={handleSubmit} className="mt-7 space-y-4" noValidate>
-          <div className="a-field">
-            <label htmlFor="admin-email" className="a-label">Email</label>
-            <input
-              id="admin-email"
-              type="email"
-              autoComplete="username"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@samaha.com"
-              className="a-input"
-              required
-            />
-          </div>
+      <div className="w-full max-w-[360px]">
+        <div className="mb-5 flex items-center justify-center gap-2">
+          <Leaf size={17} style={{ color: 'var(--a-text-dim)' }} />
+          <span className="text-[1.1rem] font-semibold tracking-tight">Samaha</span>
+        </div>
 
-          <div className="a-field">
-            <label htmlFor="admin-password" className="a-label">Password</label>
-            <div className="relative">
+        <div className="a-card" style={{ borderRadius: 'var(--a-radius-lg)', padding: '1.5rem' }}>
+          <h1 className="text-[1.15rem] font-semibold tracking-tight">Sign in</h1>
+          <p className="a-sub mt-1">Use your admin account to continue.</p>
+
+          <form onSubmit={handleSubmit} className="mt-5 space-y-3.5" noValidate>
+            <div className="a-field">
+              <label htmlFor="admin-email" className="a-label">Email</label>
               <input
-                id="admin-password"
-                type={showPassword ? 'text' : 'password'}
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="a-input pr-10"
+                id="admin-email"
+                type="email"
+                autoComplete="username"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@samaha.com"
+                className="a-input"
                 required
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword((s) => !s)}
-                className="a-iconbtn absolute right-1 top-1/2 -translate-y-1/2"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
             </div>
-          </div>
 
-          {error && (
-            <p
-              className="rounded-[7px] px-3 py-2 text-sm"
-              style={{ background: 'rgba(214,69,69,0.1)', color: 'var(--a-danger)' }}
-              role="alert"
-            >
-              {error}
-            </p>
-          )}
+            <div className="a-field">
+              <label htmlFor="admin-password" className="a-label">Password</label>
+              <div className="relative">
+                <input
+                  id="admin-password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  className="a-input pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="a-iconbtn absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
+              </div>
+            </div>
 
-          <label className="flex items-center gap-2 text-sm a-dim">
-            <input
-              type="checkbox"
-              checked={remember}
-              onChange={(e) => setRemember(e.target.checked)}
-              className="h-4 w-4 rounded accent-[var(--a-accent)]"
-            />
-            Keep me signed in
-          </label>
-
-          <button type="submit" className="a-btn a-btn-primary a-btn-block h-11" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 size={16} className="animate-spin" /> Signing in…
-              </>
-            ) : (
-              <>
-                Sign in <ArrowRight size={16} />
-              </>
+            {error && (
+              <p
+                className="rounded-[6px] px-3 py-2 text-[0.82rem]"
+                style={{ background: 'rgba(214,69,69,0.12)', color: 'var(--a-danger)' }}
+                role="alert"
+              >
+                {error}
+              </p>
             )}
-          </button>
-        </form>
 
-        <div
-          className="mt-6 rounded-[8px] border border-dashed px-3.5 py-3 text-xs a-dim"
-          style={{ borderColor: 'var(--a-border-strong)' }}
-        >
-          <span className="font-semibold text-[var(--a-text)]">Demo access</span>
-          <br />
-          {DEMO_CREDENTIALS.email} &nbsp;·&nbsp; {DEMO_CREDENTIALS.password}
+            <button
+              type="submit"
+              className="a-btn a-btn-primary a-btn-block !mt-4"
+              style={{ height: '2.5rem' }}
+              disabled={loading}
+            >
+              {loading ? <Loader2 size={15} className="animate-spin" /> : 'Sign in'}
+            </button>
+          </form>
         </div>
+
+        <p className="mt-4 text-center text-[0.75rem] a-mute">
+          Demo · {DEMO_CREDENTIALS.email} · {DEMO_CREDENTIALS.password}
+        </p>
       </div>
     </div>
   )
