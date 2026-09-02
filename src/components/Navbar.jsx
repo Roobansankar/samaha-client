@@ -160,7 +160,7 @@ function Wordmark({ className = 'h-11 sm:h-[52px]' }) {
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
     >
       <img
-        src="/samahalogo.jpeg"
+        src="/samahalogo.png"
         alt="Samaha"
         width="220"
         height="220"
@@ -194,7 +194,7 @@ export default function Navbar() {
   return (
     <header className={`nav-header ${scrolled ? 'is-scrolled' : ''}`} data-open={menuOpen}>
       <div
-        className={`mx-auto flex max-w-[1500px] items-center gap-3 ${
+        className={`relative mx-auto flex max-w-[1500px] items-center gap-3 ${
           scrolled ? 'py-2.5' : 'py-3.5'
         } sm:gap-6`}
         style={{
@@ -212,7 +212,7 @@ export default function Navbar() {
           <Menu size={22} strokeWidth={1.8} />
         </button>
 
-        <div className="max-[900px]:mx-auto max-[900px]:-translate-x-3">
+        <div className="max-[900px]:absolute max-[900px]:left-1/2 max-[900px]:-translate-x-1/2">
           <Wordmark />
         </div>
 
@@ -221,10 +221,10 @@ export default function Navbar() {
             <Link
               key={link.label}
               to={link.href}
-              className={`nav-link font-medium tracking-wide text-olive-700 hover:text-olive-950 ${
+              className={`nav-link font-semibold tracking-wide text-olive-800 hover:text-olive-950 ${
                 isActive(link) ? 'is-active text-olive-950' : ''
               }`}
-              style={{ fontSize: 'clamp(0.83rem, 0.8rem + 0.15vw, 0.92rem)' }}
+              style={{ fontSize: 'clamp(0.9rem, 0.86rem + 0.2vw, 1rem)' }}
             >
               {link.label}
             </Link>
@@ -267,18 +267,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        <div className="px-6 pt-4">
-          <button
-            type="button"
-            onClick={() => { setMenuOpen(false); setSearchOpen(true) }}
-            className="flex w-full items-center gap-3 rounded-pill border border-olive-200 bg-paper-inset px-4 py-3 text-left text-sm text-text-mute"
-          >
-            <Search size={16} strokeWidth={2} className="text-olive-500" />
-            Search products…
-          </button>
-        </div>
-
-        <nav className="flex flex-grow flex-col px-6 py-4" aria-label="Mobile">
+        <nav className="flex flex-grow flex-col px-6 py-6" aria-label="Mobile">
           {LINKS.map((link, i) => (
             <Link
               key={link.label}
