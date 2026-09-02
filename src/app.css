@@ -716,10 +716,44 @@
 }
 
 /* ============================================================
+   Reviews — auto-scrolling marquee
+   ============================================================ */
+
+.reviews-viewport {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to right, transparent, #000 7%, #000 93%, transparent
+  );
+  mask-image: linear-gradient(
+    to right, transparent, #000 7%, #000 93%, transparent
+  );
+}
+
+.reviews-track {
+  display: flex;
+  gap: 1.25rem;
+  width: max-content;
+  padding-inline: 0.625rem;
+  animation: reviews-marquee 55s linear infinite;
+}
+
+.reviews-viewport:hover .reviews-track,
+.reviews-track:focus-within {
+  animation-play-state: paused;
+}
+
+@keyframes reviews-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - 0.625rem)); }
+}
+
+/* ============================================================
    Reduced-motion overrides
    ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
+  .reviews-track { animation: none; }
+  .reviews-viewport { overflow-x: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .hero-word-inner, .hero-rise { animation: none; opacity: 1; transform: none; }
   .hero-bottle { animation: none; }
