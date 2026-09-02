@@ -11,10 +11,22 @@ export default function About() {
   return (
     <section className="bg-paper" id="groves">
       <div className="mx-auto max-w-[1500px] px-[clamp(1.75rem,5vw,5rem)] pb-[clamp(2.5rem,6vw,4.75rem)] pt-[clamp(0.5rem,1.5vw,1rem)]">
-        <div className="grid gap-[clamp(2.5rem,6vw,4.5rem)] lg:grid-cols-[1.05fr_1fr] lg:items-center">
+        <div className="grid gap-y-8 lg:grid-cols-[1.05fr_1fr] lg:gap-x-[clamp(2.5rem,6vw,4.5rem)] lg:gap-y-6 lg:items-center">
 
-          {/* Left: image + floating stat card */}
-          <div className="relative mb-10 lg:mb-0">
+          {/* Heading — mobile: 1st · desktop: top of right column */}
+          <div className="lg:col-start-2 lg:row-start-1">
+            <p className="eyebrow">Our story</p>
+            <h2
+              className="mt-5 font-sans font-bold leading-[1.08] tracking-tight text-olive-900"
+              style={{ fontSize: 'clamp(1.9rem, 1.3rem + 2.6vw, 3.1rem)' }}
+            >
+              Grown around the way you{' '}
+              <span className="text-clay-500">cook, taste and share</span>
+            </h2>
+          </div>
+
+          {/* Image + floating stat card — mobile: 2nd · desktop: left column */}
+          <div className="relative mb-4 lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:mb-0 lg:self-center">
             <div className="relative h-[clamp(340px,42vw,520px)] overflow-hidden rounded-[var(--radius-lg)] bg-paper-3 shadow-md">
               <img
                 src="/habout.png"
@@ -35,19 +47,9 @@ export default function About() {
             </div>
           </div>
 
-          {/* Right: copy */}
-          <div>
-            <p className="eyebrow">Our story</p>
-
-            <h2
-              className="mt-5 font-sans font-bold leading-[1.08] tracking-tight text-olive-900"
-              style={{ fontSize: 'clamp(1.9rem, 1.3rem + 2.6vw, 3.1rem)' }}
-            >
-              Grown around the way you{' '}
-              <span className="text-clay-500">cook, taste and share</span>
-            </h2>
-
-            <p className="mt-5 leading-[1.7] text-text-soft"
+          {/* Body — mobile: 3rd · desktop: below the heading */}
+          <div className="lg:col-start-2 lg:row-start-2">
+            <p className="leading-[1.7] text-text-soft"
                style={{ fontSize: 'clamp(0.95rem, 0.9rem + 0.2vw, 1.08rem)' }}>
               Samaha started with a single family grove, one stone press and a
               simple rule &mdash; bottle the oil exactly as it leaves the press.
