@@ -1,4 +1,6 @@
-import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react'
+import { useState } from 'react'
+import { Phone, Mail, MapPin, Clock, Send, Loader2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 const CONTACT_INFO = [
   { Icon: Phone, label: 'Phone', value: '+91 99430 97030', href: 'tel:+919943097030' },
@@ -8,6 +10,35 @@ const CONTACT_INFO = [
 ]
 
 export default function ContactPage() {
+  const [form, setForm] = useState({ name: '', email: '', phone: '', subject: 'General inquiry', message: '' })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleChange = (e) => setForm({ ...form, [e.target.id]: e.target.value })
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.message || 'Failed to send')
+      }
+      toast.success('Message sent! We\'ll get back to you within 24 hours.')
+      setForm({ name: '', email: '', phone: '', subject: 'General inquiry', message: '' })
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <section className="bg-paper" id="contact-page">
 
@@ -82,62 +113,50 @@ export default function ContactPage() {
                 style={{ fontSize: 'clamp(1.3rem, 1rem + 1.2vw, 1.8rem)' }}>
               Send us a message
             </h2>
-            <form className="mt-6 flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
-              <div className="grid gap-5 sm:grid-cols-2">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-olive-800" htmlFor="name">Name</label>
-                  <input
-                    id="name"
-                    type="text"
-                    placeholder="Your name"
-                    className="rounded-xl border border-line bg-paper-inset px-4 py-3 text-sm text-olive-900 placeholder:text-text-mute outline-none focus:border-olive-500 focus:ring-2 focus:ring-olive-200 transition-colors"
-                  />
+
+            <form className="mt-6 flex flex-col gap-5" onSubmit={handleSubmit}>
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-medium text-olive-800" htmlFor="name">Name</label>
+                    <input id="name" type="text" placeholder="Your name" value={form.name} onChange={handleChange} required
+                      className="rounded-xl border border-line bg-paper-inset px-4 py-3 text-sm text-olive-900 placeholder:text-text-mute outline-none focus:border-olive-500 focus:ring-2 focus:ring-olive-200 transition-colors" />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-medium text-olive-800" htmlFor="email">Email</label>
+                    <input id="email" type="email" placeholder="you@example.com" value={form.email} onChange={handleChange} required
+                      className="rounded-xl border border-line bg-paper-inset px-4 py-3 text-sm text-olive-900 placeholder:text-text-mute outline-none focus:border-olive-500 focus:ring-2 focus:ring-olive-200 transition-colors" />
+                  </div>
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-olive-800" htmlFor="email">Email</label>
-                  <input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    className="rounded-xl border border-line bg-paper-inset px-4 py-3 text-sm text-olive-900 placeholder:text-text-mute outline-none focus:border-olive-500 focus:ring-2 focus:ring-olive-200 transition-colors"
-                  />
+                  <label className="text-sm font-medium text-olive-800" htmlFor="phone">Phone</label>
+                  <input id="phone" type="tel" placeholder="+91 98765 43210" value={form.phone} onChange={handleChange}
+                    className="rounded-xl border border-line bg-paper-inset px-4 py-3 text-sm text-olive-900 placeholder:text-text-mute outline-none focus:border-olive-500 focus:ring-2 focus:ring-olive-200 transition-colors" />
                 </div>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-olive-800" htmlFor="phone">Phone</label>
-                <input
-                  id="phone"
-                  type="tel"
-                  placeholder="+91 98765 43210"
-                  className="rounded-xl border border-line bg-paper-inset px-4 py-3 text-sm text-olive-900 placeholder:text-text-mute outline-none focus:border-olive-500 focus:ring-2 focus:ring-olive-200 transition-colors"
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-olive-800" htmlFor="subject">Subject</label>
-                <select
-                  id="subject"
-                  className="rounded-xl border border-line bg-paper-inset px-4 py-3 text-sm text-olive-900 outline-none focus:border-olive-500 focus:ring-2 focus:ring-olive-200 transition-colors"
-                >
-                  <option>General inquiry</option>
-                  <option>Wholesale partnership</option>
-                  <option>Order support</option>
-                  <option>Press & media</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-olive-800" htmlFor="message">Message</label>
-                <textarea
-                  id="message"
-                  rows={5}
-                  placeholder="How can we help?"
-                  className="rounded-xl border border-line bg-paper-inset px-4 py-3 text-sm text-olive-900 placeholder:text-text-mute outline-none focus:border-olive-500 focus:ring-2 focus:ring-olive-200 transition-colors resize-none"
-                />
-              </div>
-              <button type="submit" className="btn btn-primary self-start mt-2">
-                Send message <Send size={15} strokeWidth={2} />
-              </button>
-            </form>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-olive-800" htmlFor="subject">Subject</label>
+                  <select id="subject" value={form.subject} onChange={handleChange}
+                    className="rounded-xl border border-line bg-paper-inset px-4 py-3 text-sm text-olive-900 outline-none focus:border-olive-500 focus:ring-2 focus:ring-olive-200 transition-colors">
+                    <option>General inquiry</option>
+                    <option>Wholesale partnership</option>
+                    <option>Order support</option>
+                    <option>Press & media</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-olive-800" htmlFor="message">Message</label>
+                  <textarea id="message" rows={5} placeholder="How can we help?" value={form.message} onChange={handleChange} required
+                    className="rounded-xl border border-line bg-paper-inset px-4 py-3 text-sm text-olive-900 placeholder:text-text-mute outline-none focus:border-olive-500 focus:ring-2 focus:ring-olive-200 transition-colors resize-none" />
+                </div>
+
+                {error && (
+                  <p className="rounded-lg px-4 py-2.5 text-sm bg-red-50 text-red-700 border border-red-200">{error}</p>
+                )}
+
+                <button type="submit" disabled={loading} className="btn btn-primary self-start mt-2">
+                  {loading ? <Loader2 size={15} className="animate-spin" /> : <>Send message <Send size={15} strokeWidth={2} /></>}
+                </button>
+              </form>
           </div>
 
         </div>

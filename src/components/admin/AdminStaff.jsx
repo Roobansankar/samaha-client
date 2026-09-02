@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Search, Plus, Trash2, X, Loader2 } from 'lucide-react'
-import { Panel, EmptyRow, ResultCount, Pager } from './ui'
+import { Panel, EmptyRow, ResultCount, Pager, Loader } from './ui'
 import { fetchStaff, createStaff, updateStaff, deleteStaff } from './auth'
 
 const PAGE_OPTIONS = [
@@ -119,9 +119,11 @@ export default function AdminStaff() {
           </>
         }
       >
+        {loading ? <Loader /> : (
         <table className="a-table">
           <thead>
             <tr>
+              <th style={{ width: 50 }}>#</th>
               <th>Name</th>
               <th>Email</th>
               <th>Access</th>
@@ -129,10 +131,10 @@ export default function AdminStaff() {
             </tr>
           </thead>
           <tbody>
-            {loading && <EmptyRow colSpan={4} label="Loading..." />}
-            {!loading && rows.length === 0 && <EmptyRow colSpan={4} label="No staff members found" />}
-            {rows.map((s) => (
+            {!loading && rows.length === 0 && <EmptyRow colSpan={5} label="No staff members found" />}
+            {rows.map((s, i) => (
               <tr key={s.id}>
+                <td className="a-mono a-dim">{(safePage - 1) * PER_PAGE + i + 1}</td>
                 <td className="font-medium">{s.name}</td>
                 <td className="a-dim">{s.email}</td>
                 <td>
@@ -154,6 +156,7 @@ export default function AdminStaff() {
             ))}
           </tbody>
         </table>
+        )}
       </Panel>
 
       {showModal && (

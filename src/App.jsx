@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import AnnouncementBar from './components/AnnouncementBar'
 import Navbar from './components/Navbar'
 import ImageSlider from './components/ImageSlider'
@@ -35,6 +36,8 @@ import AdminCustomers from './components/admin/AdminCustomers'
 import AdminProducts from './components/admin/AdminProducts'
 import AdminSettings from './components/admin/AdminSettings'
 import AdminStaff from './components/admin/AdminStaff'
+import AdminMessages from './components/admin/AdminMessages'
+import AdminSubscribers from './components/admin/AdminSubscribers'
 import ProtectedRoute from './components/admin/ProtectedRoute'
 
 function Home() {
@@ -74,6 +77,7 @@ function AppContent() {
     <>
       <ScrollToTop />
       <ScrollReveal />
+      <Toaster position="top-center" toastOptions={{ duration: 3000, style: { fontSize: '0.85rem', borderRadius: '12px', padding: '12px 16px' } }} />
       {!isAdmin && (
         <div className="site-top">
           <AnnouncementBar />
@@ -108,6 +112,8 @@ function AppContent() {
           <Route path="products" element={<AdminProducts />} />
           <Route path="settings" element={<AdminSettings />} />
           <Route path="staff" element={<AdminStaff />} />
+          <Route path="messages" element={<AdminMessages />} />
+          <Route path="subscribers" element={<AdminSubscribers />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

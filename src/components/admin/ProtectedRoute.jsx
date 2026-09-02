@@ -8,6 +8,8 @@ const PAGE_MAP = {
   '/admin/customers': 'customers',
   '/admin/settings': 'settings',
   '/admin/staff': 'staff',
+  '/admin/messages': 'messages',
+  '/admin/subscribers': 'subscribers',
 }
 
 const FIRST_PAGE_BY_PERMISSION = {

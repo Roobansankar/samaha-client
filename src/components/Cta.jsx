@@ -1,8 +1,34 @@
 import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 export default function Cta() {
   const [sent, setSent] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const email = e.target.email.value.trim()
+    setLoading(true)
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      if (res.ok) {
+        setSent(true)
+        toast.success("Thanks — you're on the list!")
+      } else {
+        const data = await res.json()
+        toast.error(data.message || 'Something went wrong')
+      }
+    } catch {
+      toast.error('Network error')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <section className="bg-paper" id="join" aria-label="Join the list">
@@ -28,18 +54,19 @@ export default function Cta() {
             </p>
           ) : (
             <form
-              onSubmit={(e) => { e.preventDefault(); setSent(true) }}
+              onSubmit={handleSubmit}
               className="mx-auto mt-8 flex max-w-[26rem] flex-col gap-3 sm:flex-row"
             >
               <input
+                name="email"
                 type="email"
                 required
                 placeholder="you@example.com"
                 aria-label="Email address"
                 className="min-w-0 flex-1 rounded-pill border border-line bg-paper px-5 py-3 text-sm text-olive-900 placeholder:text-text-mute focus:border-gold-500"
               />
-              <button type="submit" className="btn btn-primary shrink-0">
-                Join <ArrowRight size={16} strokeWidth={2} />
+              <button type="submit" disabled={loading} className="btn btn-primary shrink-0">
+                {loading ? 'Joining...' : <>Join <ArrowRight size={16} strokeWidth={2} /></>}
               </button>
             </form>
           )}

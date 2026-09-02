@@ -76,3 +76,47 @@ export async function updateStaff(id, staff) {
 export async function deleteStaff(id) {
   return request(`${API_URL}/admin/staff/${id}`, { method: 'DELETE' })
 }
+
+export async function fetchMessages() {
+  return request(`${API_URL}/admin/messages`)
+}
+
+export async function markMessageRead(id) {
+  return request(`${API_URL}/admin/messages/${id}`)
+}
+
+export async function updateMessageStatus(id, status) {
+  return request(`${API_URL}/admin/messages/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) })
+}
+
+export async function deleteMessage(id) {
+  return request(`${API_URL}/admin/messages/${id}`, { method: 'DELETE' })
+}
+
+export async function fetchSubscribers() {
+  return request(`${API_URL}/admin/subscribers`)
+}
+
+export async function toggleSubscriber(id) {
+  return request(`${API_URL}/admin/subscribers/${id}/toggle`, { method: 'PUT' })
+}
+
+export async function deleteSubscriber(id) {
+  return request(`${API_URL}/admin/subscribers/${id}`, { method: 'DELETE' })
+}
+
+export async function fetchNotifications() {
+  return request(`${API_URL}/admin/notifications`)
+}
+
+export async function markNotificationsRead(ids) {
+  return request(`${API_URL}/admin/notifications/read`, { method: 'PUT', body: JSON.stringify({ ids }) })
+}
+
+export async function markAllNotificationsRead() {
+  return request(`${API_URL}/admin/notifications/read-all`, { method: 'PUT' })
+}
+
+export async function deleteNotification(id) {
+  return request(`${API_URL}/admin/notifications/${id}`, { method: 'DELETE' })
+}

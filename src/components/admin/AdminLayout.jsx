@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { NavLink, Outlet, useNavigate, Link, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -7,14 +7,19 @@ import {
   Users,
   Settings,
   UserCog,
-  LogOut,
+  MessageSquare,
+  MailCheck,
   Menu,
+  LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
   Bell,
   Sun,
   Moon,
   ExternalLink,
+  Search,
 } from 'lucide-react'
-import { signOut, getUser, isAdmin, hasPermission } from './auth'
+import { signOut, getUser, isAdmin, hasPermission, fetchNotifications, markAllNotificationsRead } from './auth'
 import { AdminThemeContext } from './theme'
 
 const NAV = [
@@ -22,7 +27,9 @@ const NAV = [
   { to: '/admin/orders', label: 'Orders', icon: ShoppingBag, page: 'orders' },
   { to: '/admin/products', label: 'Products', icon: Package, page: 'products' },
   { to: '/admin/customers', label: 'Customers', icon: Users, page: 'customers' },
+  { to: '/admin/messages', label: 'Messages', icon: MessageSquare, page: 'messages', adminOnly: true },
   { to: '/admin/staff', label: 'Staff', icon: UserCog, page: 'staff', adminOnly: true },
+  { to: '/admin/subscribers', label: 'Subscribers', icon: MailCheck, page: 'subscribers', adminOnly: true },
 ]
 
 const isDesktop = () =>
@@ -30,7 +37,9 @@ const isDesktop = () =>
 
 export default function AdminLayout() {
   const navigate = useNavigate()
+  const location = useLocation()
   const user = getUser()
+  const bellRef = useRef(null)
 
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [navCollapsed, setNavCollapsed] = useState(() => {
@@ -39,6 +48,38 @@ export default function AdminLayout() {
   const [theme, setTheme] = useState(() => {
     try { return localStorage.getItem('adminTheme') || 'light' } catch { return 'light' }
   })
+  const [notifOpen, setNotifOpen] = useState(false)
+  const [notifications, setNotifications] = useState([])
+  const [showAll, setShowAll] = useState(false)
+  const [dismissed, setDismissed] = useState([])
+
+  const loadNotifications = async () => {
+    try {
+      const data = await fetchNotifications()
+      setNotifications(data.notifications || [])
+    } catch {}
+  }
+
+  const unreadCount = notifications.filter((n) => !n.read && !dismissed.includes(n.id)).length
+  const visibleNotifications = showAll ? notifications : notifications.filter((n) => !dismissed.includes(n.id)).slice(0, 8)
+
+  useEffect(() => {
+    if (isAdmin()) {
+      loadNotifications()
+      const interval = setInterval(loadNotifications, 30000)
+      return () => clearInterval(interval)
+    }
+  }, [location.pathname])
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!notifOpen) return
+    const handler = (e) => {
+      if (bellRef.current && !bellRef.current.contains(e.target)) setNotifOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [notifOpen])
 
   useEffect(() => {
     try { localStorage.setItem('adminTheme', theme) } catch {}
@@ -163,15 +204,91 @@ export default function AdminLayout() {
               >
                 <ExternalLink size={14} /> View store
               </a>
-              <button className="a-iconbtn relative" aria-label="Notifications">
-                <Bell size={17} />
-                <span
-                  className="absolute -right-0.5 -top-0.5 grid h-3.5 min-w-3.5 place-items-center rounded-full px-1 text-[0.58rem] font-bold text-white"
-                  style={{ background: 'var(--a-danger)' }}
-                >
-                  3
-                </span>
-              </button>
+
+              {/* Notifications bell */}
+              {isAdmin() && (
+                <div className="relative" ref={bellRef}>
+                  <button
+                    className="a-iconbtn relative cursor-pointer"
+                    aria-label="Notifications"
+                    onClick={() => setNotifOpen((o) => !o)}
+                  >
+                    <Bell size={17} />
+                    {unreadCount > 0 && (
+                      <span
+                        className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[0.6rem] font-bold text-white"
+                        style={{ background: 'var(--a-danger)' }}
+                      >
+                        {unreadCount}
+                      </span>
+                    )}
+                  </button>
+
+                  {notifOpen && (
+                    <div
+                      className="absolute right-0 top-full mt-2 w-80 rounded-xl border shadow-xl overflow-hidden"
+                      style={{ background: 'var(--a-bg)', borderColor: 'var(--a-border)' }}
+                    >
+                      <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--a-border)' }}>
+                        <span className="text-sm font-semibold">Notifications</span>
+                        {unreadCount > 0 && (
+                          <span className="text-[0.7rem] font-medium px-2 py-0.5 rounded-full text-white" style={{ background: 'var(--a-danger)' }}>
+                            {unreadCount} new
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="max-h-80 overflow-y-auto">
+                        {visibleNotifications.length === 0 ? (
+                          <div className="px-4 py-8 text-center">
+                            <p className="text-sm a-mute">No notifications</p>
+                          </div>
+                        ) : (
+                          visibleNotifications.map((n) => (
+                            <div
+                              key={n.id}
+                              className="flex items-start gap-3 px-4 py-3 transition-colors"
+                              style={{ borderBottom: '1px solid var(--a-border)', opacity: n.read && !dismissed.includes(n.id) ? 0.6 : 1 }}
+                            >
+                              <span
+                                className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-[0.7rem] font-bold"
+                                style={{
+                                  background: n.type === 'subscriber' ? 'var(--a-teal)' : 'var(--a-accent)',
+                                  color: '#fff',
+                                }}
+                              >
+                                {n.type === 'subscriber' ? <MailCheck size={14} /> : <MessageSquare size={14} />}
+                              </span>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[0.8rem] font-medium truncate">{n.title}</p>
+                                <p className="text-[0.72rem] a-mute truncate">{n.body}</p>
+                                <p className="text-[0.68rem] a-mute mt-0.5">{new Date(n.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
+                              </div>
+                              {!n.read && !dismissed.includes(n.id) && (
+                                <span className="mt-1 h-2 w-2 shrink-0 rounded-full" style={{ background: 'var(--a-danger)' }} />
+                              )}
+                            </div>
+                          ))
+                        )}
+                      </div>
+
+                      <button
+                        className="w-full text-center text-[0.8rem] font-medium py-3 hover:bg-[var(--a-surface)] transition-colors"
+                        style={{ borderTop: '1px solid var(--a-border)' }}
+                        onClick={() => {
+                          if (unreadCount > 0) {
+                            markAllNotificationsRead().then(() => loadNotifications())
+                          }
+                          setShowAll((s) => !s)
+                        }}
+                      >
+                        {showAll ? 'Show less' : 'View all notifications'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <button className="a-iconbtn" onClick={toggleTheme} aria-label="Toggle theme">
                 {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
               </button>

@@ -162,3 +162,14 @@ export function EmptyRow({ colSpan, label = 'Nothing to show' }) {
     </tr>
   )
 }
+
+/* ---------- Loader ---------- */
+
+export function Loader({ text = 'Loading...' }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-3 py-16">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-current border-t-transparent" style={{ color: 'var(--a-accent)' }} />
+      <p className="text-[0.8rem] a-mute">{text}</p>
+    </div>
+  )
+}
