@@ -64,7 +64,7 @@ export default function AboutPage() {
     <div className="bg-paper">
 
       {/* ---------- Hero ---------- */}
-      <section className="relative overflow-hidden bg-olive-950 text-on-olive">
+      <section className="relative flex min-h-[clamp(420px,62vh,660px)] items-center overflow-hidden bg-olive-950 text-on-olive">
         <img
           src="/about1.webp"
           alt="Samaha oil mill in Coimbatore"
@@ -73,7 +73,7 @@ export default function AboutPage() {
           decoding="async"
           className="img-shimmer absolute inset-0 h-full w-full object-cover opacity-35"
         />
-        <div className={`relative ${SECTION} py-[clamp(4rem,13vw,8.5rem)]`}>
+        <div className={`relative w-full ${SECTION} py-[clamp(3rem,8vw,5rem)]`}>
           <p className="eyebrow text-gold-300">Our story</p>
           <h1
             className="mt-4 max-w-[20ch] font-display font-medium leading-[1.03] text-on-olive"
