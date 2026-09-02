@@ -29,7 +29,7 @@ export default function About() {
                 <Sprout size={18} strokeWidth={1.8} />
               </span>
               <div>
-                <p className="font-sans text-lg font-bold leading-none text-olive-900">15+ years</p>
+                <p className="font-sans text-lg font-bold leading-none text-olive-900">40+ years</p>
                 <p className="mt-1 text-xs text-text-mute">pressing oil the slow way</p>
               </div>
             </div>
