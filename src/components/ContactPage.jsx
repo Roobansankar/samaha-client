@@ -43,24 +43,34 @@ export default function ContactPage() {
     <section className="bg-paper" id="contact-page">
 
       {/* Hero banner */}
-      <div className="relative h-[clamp(280px,40vw,400px)] overflow-hidden">
+      <div className="relative flex min-h-[clamp(420px,62vh,660px)] items-center overflow-hidden bg-olive-950 text-on-olive">
         <img
           src="/contact.webp"
           alt="Contact Samaha"
           loading="eager"
           fetchPriority="high"
           decoding="async"
-          className="img-shimmer h-full w-full object-cover"
+          className="img-shimmer absolute inset-0 h-full w-full object-cover opacity-55"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-olive-950/80 via-olive-950/30 to-transparent" />
-        <div className="absolute inset-0 flex items-center sm:items-end">
-          <div className="w-full py-10 px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
-            <p className="eyebrow" style={{ color: 'var(--color-paper)' }}>Contact Us</p>
-            <h1 className="mt-3 font-display font-medium leading-[1.08] text-paper max-w-[36rem]"
-                style={{ fontSize: 'clamp(2rem, 1.4rem + 2.8vw, 3.6rem)' }}>
-              Let&rsquo;s start a conversation
-            </h1>
-          </div>
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-olive-950/90 via-olive-950/60 to-olive-950/20"
+          aria-hidden="true"
+        />
+        <div className="relative mx-auto w-full max-w-[1500px] px-[clamp(1.75rem,5vw,5rem)] py-[clamp(3rem,8vw,5rem)]">
+          <p className="eyebrow text-gold-300">Contact us</p>
+          <h1
+            className="mt-4 max-w-[20ch] font-display font-medium leading-[1.03] text-on-olive"
+            style={{ fontSize: 'clamp(2.3rem, 1.5rem + 4vw, 4.6rem)' }}
+          >
+            Let&rsquo;s start a conversation
+          </h1>
+          <p
+            className="mt-6 max-w-[46ch] leading-[1.7] text-on-olive-soft"
+            style={{ fontSize: 'clamp(1rem, 0.95rem + 0.25vw, 1.15rem)' }}
+          >
+            Reach out directly, visit the mill in Sulur, or send a note below &mdash;
+            we&rsquo;re always happy to talk oil.
+          </p>
         </div>
       </div>
 
