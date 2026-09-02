@@ -483,6 +483,49 @@
     color: var(--color-text-mute);
   }
 
+  /* ---- Why Samaha ---- */
+  .why-col {
+    box-shadow: 0 1px 2px rgba(42, 49, 26, 0.05);
+    transition: box-shadow 0.3s var(--ease-out);
+  }
+
+  .why-col:hover {
+    box-shadow: 0 16px 34px -18px rgba(42, 49, 26, 0.28);
+  }
+
+  .why-col__rule {
+    flex: 1;
+    height: 1px;
+    background: rgba(42, 49, 26, 0.16);
+    transform-origin: left;
+    transition: background-color var(--duration-2) var(--ease-default);
+  }
+
+  .why-col:hover .why-col__rule {
+    background: var(--color-clay-500);
+  }
+
+  .why-col__icon {
+    transition: transform 0.3s var(--ease-out),
+      color var(--duration-2) var(--ease-default);
+  }
+
+  .why-col:hover .why-col__icon {
+    transform: translateY(-4px);
+    color: var(--color-clay-500);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .js-anim .sr-section .why-col__rule {
+      transform: scaleX(0);
+      transition: transform 0.65s 0.15s var(--ease-out),
+        background-color var(--duration-2) var(--ease-default);
+    }
+    .js-anim .sr-section.is-revealed .why-col__rule {
+      transform: scaleX(1);
+    }
+  }
+
   /* ---- Navbar mark rotate on brand hover ---- */
   .nav-mark {
     transition: transform var(--duration-2) var(--ease-default),
@@ -898,4 +941,6 @@
   .nav-menu, .nav-menu.is-open { transform: none; transition: opacity 0.15s linear, visibility 0.15s; }
   .nav-menu__card, .nav-menu.is-open .nav-menu__card { opacity: 1; transform: none; transition: background-color 0.15s linear; }
   .nav-menu__thumb, .nav-menu__thumb img { transition: none; }
+  .why-col__rule, .js-anim .sr-section .why-col__rule { transform: none; }
+  .why-col__icon, .why-col:hover .why-col__icon { transform: none; }
 }
