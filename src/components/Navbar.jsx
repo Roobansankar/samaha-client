@@ -155,10 +155,13 @@ export default function Navbar() {
   return (
     <header className={`nav-header ${scrolled ? 'is-scrolled' : ''}`} data-open={menuOpen}>
       <div
-        className={`mx-auto flex max-w-[var(--max-w-site)] items-center gap-3 ${
+        className={`mx-auto flex max-w-[1500px] items-center gap-3 ${
           scrolled ? 'py-2.5' : 'py-3.5'
-        } sm:gap-5`}
-        style={{ paddingInline: 'var(--spacing-gutter)', transition: 'padding var(--duration-2) var(--ease-default)' }}
+        } sm:gap-6`}
+        style={{
+          paddingInline: 'clamp(1.5rem, 4vw, 3.25rem)',
+          transition: 'padding var(--duration-2) var(--ease-default)',
+        }}
       >
         <button
           type="button"
