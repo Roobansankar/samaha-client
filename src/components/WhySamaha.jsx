@@ -27,8 +27,8 @@ const REASONS = [
 export default function WhySamaha() {
   return (
     <section className="bg-paper-inset" id="why" aria-label="Why choose Samaha">
-      <div className="px-[var(--spacing-gutter)] py-[clamp(2.5rem,6vw,5rem)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
-        <div className="mx-auto grid max-w-[1180px] overflow-hidden rounded-[var(--radius-lg)] border border-line bg-paper lg:grid-cols-[minmax(250px,0.8fr)_minmax(0,1.2fr)]">
+      <div className="mx-auto max-w-[1500px] px-[clamp(1.75rem,5vw,5rem)] py-[clamp(2.5rem,6vw,5rem)]">
+        <div className="grid overflow-hidden rounded-[var(--radius-lg)] border border-line bg-paper lg:grid-cols-[minmax(250px,0.8fr)_minmax(0,1.2fr)]">
 
           <div className="flex flex-col justify-center bg-olive-900 px-[clamp(1.5rem,5vw,4rem)] py-[clamp(2rem,5vw,4rem)]">
             <p className="eyebrow text-gold-300">Why Samaha?</p>

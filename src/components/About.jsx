@@ -1,40 +1,78 @@
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, Clock, MapPin, Leaf, Sprout } from 'lucide-react'
 import { Link } from 'react-router-dom'
+
+const FACTS = [
+  { Icon: Clock, label: 'Cold-pressed within hours of harvest' },
+  { Icon: MapPin, label: 'Single estate — never blended to stretch a crop' },
+  { Icon: Leaf, label: 'Unrefined, unfiltered, nothing added' },
+]
 
 export default function About() {
   return (
     <section className="bg-paper" id="groves">
-      <div className="py-[clamp(2rem,4vw,3rem)] px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
-        <div className="grid grid-cols-[1fr_1.05fr] items-center gap-[clamp(2rem,6vw,5rem)] max-[768px]:!grid-cols-1 max-[768px]:!gap-8">
+      <div className="mx-auto max-w-[1500px] px-[clamp(1.75rem,5vw,5rem)] pb-[clamp(2.5rem,6vw,4.75rem)] pt-[clamp(0.5rem,1.5vw,1rem)]">
+        <div className="grid gap-[clamp(2.5rem,6vw,4.5rem)] lg:grid-cols-[1.05fr_1fr] lg:items-center">
 
-          {/* Left: image */}
-          <div className="relative h-[clamp(340px,40vw,500px)] overflow-hidden rounded-2xl bg-paper-3 shadow-md max-[768px]:h-[62vw] max-[768px]:min-h-[280px]">
-            <img
-              src="/habout.png"
-              alt="Corked bottle of cold-pressed Samaha oil on a wooden board with a bowl of nuts and fresh greenery"
-              className="h-full w-full object-cover"
-            />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-olive-900/15 to-transparent" />
+          {/* Left: image + floating stat card */}
+          <div className="relative mb-10 lg:mb-0">
+            <div className="relative h-[clamp(340px,42vw,520px)] overflow-hidden rounded-[var(--radius-lg)] bg-paper-3 shadow-md">
+              <img
+                src="/habout.png"
+                alt="Corked bottle of cold-pressed Samaha oil on a wooden board with a bowl of nuts and fresh greenery"
+                className="h-full w-full object-cover"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-olive-900/25 to-transparent" />
+            </div>
+
+            <div className="absolute -bottom-6 left-4 flex items-center gap-3 rounded-2xl border border-line bg-paper/95 px-4 py-3 shadow-lg backdrop-blur sm:-bottom-8 sm:left-8">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-olive-900 text-paper">
+                <Sprout size={18} strokeWidth={1.8} />
+              </span>
+              <div>
+                <p className="font-sans text-lg font-bold leading-none text-olive-900">15+ years</p>
+                <p className="mt-1 text-xs text-text-mute">pressing oil the slow way</p>
+              </div>
+            </div>
           </div>
 
-          {/* Right: copy + link */}
-          <div className="max-[768px]:order-2">
-            <h2 className="font-sans font-bold text-olive-900 tracking-tight leading-[1.08]"
-                style={{ fontSize: 'clamp(1.9rem, 1.3rem + 2.6vw, 3.2rem)' }}>
+          {/* Right: copy */}
+          <div>
+            <p className="eyebrow">Our story</p>
+
+            <h2
+              className="mt-5 font-sans font-bold leading-[1.08] tracking-tight text-olive-900"
+              style={{ fontSize: 'clamp(1.9rem, 1.3rem + 2.6vw, 3.1rem)' }}
+            >
               Grown around the way you{' '}
               <span className="text-clay-500">cook, taste and share</span>
             </h2>
 
-            <p className="mt-5 text-text-soft leading-[1.7]"
-               style={{ fontSize: 'clamp(0.95rem, 0.9rem + 0.2vw, 1.1rem)' }}>
-              Every bottle in our harvest is pressed to keep a single grove&rsquo;s
-              character intact &mdash; cold-extracted within hours of picking,
-              unfiltered, and filled by hand, so the oil on your table is exactly
-              the oil we made.
+            <p className="mt-5 leading-[1.7] text-text-soft"
+               style={{ fontSize: 'clamp(0.95rem, 0.9rem + 0.2vw, 1.08rem)' }}>
+              Samaha started with a single family grove, one stone press and a
+              simple rule &mdash; bottle the oil exactly as it leaves the press.
+              Cold-extracted within hours of picking, unfiltered, and filled by hand.
+            </p>
+            <p className="mt-4 leading-[1.7] text-text-soft"
+               style={{ fontSize: 'clamp(0.95rem, 0.9rem + 0.2vw, 1.08rem)' }}>
+              No refining, no deodorising, no stretching one harvest with another.
+              What reaches your kitchen is an honest record of one crop, one season,
+              one place.
             </p>
 
-            <Link to="/about" className="btn btn-ghost group mt-7">
-              About us
+            <ul className="mt-7 flex flex-col gap-3.5 border-t border-line pt-6">
+              {FACTS.map(({ Icon, label }) => (
+                <li key={label} className="flex items-center gap-3 text-sm font-medium text-olive-900">
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-olive-100 text-olive-800">
+                    <Icon size={16} strokeWidth={1.8} />
+                  </span>
+                  {label}
+                </li>
+              ))}
+            </ul>
+
+            <Link to="/about" className="btn btn-ghost group mt-8">
+              Read our full story
               <ArrowUpRight
                 size={15}
                 strokeWidth={2}

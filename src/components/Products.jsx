@@ -43,7 +43,7 @@ function Tile({ p, className = '', big = false }) {
 export default function Products() {
   return (
     <section className="bg-paper" id="shop">
-      <div className="mx-auto max-w-[1500px] px-[clamp(1.5rem,4vw,3.25rem)] py-[clamp(3rem,6vw,5rem)]">
+      <div className="mx-auto max-w-[1500px] px-[clamp(1.5rem,4vw,3.25rem)] pb-[clamp(1.75rem,3.5vw,3rem)] pt-[clamp(1.5rem,3vw,2.5rem)]">
 
         <div className="mb-8 flex items-end justify-between gap-4">
           <h2
