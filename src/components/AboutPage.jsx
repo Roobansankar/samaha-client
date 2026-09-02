@@ -110,16 +110,37 @@ export default function AboutPage() {
       {/* ---------- Lead ---------- */}
       <section className="bg-paper">
         <div className={`${SECTION} py-[clamp(3rem,7vw,5.5rem)]`}>
-          <div className="grid gap-x-[clamp(2rem,5vw,4.5rem)] gap-y-6 lg:grid-cols-[0.8fr_1.2fr]">
-            <p className="eyebrow lg:pt-2">The short version</p>
-            <p
-              className="font-display font-medium leading-[1.35] text-olive-900"
-              style={{ fontSize: 'clamp(1.25rem, 1rem + 1.5vw, 1.95rem)' }}
+          <div className="grid gap-x-[clamp(2.5rem,6vw,5rem)] gap-y-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+
+            <div>
+              <p className="eyebrow">The short version</p>
+              <p
+                className="mt-5 font-display font-medium leading-[1.16] text-olive-900"
+                style={{ fontSize: 'clamp(1.9rem, 1.2rem + 3vw, 3.4rem)' }}
+              >
+                What began as <span className="text-clay-500">MRS Oil Mills</span> in
+                1985 is now Samaha.
+              </p>
+            </div>
+
+            <div
+              className="space-y-4 leading-[1.75] text-text-soft lg:pt-2"
+              style={{ fontSize: 'clamp(1rem, 0.94rem + 0.25vw, 1.12rem)' }}
             >
-              What began as <span className="text-clay-500">MRS Oil Mills</span> under
-              N. Rangasamy in 1985 is now Samaha — the same family, the same wooden
-              presses, three cold-pressed oils, and copra we still make without sulphur.
-            </p>
+              <p>
+                N. Rangasamy started the mill in Coimbatore, and for three decades it
+                sold coconut oil under the MRS name to homes across the Nilgiris. In
+                2016 we brought in traditional wooden-chekku cold pressing and launched
+                three cooking oils — groundnut, coconut and gingelly — as Samaha.
+              </p>
+              <p>
+                We buy coconuts straight from farmers in the Velliangiri Hills, make
+                our own copra without sulphur, and cold-press every batch in-house.
+                From farm to bottle nothing leaves our hands, so every bottle stays
+                fully traceable.
+              </p>
+            </div>
+
           </div>
         </div>
       </section>
