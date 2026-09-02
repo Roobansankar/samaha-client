@@ -127,9 +127,9 @@ export default function AboutPage() {
       {/* ---------- Timeline ---------- */}
       <section className="bg-paper-inset">
         <div className={`${SECTION} py-[clamp(3rem,7vw,5.5rem)]`}>
-          <div className="grid gap-x-[clamp(2rem,5vw,4.5rem)] gap-y-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="grid gap-x-[clamp(2rem,5vw,4.5rem)] gap-y-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
 
-            <div className="lg:sticky lg:top-28 lg:self-start">
+            <div>
               <p className="eyebrow">Since 1985</p>
               <h2 className={`mt-3 ${HEADING}`} style={{ fontSize: 'clamp(1.7rem, 1.2rem + 2vw, 2.6rem)' }}>
                 Four decades, one process
@@ -138,6 +138,13 @@ export default function AboutPage() {
                 One family, one method. From a single wooden press to two units in
                 coconut country — every step still done in-house.
               </p>
+              <img
+                src="/mill.webp"
+                alt="Samaha's oil mill in Coimbatore"
+                loading="lazy"
+                decoding="async"
+                className="img-shimmer mt-7 aspect-[4/3] w-full rounded-[var(--radius-lg)] object-cover"
+              />
             </div>
 
             <ol className="about-timeline">
