@@ -10,8 +10,8 @@ export default function About() {
           {/* Left: image */}
           <div className="relative h-[clamp(340px,40vw,500px)] overflow-hidden rounded-2xl bg-paper-3 shadow-md max-[768px]:h-[62vw] max-[768px]:min-h-[280px]">
             <img
-              src="https://i.pinimg.com/1200x/49/27/81/492781048f8345b774b53472caba0bcd.jpg"
-              alt="Samaha olive grove on a terraced hillside"
+              src="/habout.png"
+              alt="Corked bottle of cold-pressed Samaha oil on a wooden board with a bowl of nuts and fresh greenery"
               className="h-full w-full object-cover"
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-olive-900/15 to-transparent" />
