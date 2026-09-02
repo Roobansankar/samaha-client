@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useScrolled } from '../hooks/useScrolled'
-import { Search, User, ShoppingCart, Menu, X, Leaf, ChevronRight } from 'lucide-react'
+import { Search, User, ShoppingCart, Menu, X, ChevronRight } from 'lucide-react'
 
 const LINKS = [
   { label: 'Home', href: '/', exact: true },
@@ -88,102 +88,84 @@ function SearchOverlay({ open, onClose }) {
 
   return (
     <div
-      className={`search-overlay ${open ? 'is-open' : ''}`}
+      className={`search-full ${open ? 'is-open' : ''}`}
       role="dialog"
       aria-modal="true"
       aria-label="Search products"
     >
-      <div className="search-overlay__scrim" onClick={close} />
-      <div className="search-overlay__panel">
-        <div className="mx-auto w-full max-w-[720px]">
-          <form
-            onSubmit={(e) => { e.preventDefault(); go(query) }}
-            role="search"
-            className="flex items-center gap-3 border-b border-olive-300 pb-3"
-          >
-            <Search size={22} strokeWidth={1.8} className="shrink-0 text-olive-500" />
-            <div className="relative flex-1">
-              <input
-                ref={inputRef}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                aria-label="Search products"
-                className="w-full bg-transparent font-display text-[clamp(1.15rem,3.4vw,1.7rem)] text-olive-900 outline-none"
-              />
-              {!query && (
-                <span
-                  className="pointer-events-none absolute inset-y-0 left-0 flex items-center font-display text-[clamp(1.15rem,3.4vw,1.7rem)] text-text-mute"
-                  aria-hidden="true"
-                >
-                  {typed}
-                  <i className="nav-search__caret" />
-                </span>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={close}
-              className="nav-icon shrink-0"
-              aria-label="Close search"
-            >
-              <X size={22} strokeWidth={1.8} />
-            </button>
-          </form>
-
-          <div className="mt-6">
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-text-mute">
-              Popular searches
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {SEARCH_HINTS.map((h) => (
-                <button
-                  key={h}
-                  type="button"
-                  onClick={() => go(h)}
-                  className="rounded-pill border border-olive-200 bg-paper-inset px-4 py-1.5 text-sm capitalize text-olive-800 transition-colors hover:border-olive-400 hover:bg-olive-100"
-                >
-                  {h}
-                </button>
-              ))}
-            </div>
+      <div className="search-full__inner mx-auto w-full max-w-[1180px] px-[var(--spacing-gutter)]">
+        <form
+          onSubmit={(e) => { e.preventDefault(); go(query) }}
+          role="search"
+          className="flex items-center gap-4 pt-[clamp(2.5rem,11vh,6rem)]"
+        >
+          <div className="relative flex-1">
+            <input
+              ref={inputRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Search products"
+              className="search-full__input w-full bg-transparent outline-none"
+            />
+            {!query && (
+              <span className="search-full__ghost" aria-hidden="true">
+                {typed || 'Search for products'}
+                <i className="nav-search__caret" />
+              </span>
+            )}
           </div>
-        </div>
+          <button
+            type="button"
+            onClick={close}
+            className="search-full__close"
+            aria-label="Close search"
+          >
+            <X size={28} strokeWidth={1.6} />
+          </button>
+        </form>
+
+        <span className="search-full__rule" />
+
+        <p className="search-full__hint">
+          {query
+            ? `Press Enter to search “${query}”`
+            : 'Start typing, or pick a popular search below.'}
+        </p>
+
+        {!query && (
+          <div className="mt-6 flex flex-wrap gap-2">
+            {SEARCH_HINTS.map((h) => (
+              <button
+                key={h}
+                type="button"
+                onClick={() => go(h)}
+                className="rounded-pill border border-line px-4 py-1.5 text-sm capitalize text-olive-800 transition-colors hover:border-olive-400 hover:bg-olive-100"
+              >
+                {h}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
-function Wordmark({ hideTaglineOnMobile = false }) {
+function Wordmark({ className = 'h-11 sm:h-[52px]' }) {
   return (
     <Link
-      className="nav-brand inline-flex shrink-0 items-center gap-2.5"
+      className="nav-brand inline-flex shrink-0 items-center"
       to="/"
       aria-label="Samaha — home"
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
     >
-      <span
-        className="nav-mark grid h-[30px] w-[30px] shrink-0 place-items-center rounded-full"
-        style={{ border: '1.5px solid var(--color-olive-400)', color: 'var(--color-olive-700)' }}
-        aria-hidden="true"
-      >
-        <Leaf size={15} strokeWidth={2} />
-      </span>
-      <span className="flex flex-col items-start leading-none">
-        <span
-          className="font-display text-[1.3rem] font-medium tracking-[-0.01em] sm:text-[1.4rem]"
-          style={{ color: 'var(--color-olive-900)' }}
-        >
-          Samaha
-        </span>
-        <span
-          className={`mt-[2px] whitespace-nowrap font-sans font-semibold uppercase ${
-            hideTaglineOnMobile ? 'hidden sm:block' : ''
-          }`}
-          style={{ fontSize: '0.48rem', letterSpacing: '0.2em', color: 'var(--color-olive-500)' }}
-        >
-          Pure Natural Healthy
-        </span>
-      </span>
+      <img
+        src="/samahalogo.jpeg"
+        alt="Samaha"
+        width="220"
+        height="220"
+        className={`w-auto object-contain mix-blend-multiply ${className}`}
+      />
     </Link>
   )
 }
@@ -231,7 +213,7 @@ export default function Navbar() {
         </button>
 
         <div className="max-[900px]:mx-auto max-[900px]:-translate-x-3">
-          <Wordmark hideTaglineOnMobile />
+          <Wordmark />
         </div>
 
         <nav className="mx-auto hidden gap-7 min-[901px]:flex" aria-label="Primary">
