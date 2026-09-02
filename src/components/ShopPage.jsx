@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Leaf, ShieldCheck, Truck, Star } from 'lucide-react'
 import { PRODUCTS, fromPrice } from '../data/products'
 
-const FILTERS = ['All', 'Coconut', 'Groundnut', 'Peanut']
+const FILTERS = ['All', 'Coconut', 'Groundnut', 'Sesame']
 
 const PERKS = [
   { Icon: Leaf, title: 'Cold-pressed & unrefined', text: 'Extracted below 27°C so nothing good is lost.' },
@@ -23,53 +23,35 @@ export default function ShopPage() {
     <div className="bg-paper-inset" id="shop-page">
 
       {/* ---------- Hero ---------- */}
-      <section className="relative overflow-hidden">
+      <section className="relative flex min-h-[clamp(420px,62vh,660px)] items-center overflow-hidden bg-olive-950 text-on-olive">
         <img
           src="/banner.webp"
-          alt="Golden cold-pressed oil poured into a glass bowl beside coconut and peanuts"
-          width={1920}
-          height={912}
+          alt="Golden cold-pressed oil poured into a glass bowl beside coconut and groundnuts"
           loading="eager"
           fetchPriority="high"
           decoding="async"
-          className="img-shimmer h-[clamp(400px,46vw,480px)] w-full object-cover"
+          className="img-shimmer absolute inset-0 h-full w-full object-cover opacity-55"
         />
         <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(90deg, rgba(26,46,20,0.82) 0%, rgba(26,46,20,0.55) 45%, rgba(26,46,20,0.25) 100%)',
-          }}
+          className="absolute inset-0 bg-gradient-to-r from-olive-950/90 via-olive-950/60 to-olive-950/20"
           aria-hidden="true"
         />
 
-        <div className="absolute inset-0 flex items-center">
-          <div className="container-site">
-            <p className="eyebrow" style={{ color: 'var(--color-gold-300)' }}>
-              The Shop
-            </p>
-            <h1
-              className="mt-3 max-w-[16ch] font-display font-medium leading-[1.04] text-on-olive"
-              style={{ fontSize: 'clamp(2.4rem, 1.5rem + 4.5vw, 4.25rem)' }}
-            >
-              Four oils, pressed the slow way
-            </h1>
-            <p
-              className="mt-4 max-w-[46ch] leading-relaxed text-on-olive-soft"
-              style={{ fontSize: 'clamp(0.95rem, 0.9rem + 0.25vw, 1.15rem)' }}
-            >
-              Single-estate coconuts and groundnuts, cold-pressed and bottled by
-              hand in small, dated lots.
-            </p>
-            <div className="mt-6 hidden flex-wrap items-center gap-x-5 gap-y-2 text-on-olive-mute sm:flex"
-                 style={{ fontSize: '0.8rem', letterSpacing: '0.08em' }}>
-              <span className="uppercase">4 varieties</span>
-              <span aria-hidden="true">·</span>
-              <span className="uppercase">½, 1, 5 &amp; 16 L tins</span>
-              <span aria-hidden="true">·</span>
-              <span className="uppercase">Chekku cold-pressed</span>
-            </div>
-          </div>
+        <div className="relative mx-auto w-full max-w-[1500px] px-[clamp(1.75rem,5vw,5rem)] py-[clamp(3rem,8vw,5rem)]">
+          <p className="eyebrow text-gold-300">The shop</p>
+          <h1
+            className="mt-4 max-w-[20ch] font-display font-medium leading-[1.03] text-on-olive"
+            style={{ fontSize: 'clamp(2.3rem, 1.5rem + 4vw, 4.6rem)' }}
+          >
+            Three oils, pressed the slow way
+          </h1>
+          <p
+            className="mt-6 max-w-[46ch] leading-[1.7] text-on-olive-soft"
+            style={{ fontSize: 'clamp(1rem, 0.95rem + 0.25vw, 1.15rem)' }}
+          >
+            Single-estate coconuts and groundnuts, cold-pressed and bottled by
+            hand in small, dated lots.
+          </p>
         </div>
       </section>
 

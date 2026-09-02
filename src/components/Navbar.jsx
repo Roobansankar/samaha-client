@@ -24,7 +24,6 @@ const LINKS = [
 const SEARCH_HINTS = [
   'coconut oil',
   'groundnut oil',
-  'peanut oil',
   'sesame oil',
 ]
 

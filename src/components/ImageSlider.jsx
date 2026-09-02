@@ -26,16 +26,6 @@ const SLIDES = [
     href: '/shop/groundnut-oil',
     steps: ['Sun-dried groundnuts', 'Wood-pressed the slow way', 'Small, dated lots'],
   },
-  {
-    src: '/slide3.webp',
-    srcMobile: '/slidem3.webp',
-    alt: 'Samaha cold-pressed peanut oil on a stone plinth',
-    eyebrow: 'Small batch · High-heat ready',
-    title: 'Peanut Oil',
-    text: 'Clean, light and stable enough for a hot pan.',
-    href: '/shop/peanut-oil',
-    steps: ['Hand-sorted peanuts', 'Cold-pressed in small batches', 'Clean, high-heat ready'],
-  },
 ]
 
 const REDUCED_MOTION =

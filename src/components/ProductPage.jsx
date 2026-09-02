@@ -467,7 +467,7 @@ export default function ProductPage() {
             <h2 className="font-display font-medium text-olive-900" style={{ fontSize: headingSize }}>
               More from Samaha
             </h2>
-            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6">
+            <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-6">
               {others.map((o) => (
                 <Link
                   key={o.slug}

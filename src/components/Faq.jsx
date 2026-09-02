@@ -13,7 +13,7 @@ const FAQS = [
   },
   {
     q: 'Is it suitable for high-heat cooking?',
-    a: 'Groundnut and peanut oils are happy at frying temperatures. Coconut oil is best for medium heat, sautéing and baking. None are refined, so treat them gently for the fullest flavour.',
+    a: 'Groundnut oil is happy at frying temperatures, and sesame oil takes a good amount of heat too. Coconut oil is best for medium heat, sautéing and baking. None are refined, so treat them gently for the fullest flavour.',
   },
   {
     q: 'What does \u2018single origin\u2019 actually mean here?',

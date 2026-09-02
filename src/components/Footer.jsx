@@ -5,10 +5,10 @@ const COLS = [
   {
     title: 'Shop',
     links: [
-      ['All oils', '/'],
-      ['Coconut oil', '/'],
-      ['Groundnut oil', '/'],
-      ['Peanut oil', '/'],
+      ['All oils', '/shop'],
+      ['Coconut oil', '/shop/coconut-oil'],
+      ['Groundnut oil', '/shop/groundnut-oil'],
+      ['Sesame oil', '/shop/sesame-oil'],
     ],
   },
   {

@@ -6,7 +6,7 @@ export default function Banner() {
     <section className="relative overflow-clip" aria-label="Nature in every bottle">
       <img
         src="/banner.webp"
-        alt="Golden cooking oil poured into a glass bowl surrounded by coconut and peanuts"
+        alt="Golden cooking oil poured into a glass bowl surrounded by coconut and groundnuts"
         loading="lazy"
         width={1920}
         height={912}

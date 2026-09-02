@@ -30,12 +30,12 @@ const OILS = [
     use: 'Deep frying, tempering',
   },
   {
-    name: 'Peanut Oil',
-    img: '/products/peanut-oil.webp',
-    tint: '#e3c8a3',
-    fat: 'Balanced fats',
-    smoke: '~225°C',
-    use: 'Stir-fry, dressings',
+    name: 'Sesame Oil',
+    img: '/products/sesame-oil.webp',
+    tint: '#d4b896',
+    fat: 'Poly & monounsaturated',
+    smoke: '~210°C',
+    use: 'Finishing, marinades, stir-fry',
   },
 ]
 

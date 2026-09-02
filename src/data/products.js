@@ -69,32 +69,6 @@ export const PRODUCTS = [
       ['Shelf life', '9 months from pressing'],
     ],
   }),
-  withImages('peanut-oil', {
-    name: 'Peanut Oil',
-    tag: 'Peanut',
-    tagline: 'Small batch, light and clean — stable enough for a hot pan.',
-    tint: '#e3c8a3',
-    rating: 4.9,
-    reviews: 98,
-    description: [
-      'Hand-sorted peanuts, cold-pressed in small batches and left to settle rather than filtered hard. Lighter and cleaner on the palate than groundnut oil, with a high smoke point that suits fast, hot cooking.',
-      'The one to reach for when you want the food to taste of itself — stir-fries, shallow frying and dressings.',
-    ],
-    sizes: [
-      { label: '1/2 L', price: 140 },
-      { label: '1 L', price: 250 },
-      { label: '5 L', price: 1150 },
-      { label: '16 L tin', price: 3500 },
-    ],
-    specs: [
-      ['Extraction', 'Cold-pressed, small batch'],
-      ['Pressed at', 'Below 27°C'],
-      ['Filtering', 'Unfiltered, naturally settled'],
-      ['Smoke point', '~225°C'],
-      ['Best for', 'High-heat stir-fry, shallow frying, dressings'],
-      ['Shelf life', '9 months from pressing'],
-    ],
-  }),
   withImages('sesame-oil', {
     name: 'Sesame Oil',
     tag: 'Sesame',
