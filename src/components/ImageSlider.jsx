@@ -114,6 +114,7 @@ export default function ImageSlider() {
             />
 
             {/* Caption — overlaid top-left on mobile, vertically centred on desktop */}
+            {s.title && (
             <div className="pointer-events-none absolute inset-x-0 top-0 px-[var(--spacing-gutter)] pt-[18%] sm:inset-0 sm:flex sm:items-center sm:px-0 sm:pt-0">
               <div className="mx-auto w-full sm:max-w-[1260px] sm:px-[var(--spacing-gutter)]">
                 <div className="pointer-events-auto max-w-[15rem] sm:max-w-[30rem]">
@@ -132,6 +133,7 @@ export default function ImageSlider() {
                   </p>
 
                   {/* mobile-only process steps */}
+                  {s.steps.length > 0 && (
                   <ol className="mt-4 space-y-2 sm:hidden">
                     {s.steps.map((step, n) => (
                       <li key={step} className="flex items-center gap-2.5 leading-tight text-text-soft"
@@ -143,13 +145,17 @@ export default function ImageSlider() {
                       </li>
                     ))}
                   </ol>
+                  )}
 
+                  {s.href && (
                   <Link to={s.href} className="btn btn-primary mt-4 sm:mt-6">
                     Shop {s.title} <ArrowRight size={15} strokeWidth={2} />
                   </Link>
+                  )}
                 </div>
               </div>
             </div>
+            )}
           </div>
         ))}
       </div>
