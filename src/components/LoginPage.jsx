@@ -220,11 +220,7 @@ export default function LoginPage() {
               )}
 
               {isLogin && (
-                <div className="flex items-center justify-between text-sm">
-                  <label className="flex cursor-pointer items-center gap-2 text-olive-700/70">
-                    <input type="checkbox" name="remember" className="h-4 w-4 accent-olive-800 cursor-pointer" />
-                    Remember me
-                  </label>
+                <div className="flex justify-end text-sm">
                   <button
                     type="button"
                     onClick={() => go('forgot')}

@@ -207,6 +207,34 @@
   p { text-wrap: pretty; }
 }
 
+/* ------------------------------------------------------------
+   Kill the browser's autofill background tint on storefront
+   fields. Unlayered + !important so it beats the UA style even
+   while the field is focused / selected. Admin has its own rule.
+   ------------------------------------------------------------ */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+input:autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--color-olive-900) !important;
+  -webkit-box-shadow: 0 0 0 40rem #fff inset !important;
+  box-shadow: 0 0 0 40rem #fff inset !important;
+  caret-color: var(--color-olive-900);
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+
+.admin input:-webkit-autofill,
+.admin input:-webkit-autofill:hover,
+.admin input:-webkit-autofill:focus,
+.admin input:autofill {
+  -webkit-box-shadow: 0 0 0 40rem var(--a-surface) inset !important;
+  box-shadow: 0 0 0 40rem var(--a-surface) inset !important;
+  -webkit-text-fill-color: var(--a-text) !important;
+}
+
 /* ============================================================
    Utility classes (things that can't be pure Tailwind)
    ============================================================ */
