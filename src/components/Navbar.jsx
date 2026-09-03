@@ -6,19 +6,16 @@ import { Search, UserRound, Handbag, Menu, X, ChevronRight, ChevronDown } from '
 
 const initialOf = (name) => (name || '').trim().charAt(0).toUpperCase() || 'U'
 
-/* TEMPORARILY DISABLED — "Shop by Category" nav dropdown.
-   To re-enable: uncomment CATEGORIES below and the "Shop by Category" entry in LINKS.
-   The NavCategory component, the mobile-drawer branch and the .nav-menu CSS are left in place. */
-// const CATEGORIES = [
-//   { label: 'Coconut Oil', href: '/shop/coconut-oil', note: 'Mild & versatile', img: '/cat-coconut.jpg' },
-//   { label: 'Groundnut Oil', href: '/shop/groundnut-oil', note: 'Deep & nutty', img: '/products/groundnut-oil.webp' },
-//   { label: 'Sesame Oil', href: '/shop/sesame-oil', note: 'Rich & aromatic', img: '/products/sesame-oil.webp' },
-// ]
+const CATEGORIES = [
+  { label: 'Coconut Oil', href: '/shop?oil=coconut', note: 'Mild & versatile', img: '/products/coconut-oil.webp' },
+  { label: 'Groundnut Oil', href: '/shop?oil=groundnut', note: 'Deep & nutty', img: '/products/groundnut-oil.webp' },
+  { label: 'Sesame Oil', href: '/shop?oil=sesame', note: 'Rich & aromatic', img: '/products/sesame-oil.webp' },
+]
 
 const LINKS = [
   { label: 'Home', href: '/', exact: true },
   { label: 'Shop', href: '/shop' },
-  // { label: 'Shop by Category', href: '/shop', menu: CATEGORIES },
+  { label: 'Shop by Category', href: '/shop', menu: CATEGORIES },
   { label: 'Health Benefits', href: '/health-benefits' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
@@ -336,12 +333,19 @@ export default function Navbar() {
             className="nav-icon max-[900px]:hidden"
             aria-label={account ? 'My account' : 'Sign in'}
           >
-            {account ? (
+            {!account ? (
+              <UserRound size={20} strokeWidth={1.8} />
+            ) : account.avatar ? (
+              <img
+                src={account.avatar}
+                alt=""
+                referrerPolicy="no-referrer"
+                className="h-[26px] w-[26px] rounded-full object-cover"
+              />
+            ) : (
               <span className="grid h-[26px] w-[26px] place-items-center rounded-full bg-olive-900 text-[0.72rem] font-semibold text-paper">
                 {initialOf(account.name)}
               </span>
-            ) : (
-              <UserRound size={20} strokeWidth={1.8} />
             )}
           </Link>
           <Link to="/cart" className="nav-icon relative" aria-label={`Cart, ${CART_COUNT} items`}>
@@ -431,12 +435,14 @@ export default function Navbar() {
             style={{ animationDelay: `${0.12 + LINKS.length * 0.06}s` }}
           >
             <span className="flex items-center gap-2.5">
-              {account ? (
+              {!account ? (
+                <UserRound size={18} strokeWidth={2} />
+              ) : account.avatar ? (
+                <img src={account.avatar} alt="" referrerPolicy="no-referrer" className="h-6 w-6 rounded-full object-cover" />
+              ) : (
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-on-olive/15 text-[0.7rem] font-semibold">
                   {initialOf(account.name)}
                 </span>
-              ) : (
-                <UserRound size={18} strokeWidth={2} />
               )}
               <span className="font-sans text-base font-semibold tracking-tight">
                 {account ? 'My account' : 'Login / Register'}

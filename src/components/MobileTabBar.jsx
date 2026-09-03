@@ -14,7 +14,7 @@ export default function MobileTabBar() {
     { label: 'Search', Icon: Search, action: 'search' },
     { label: 'Wishlist', to: '/wishlist', Icon: Heart },
     account
-      ? { label: 'Account', to: '/profile', initial: initialOf(account.name) }
+      ? { label: 'Account', to: '/profile', initial: initialOf(account.name), avatar: account.avatar }
       : { label: 'Account', to: '/account', Icon: UserRound },
   ]
 
@@ -34,9 +34,13 @@ export default function MobileTabBar() {
           const inner = (
             <>
               <span className="tabbar__icon">
-                {Icon
-                  ? <Icon size={20} strokeWidth={2} />
-                  : <span className="grid h-5 w-5 place-items-center rounded-full bg-olive-900 text-[0.62rem] font-bold text-paper">{t.initial}</span>}
+                {Icon ? (
+                  <Icon size={20} strokeWidth={2} />
+                ) : t.avatar ? (
+                  <img src={t.avatar} alt="" referrerPolicy="no-referrer" className="h-5 w-5 rounded-full object-cover" />
+                ) : (
+                  <span className="grid h-5 w-5 place-items-center rounded-full bg-olive-900 text-[0.62rem] font-bold text-paper">{t.initial}</span>
+                )}
               </span>
               {t.label}
             </>

@@ -17,6 +17,7 @@ import WhyUsPage from './components/WhyUsPage'
 import BlogPage from './components/BlogPage'
 import AccountPage from './components/AccountPage'
 import ProfilePage from './components/ProfilePage'
+import AuthCallback from './components/AuthCallback'
 import Products from './components/Products'
 import OilRange from './components/OilRange'
 import Benefits from './components/Benefits'
@@ -96,6 +97,7 @@ function AppContent() {
         <Route path="/whyus" element={<WhyUsPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/account" element={<AccountPage />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/profile" element={<ProfilePage view="dashboard" />} />
         <Route path="/profile/orders" element={<ProfilePage view="orders" />} />
         <Route path="/profile/addresses" element={<ProfilePage view="addresses" />} />

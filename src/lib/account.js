@@ -91,6 +91,20 @@ export async function login(email, password) {
   return data.user
 }
 
+/* Where to send the browser to start Google sign-in (proxied to the API). */
+export const GOOGLE_LOGIN_URL = '/api/auth/google/redirect'
+
+/* Called by /auth/callback after Google bounces back with a token in the URL. */
+export async function completeOAuth(token) {
+  localStorage.setItem(TOKEN_KEY, token)
+  try {
+    await fetchAccount() // stores the user + emits
+  } catch (err) {
+    signOutLocal()
+    throw err
+  }
+}
+
 export async function fetchAccount() {
   const user = await request('/account')
   persistUser(user)

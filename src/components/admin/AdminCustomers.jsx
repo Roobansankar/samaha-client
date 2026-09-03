@@ -90,6 +90,7 @@ export default function AdminCustomers() {
         <thead>
           <tr>
             <th>Customer</th>
+            <th>Sign-up</th>
             <th>Phone</th>
             <th>Address</th>
             <th>Joined</th>
@@ -100,7 +101,7 @@ export default function AdminCustomers() {
         <tbody>
           {loading && (
             <tr>
-              <td colSpan={6} className="py-12 text-center a-mute">
+              <td colSpan={7} className="py-12 text-center a-mute">
                 <Loader2 size={16} className="mx-auto animate-spin" />
               </td>
             </tr>
@@ -108,13 +109,13 @@ export default function AdminCustomers() {
 
           {!loading && error && (
             <tr>
-              <td colSpan={6} className="py-8 text-center text-red-600">{error}</td>
+              <td colSpan={7} className="py-8 text-center text-red-600">{error}</td>
             </tr>
           )}
 
           {!loading && !error && pageRows.length === 0 && (
             <EmptyRow
-              colSpan={6}
+              colSpan={7}
               label={q ? 'No customers match your search' : 'No customers have registered yet'}
             />
           )}
@@ -123,12 +124,27 @@ export default function AdminCustomers() {
             <tr key={c.id}>
               <td>
                 <div className="flex items-center gap-3">
-                  <span className="a-avatar h-9 w-9 text-[0.72rem]">{initials(c.name)}</span>
+                  {c.avatar ? (
+                    <img src={c.avatar} alt="" referrerPolicy="no-referrer" className="a-avatar h-9 w-9 object-cover" />
+                  ) : (
+                    <span className="a-avatar h-9 w-9 text-[0.72rem]">{initials(c.name)}</span>
+                  )}
                   <div>
                     <p className="font-medium">{c.name}</p>
                     <p className="text-[0.75rem] a-mute">{c.email}</p>
                   </div>
                 </div>
+              </td>
+              <td>
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[0.7rem] font-medium ${
+                    c.signup === 'Google'
+                      ? 'bg-[#4285F4]/10 text-[#3367d6]'
+                      : 'a-muted a-dim'
+                  }`}
+                >
+                  {c.signup === 'Google' ? 'Google' : 'Email'}
+                </span>
               </td>
               <td className="a-dim">{c.phone || '—'}</td>
               <td className="a-dim">

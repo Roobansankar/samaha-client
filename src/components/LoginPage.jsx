@@ -1,7 +1,23 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Mail, Lock, User, Eye, EyeOff, ArrowLeft, MailCheck, ArrowRight, Loader2 } from 'lucide-react'
-import { login as apiLogin, register as apiRegister } from '../lib/account'
+import { login as apiLogin, register as apiRegister, GOOGLE_LOGIN_URL } from '../lib/account'
+
+const OAUTH_ERR = {
+  google: 'Google sign-in didn’t complete. Please try again.',
+  staff: 'That email belongs to a staff account — please use the admin sign-in.',
+}
+
+function GoogleG() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#4285F4" d="M23.06 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h6.2a5.3 5.3 0 0 1-2.3 3.48v2.88h3.72c2.18-2 3.44-4.96 3.44-8.37Z" />
+      <path fill="#34A853" d="M12 24c3.1 0 5.7-1.03 7.6-2.78l-3.72-2.88c-1.03.7-2.36 1.1-3.88 1.1-2.98 0-5.5-2.01-6.4-4.72H1.76v2.97A11.99 11.99 0 0 0 12 24Z" />
+      <path fill="#FBBC05" d="M5.6 14.72a7.2 7.2 0 0 1 0-4.44V7.31H1.76a12 12 0 0 0 0 10.38l3.84-2.97Z" />
+      <path fill="#EA4335" d="M12 4.75c1.68 0 3.2.58 4.39 1.72l3.29-3.29C17.7 1.24 15.1 0 12 0 7.32 0 3.28 2.7 1.76 6.62L5.6 9.6C6.5 6.89 9.02 4.75 12 4.75Z" />
+    </svg>
+  )
+}
 
 const inputCls =
   'w-full rounded-xl border border-olive-900/10 bg-white py-4 pl-12 pr-4 text-[0.92rem] text-olive-900 outline-none transition placeholder:text-olive-700/40 focus:border-olive-700 focus:ring-4 focus:ring-olive-800/5'
@@ -18,12 +34,13 @@ const COPY = {
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const [params] = useSearchParams()
   const [mode, setMode] = useState('login')
   const [showPass, setShowPass] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState(() => OAUTH_ERR[params.get('error')] || '')
 
   const isLogin = mode === 'login'
   const isRegister = mode === 'register'
@@ -52,9 +69,8 @@ export default function LoginPage() {
           throw new Error('The two passwords do not match.')
         }
         await apiRegister({
-          name: `${fd.get('first_name') || ''} ${fd.get('last_name') || ''}`.trim(),
+          name: fd.get('name'),
           email: fd.get('email'),
-          phone: fd.get('phone') || undefined,
           password: fd.get('password'),
           password_confirmation: fd.get('password_confirmation'),
         })
@@ -138,18 +154,26 @@ export default function LoginPage() {
         {/* ---- Login / Register ---- */}
         {(isLogin || isRegister) && (
           <>
-            <form className="mt-10 space-y-4" onSubmit={handleAuth}>
+            <a
+              href={GOOGLE_LOGIN_URL}
+              className="mt-9 flex w-full items-center justify-center gap-3 rounded-xl border border-olive-900/15 bg-white py-4 text-[0.92rem] font-medium text-olive-900 transition-colors hover:border-olive-900/30 hover:bg-olive-100/50"
+            >
+              <GoogleG />
+              Continue with Google
+            </a>
+
+            <div className="my-6 flex items-center gap-3 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-olive-700/40">
+              <span className="h-px flex-1 bg-olive-900/10" />
+              or
+              <span className="h-px flex-1 bg-olive-900/10" />
+            </div>
+
+            <form className="space-y-4" onSubmit={handleAuth}>
 
               {isRegister && (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="relative">
-                    <User size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-olive-700/40" />
-                    <input name="first_name" type="text" required placeholder="First name" autoComplete="given-name" className={inputCls} />
-                  </div>
-                  <div className="relative">
-                    <User size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-olive-700/40" />
-                    <input name="last_name" type="text" placeholder="Last name" autoComplete="family-name" className={inputCls} />
-                  </div>
+                <div className="relative">
+                  <User size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-olive-700/40" />
+                  <input name="name" type="text" required placeholder="Full name" autoComplete="name" className={inputCls} />
                 </div>
               )}
 
@@ -166,13 +190,6 @@ export default function LoginPage() {
                   className={inputCls}
                 />
               </div>
-
-              {isRegister && (
-                <div className="relative">
-                  <User size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-olive-700/40" />
-                  <input name="phone" type="tel" placeholder="Phone (optional)" autoComplete="tel" className={inputCls} />
-                </div>
-              )}
 
               <div className="relative">
                 <Lock size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-olive-700/40" />
