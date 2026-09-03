@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Home, Store, Search, Heart, User } from 'lucide-react'
+import { Home, Store, Search, Heart, UserRound } from 'lucide-react'
 import { useAccount } from '../lib/account'
 
 const initialOf = (name) => (name || '').trim().charAt(0).toUpperCase() || 'U'
@@ -15,7 +15,7 @@ export default function MobileTabBar() {
     { label: 'Wishlist', to: '/wishlist', Icon: Heart },
     account
       ? { label: 'Account', to: '/profile', initial: initialOf(account.name) }
-      : { label: 'Account', to: '/account', Icon: User },
+      : { label: 'Account', to: '/account', Icon: UserRound },
   ]
 
   const isActive = (t) =>

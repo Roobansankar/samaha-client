@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useScrolled } from '../hooks/useScrolled'
 import { useAccount } from '../lib/account'
-import { Search, User, ShoppingCart, Menu, X, ChevronRight, ChevronDown } from 'lucide-react'
+import { Search, UserRound, Handbag, Menu, X, ChevronRight, ChevronDown } from 'lucide-react'
 
 const initialOf = (name) => (name || '').trim().charAt(0).toUpperCase() || 'U'
 
@@ -341,11 +341,11 @@ export default function Navbar() {
                 {initialOf(account.name)}
               </span>
             ) : (
-              <User size={20} strokeWidth={1.8} />
+              <UserRound size={20} strokeWidth={1.8} />
             )}
           </Link>
           <Link to="/cart" className="nav-icon relative" aria-label={`Cart, ${CART_COUNT} items`}>
-            <ShoppingCart size={20} strokeWidth={1.8} />
+            <Handbag size={20} strokeWidth={1.8} />
             {CART_COUNT > 0 && <span className="nav-badge">{CART_COUNT}</span>}
           </Link>
         </div>
@@ -436,7 +436,7 @@ export default function Navbar() {
                   {initialOf(account.name)}
                 </span>
               ) : (
-                <User size={18} strokeWidth={2} />
+                <UserRound size={18} strokeWidth={2} />
               )}
               <span className="font-sans text-base font-semibold tracking-tight">
                 {account ? 'My account' : 'Login / Register'}
