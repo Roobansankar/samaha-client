@@ -409,17 +409,20 @@ export default function Navbar() {
               </Link>
             )
           )}
-        </nav>
 
-        <div className="border-t border-olive-200 px-6 pb-8 pt-4">
           <Link
             to="/account"
             onClick={() => setMenuOpen(false)}
-            className="btn btn-primary w-full py-3 text-center text-sm"
+            className="nav-drawer-link mt-6 flex items-center justify-between gap-3 rounded-xl bg-olive-900 px-4 py-3.5 text-on-olive transition-colors hover:bg-olive-800"
+            style={{ animationDelay: `${0.12 + LINKS.length * 0.06}s` }}
           >
-            Login / Register
+            <span className="flex items-center gap-2.5">
+              <User size={18} strokeWidth={2} />
+              <span className="font-sans text-base font-semibold tracking-tight">Login / Register</span>
+            </span>
+            <ChevronRight size={16} strokeWidth={2} className="text-on-olive-soft" />
           </Link>
-        </div>
+        </nav>
       </aside>
     </header>
   )
