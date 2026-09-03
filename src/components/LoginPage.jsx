@@ -35,14 +35,8 @@ export default function LoginPage() {
   const { title, sub } = COPY[mode]
 
   return (
-    <div
-      className="flex min-h-[86svh] items-center justify-center px-[var(--spacing-gutter)] py-[clamp(2.5rem,7vw,4.5rem)]"
-      style={{
-        background:
-          'radial-gradient(135% 80% at 50% -10%, var(--color-paper-inset), var(--color-paper) 60%)',
-      }}
-    >
-      <div className="w-full max-w-[420px] rounded-[24px] border border-line bg-white p-[clamp(1.75rem,5vw,2.75rem)] shadow-[0_28px_70px_-30px_rgba(37,41,20,0.28)]">
+    <div className="flex min-h-[72svh] justify-center bg-paper px-[var(--spacing-gutter)] pb-[clamp(3rem,7vw,5rem)] pt-[clamp(1.25rem,4vw,2.5rem)]">
+      <div className="w-full max-w-[420px] rounded-[24px] bg-white p-[clamp(1.75rem,5vw,2.75rem)] shadow-[0_20px_52px_-30px_rgba(37,41,20,0.2)]">
 
         <div className="flex flex-col items-center text-center">
           <span className="grid h-12 w-12 place-items-center rounded-2xl bg-olive-100 text-olive-800">
