@@ -136,16 +136,18 @@ export default function HealthBenefitsPage() {
             Each oil, and what it&rsquo;s good for
           </h2>
 
-          <div className="mt-9 overflow-x-auto">
+          <div className="mt-9 overflow-x-auto rounded-[var(--radius-lg)] border border-line">
             <table className="w-full min-w-[640px] border-collapse text-left">
               <thead>
-                <tr className="border-b-2 border-line">
-                  <th className="w-[1%] py-4 pr-6" />
+                <tr className="bg-olive-900 text-on-olive">
+                  <th className="px-5 py-4 text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-gold-300">
+                    Oil
+                  </th>
                   {OILS.map((o) => (
-                    <th key={o.slug} className="px-5 py-4 align-bottom">
+                    <th key={o.slug} className="border-l border-white/10 px-5 py-4">
                       <Link
                         to={`/shop/${o.slug}`}
-                        className="font-display text-lg font-medium text-olive-950 transition-colors hover:text-olive-700"
+                        className="font-display text-base font-medium text-on-olive transition-colors hover:text-gold-300"
                       >
                         {o.name}
                       </Link>
@@ -153,17 +155,20 @@ export default function HealthBenefitsPage() {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-line">
-                {ROWS.map(([label, key]) => (
-                  <tr key={key}>
+              <tbody>
+                {ROWS.map(([label, key], ri) => (
+                  <tr key={key} className={ri % 2 ? 'bg-paper-inset' : 'bg-paper'}>
                     <th
                       scope="row"
-                      className="whitespace-nowrap py-4 pr-6 align-top text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-text-mute"
+                      className="whitespace-nowrap border-t border-line px-5 py-4 align-top text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-text-mute"
                     >
                       {label}
                     </th>
                     {OILS.map((o) => (
-                      <td key={o.slug} className="px-5 py-4 align-top text-sm font-medium text-olive-900">
+                      <td
+                        key={o.slug}
+                        className="border-l border-t border-line px-5 py-4 align-top text-sm font-medium text-olive-900"
+                      >
                         {o[key]}
                       </td>
                     ))}
