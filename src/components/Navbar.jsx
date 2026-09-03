@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useScrolled } from '../hooks/useScrolled'
+import { useAccount } from '../lib/account'
 import { Search, User, ShoppingCart, Menu, X, ChevronRight, ChevronDown } from 'lucide-react'
+
+const initialOf = (name) => (name || '').trim().charAt(0).toUpperCase() || 'U'
 
 /* TEMPORARILY DISABLED — "Shop by Category" nav dropdown.
    To re-enable: uncomment CATEGORIES below and the "Shop by Category" entry in LINKS.
@@ -247,6 +250,7 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [shopOpen, setShopOpen] = useState(false)
   const location = useLocation()
+  const account = useAccount()
 
   useEffect(() => {
     document.body.classList.toggle('no-scroll', menuOpen)
@@ -327,8 +331,18 @@ export default function Navbar() {
           >
             <Search size={20} strokeWidth={1.8} />
           </button>
-          <Link to="/account" className="nav-icon max-[900px]:hidden" aria-label="Account">
-            <User size={20} strokeWidth={1.8} />
+          <Link
+            to={account ? '/profile' : '/account'}
+            className="nav-icon max-[900px]:hidden"
+            aria-label={account ? 'My account' : 'Sign in'}
+          >
+            {account ? (
+              <span className="grid h-[26px] w-[26px] place-items-center rounded-full bg-olive-900 text-[0.72rem] font-semibold text-paper">
+                {initialOf(account.name)}
+              </span>
+            ) : (
+              <User size={20} strokeWidth={1.8} />
+            )}
           </Link>
           <Link to="/cart" className="nav-icon relative" aria-label={`Cart, ${CART_COUNT} items`}>
             <ShoppingCart size={20} strokeWidth={1.8} />
@@ -411,14 +425,22 @@ export default function Navbar() {
           )}
 
           <Link
-            to="/account"
+            to={account ? '/profile' : '/account'}
             onClick={() => setMenuOpen(false)}
             className="nav-drawer-link mt-6 flex items-center justify-between gap-3 rounded-xl bg-olive-900 px-4 py-3.5 text-on-olive transition-colors hover:bg-olive-800"
             style={{ animationDelay: `${0.12 + LINKS.length * 0.06}s` }}
           >
             <span className="flex items-center gap-2.5">
-              <User size={18} strokeWidth={2} />
-              <span className="font-sans text-base font-semibold tracking-tight">Login / Register</span>
+              {account ? (
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-on-olive/15 text-[0.7rem] font-semibold">
+                  {initialOf(account.name)}
+                </span>
+              ) : (
+                <User size={18} strokeWidth={2} />
+              )}
+              <span className="font-sans text-base font-semibold tracking-tight">
+                {account ? 'My account' : 'Login / Register'}
+              </span>
             </span>
             <ChevronRight size={16} strokeWidth={2} className="text-on-olive-soft" />
           </Link>

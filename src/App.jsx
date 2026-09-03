@@ -15,7 +15,8 @@ import HealthBenefitsPage from './components/HealthBenefitsPage'
 import CartPage from './components/CartPage'
 import WhyUsPage from './components/WhyUsPage'
 import BlogPage from './components/BlogPage'
-import LoginPage from './components/LoginPage'
+import AccountPage from './components/AccountPage'
+import ProfilePage from './components/ProfilePage'
 import Products from './components/Products'
 import Benefits from './components/Benefits'
 import WhySamaha from './components/WhySamaha'
@@ -92,7 +93,11 @@ function AppContent() {
         <Route path="/health-benefits" element={<HealthBenefitsPage />} />
         <Route path="/whyus" element={<WhyUsPage />} />
         <Route path="/blog" element={<BlogPage />} />
-        <Route path="/account" element={<LoginPage />} />
+        <Route path="/account" element={<AccountPage />} />
+        <Route path="/profile" element={<ProfilePage view="dashboard" />} />
+        <Route path="/profile/orders" element={<ProfilePage view="orders" />} />
+        <Route path="/profile/addresses" element={<ProfilePage view="addresses" />} />
+        <Route path="/profile/account" element={<ProfilePage view="account" />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />

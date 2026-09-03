@@ -61,6 +61,11 @@ export async function signOut() {
   localStorage.removeItem('adminUser')
 }
 
+export async function fetchCustomers(q = '') {
+  const qs = q ? `?q=${encodeURIComponent(q)}` : ''
+  return request(`${API_URL}/admin/customers${qs}`)
+}
+
 export async function fetchStaff() {
   return request(`${API_URL}/admin/staff`)
 }

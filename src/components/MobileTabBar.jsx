@@ -1,17 +1,30 @@
 import { Link, useLocation } from 'react-router-dom'
 import { Home, Store, Search, Heart, User } from 'lucide-react'
+import { useAccount } from '../lib/account'
 
-const TABS = [
-  { label: 'Home', to: '/', Icon: Home, exact: true },
-  { label: 'Shop', to: '/shop', Icon: Store },
-  { label: 'Search', Icon: Search, action: 'search' },
-  { label: 'Wishlist', to: '/wishlist', Icon: Heart },
-  { label: 'Account', to: '/account', Icon: User },
-]
+const initialOf = (name) => (name || '').trim().charAt(0).toUpperCase() || 'U'
 
 export default function MobileTabBar() {
   const { pathname } = useLocation()
-  const isActive = (t) => !!t.to && (t.exact ? pathname === t.to : pathname.startsWith(t.to))
+  const account = useAccount()
+
+  const TABS = [
+    { label: 'Home', to: '/', Icon: Home, exact: true },
+    { label: 'Shop', to: '/shop', Icon: Store },
+    { label: 'Search', Icon: Search, action: 'search' },
+    { label: 'Wishlist', to: '/wishlist', Icon: Heart },
+    account
+      ? { label: 'Account', to: '/profile', initial: initialOf(account.name) }
+      : { label: 'Account', to: '/account', Icon: User },
+  ]
+
+  const isActive = (t) =>
+    !!t.to &&
+    (t.exact
+      ? pathname === t.to
+      : t.to === '/profile'
+        ? pathname.startsWith('/profile') || pathname === '/account'
+        : pathname.startsWith(t.to))
 
   return (
     <nav className="tabbar min-[901px]:hidden" aria-label="Quick navigation">
@@ -21,7 +34,9 @@ export default function MobileTabBar() {
           const inner = (
             <>
               <span className="tabbar__icon">
-                <Icon size={20} strokeWidth={2} />
+                {Icon
+                  ? <Icon size={20} strokeWidth={2} />
+                  : <span className="grid h-5 w-5 place-items-center rounded-full bg-olive-900 text-[0.62rem] font-bold text-paper">{t.initial}</span>}
               </span>
               {t.label}
             </>
