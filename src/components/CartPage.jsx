@@ -174,9 +174,9 @@ export default function CartPage() {
                   <span className="font-sans text-xl font-semibold text-olive-900">{money(total)}</span>
                 </div>
 
-                <button type="button" className="btn btn-primary mt-5 w-full">
+                <Link to="/checkout" className="btn btn-primary mt-5 w-full">
                   Checkout <ArrowRight size={16} strokeWidth={2} />
-                </button>
+                </Link>
 
                 <ul className="mt-4 space-y-1.5 text-xs text-text-mute">
                   <li className="flex items-center gap-2"><ShieldCheck size={13} className="text-olive-700" /> Secure checkout</li>

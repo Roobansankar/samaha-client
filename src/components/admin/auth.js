@@ -66,6 +66,13 @@ export async function fetchCustomers(q = '') {
   return request(`${API_URL}/admin/customers${qs}`)
 }
 
+export async function fetchOrders(params = {}) {
+  const qs = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => v && v !== 'all'),
+  ).toString()
+  return request(`${API_URL}/admin/orders${qs ? `?${qs}` : ''}`)
+}
+
 export async function fetchStaff() {
   return request(`${API_URL}/admin/staff`)
 }

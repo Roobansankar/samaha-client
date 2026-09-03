@@ -19,6 +19,8 @@ import BlogPage from './components/BlogPage'
 import AccountPage from './components/AccountPage'
 import ProfilePage from './components/ProfilePage'
 import AuthCallback from './components/AuthCallback'
+import CheckoutPage from './components/CheckoutPage'
+import CheckoutSuccessPage from './components/CheckoutSuccessPage'
 import Products from './components/Products'
 import OilRange from './components/OilRange'
 import Benefits from './components/Benefits'
@@ -109,6 +111,8 @@ function AppContent() {
         <Route path="/profile/addresses" element={<ProfilePage view="addresses" />} />
         <Route path="/profile/account" element={<ProfilePage view="account" />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
 

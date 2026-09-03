@@ -8,6 +8,9 @@ import {
   useAccount, updateAccount, logout,
   fetchAddresses, createAddress, updateAddress, deleteAddress, makeAddressDefault,
 } from '../lib/account'
+import { fetchOrders } from '../lib/checkout'
+
+const money = (n) => `₹${(Number(n) || 0).toLocaleString('en-IN')}`
 
 const NAV = [
   { key: 'dashboard', label: 'Dashboard', to: '/profile', Icon: LayoutDashboard },
@@ -77,7 +80,7 @@ export default function ProfilePage({ view = 'dashboard' }) {
             {view === 'orders' && (
               <div className={card}>
                 <h2 className="font-display text-lg font-medium text-olive-900">My orders</h2>
-                <EmptyOrders />
+                <OrderList />
               </div>
             )}
             {view === 'addresses' && <Addresses />}
@@ -140,7 +143,7 @@ function Dashboard({ user }) {
 
       <div className={card}>
         <h2 className="font-display text-lg font-medium text-olive-900">Recent orders</h2>
-        <EmptyOrders />
+        <OrderList limit={3} />
       </div>
     </div>
   )
@@ -400,12 +403,50 @@ function L({ label, children }) {
   )
 }
 
-function EmptyOrders() {
+function OrderList({ limit }) {
+  const [orders, setOrders] = useState(null)
+
+  useEffect(() => {
+    fetchOrders().then(setOrders).catch(() => setOrders([]))
+  }, [])
+
+  if (orders === null) {
+    return <Loader2 size={18} className="mt-6 animate-spin text-olive-700/40" />
+  }
+
+  if (orders.length === 0) {
+    return (
+      <div className="mt-4 flex flex-col items-center gap-3 rounded-xl border border-dashed border-olive-900/15 py-10 text-center">
+        <Package size={22} className="text-olive-700/40" />
+        <p className="text-sm text-olive-700/60">You haven’t placed any orders yet.</p>
+        <Link to="/shop" className="text-sm font-semibold text-olive-900 underline underline-offset-2">Browse the shop</Link>
+      </div>
+    )
+  }
+
+  const shown = limit ? orders.slice(0, limit) : orders
+
   return (
-    <div className="mt-4 flex flex-col items-center gap-3 rounded-xl border border-dashed border-olive-900/15 py-10 text-center">
-      <Package size={22} className="text-olive-700/40" />
-      <p className="text-sm text-olive-700/60">You haven’t placed any orders yet.</p>
-      <Link to="/shop" className="text-sm font-semibold text-olive-900 underline underline-offset-2">Browse the shop</Link>
+    <div className="mt-4 space-y-3">
+      {shown.map((o) => (
+        <div key={o.id} className="rounded-xl border border-olive-900/10 p-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-semibold text-olive-900">Order #{o.id}</span>
+            <span className="text-olive-700/60">{o.placed_at}</span>
+          </div>
+          <ul className="mt-2 space-y-0.5 text-xs text-olive-700/70">
+            {o.items.map((it, i) => (
+              <li key={i}>{it.name} × {it.qty}</li>
+            ))}
+          </ul>
+          <p className="mt-2 text-sm font-semibold text-olive-900">{money(o.total)}</p>
+        </div>
+      ))}
+      {limit && orders.length > limit && (
+        <Link to="/profile/orders" className="inline-block text-sm font-semibold text-olive-900 underline underline-offset-2">
+          View all {orders.length} orders
+        </Link>
+      )}
     </div>
   )
 }

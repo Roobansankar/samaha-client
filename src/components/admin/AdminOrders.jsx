@@ -1,81 +1,77 @@
-import { useMemo, useState } from 'react'
-import { Search, Download, Plus, ListFilter } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { Search, RefreshCw, ListFilter, Loader2 } from 'lucide-react'
 import { Panel, StatusBadge, EmptyRow, ResultCount, Pager } from './ui'
+import { fetchOrders } from './auth'
 
-const ORDERS = [
-  { id: '#1042', customer: 'Aarti Menon', email: 'aarti@example.com', channel: 'Samaha Coimbatore', payment: 'Captured', fulfillment: 'Not fulfilled', total: 1416, date: '2026-08-31' },
-  { id: '#1041', customer: 'Daniel Rowe', email: 'daniel@example.com', channel: 'Samaha Online', payment: 'Authorized', fulfillment: 'Not fulfilled', total: 1416, date: '2026-08-31' },
-  { id: '#1040', customer: 'Priya Shah', email: 'priya@example.com', channel: 'Samaha Online', payment: 'Captured', fulfillment: 'Shipped', total: 4248, date: '2026-08-30' },
-  { id: '#1039', customer: 'Karthik Rao', email: 'karthik@example.com', channel: 'Samaha Coimbatore', payment: 'Captured', fulfillment: 'Delivered', total: 1652, date: '2026-08-30' },
-  { id: '#1038', customer: 'Lena Fischer', email: 'lena@example.com', channel: 'Samaha Online', payment: 'Authorized', fulfillment: 'Not fulfilled', total: 1416, date: '2026-08-29' },
-  { id: '#1037', customer: 'Omar Haddad', email: 'omar@example.com', channel: 'Samaha Coimbatore', payment: 'Refunded', fulfillment: 'Canceled', total: 1652, date: '2026-08-29' },
-  { id: '#1036', customer: 'Grace Liu', email: 'grace@example.com', channel: 'Samaha Online', payment: 'Captured', fulfillment: 'Delivered', total: 3510, date: '2026-08-28' },
-  { id: '#1035', customer: 'Mateo Silva', email: 'mateo@example.com', channel: 'Samaha Online', payment: 'Captured', fulfillment: 'Delivered', total: 890, date: '2026-08-28' },
-  { id: '#1034', customer: 'Hannah Berg', email: 'hannah@example.com', channel: 'Samaha Coimbatore', payment: 'Failed', fulfillment: 'Canceled', total: 1240, date: '2026-08-27' },
-  { id: '#1033', customer: 'Ravi Kapoor', email: 'ravi@example.com', channel: 'Samaha Online', payment: 'Captured', fulfillment: 'Shipped', total: 2085, date: '2026-08-27' },
-  { id: '#1032', customer: 'Sofia Marín', email: 'sofia@example.com', channel: 'Samaha Online', payment: 'Captured', fulfillment: 'Delivered', total: 960, date: '2026-08-26' },
-  { id: '#1031', customer: 'Tom Becker', email: 'tom@example.com', channel: 'Samaha Coimbatore', payment: 'Captured', fulfillment: 'Delivered', total: 4620, date: '2026-08-25' },
-]
-
-const PER_PAGE = 8
-const inr = (n) => `₹ ${n.toLocaleString('en-IN', { minimumFractionDigits: 2 })} INR`
+const PER_PAGE = 10
+const inr = (n) => `₹ ${Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 const fmtDate = (d) =>
-  new Date(d).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
+  d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : '—'
+const badgeFor = (s) => (s === 'created' ? 'Pending' : s === 'paid' ? 'Paid' : 'Failed')
 
 export default function AdminOrders() {
+  const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [q, setQ] = useState('')
   const [status, setStatus] = useState('all')
   const [page, setPage] = useState(1)
 
+  const load = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      setOrders(await fetchOrders())
+    } catch (e) {
+      setError(e.message || 'Could not load orders.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { load() }, [])
+
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase()
-    return ORDERS.filter((o) => {
+    return orders.filter((o) => {
       const matchesQ =
         !needle ||
-        o.id.toLowerCase().includes(needle) ||
-        o.customer.toLowerCase().includes(needle) ||
-        o.email.toLowerCase().includes(needle)
-      const matchesS = status === 'all' || o.fulfillment.toLowerCase() === status
+        String(o.id).includes(needle.replace('#', '')) ||
+        (o.customer || '').toLowerCase().includes(needle) ||
+        (o.email || '').toLowerCase().includes(needle)
+      const matchesS = status === 'all' || o.status === status
       return matchesQ && matchesS
     })
-  }, [q, status])
+  }, [q, status, orders])
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
   const safePage = Math.min(page, pageCount)
   const rows = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
-  const reset = (fn) => (v) => {
-    fn(v)
-    setPage(1)
-  }
+  const reset = (fn) => (v) => { fn(v); setPage(1) }
 
   return (
     <Panel
       title="Orders"
       actions={
-        <>
-          <button className="a-btn a-btn-sm">
-            <Download size={14} /> Export
-          </button>
-          <button className="a-btn a-btn-sm a-btn-primary">
-            <Plus size={14} /> Create
-          </button>
-        </>
+        <button className="a-btn a-btn-sm" onClick={load}>
+          <RefreshCw size={14} /> Refresh
+        </button>
       }
       toolbar={
         <>
           <select className="a-select a-select-sm sm:w-40" value={status} onChange={(e) => reset(setStatus)(e.target.value)}>
-            <option value="all">Add filter</option>
-            <option value="not fulfilled">Not fulfilled</option>
-            <option value="shipped">Shipped</option>
-            <option value="delivered">Delivered</option>
-            <option value="canceled">Canceled</option>
+            <option value="all">All statuses</option>
+            <option value="paid">Paid</option>
+            <option value="created">Pending</option>
+            <option value="failed">Failed</option>
           </select>
+          <span className="a-dim text-[0.8rem]">{orders.length} total</span>
           <div className="flex-1" />
           <div className="a-input-wrap w-full sm:w-64">
             <Search size={15} />
             <input
               className="a-input a-input-sm"
-              placeholder="Search"
+              placeholder="Search order / customer"
               value={q}
               onChange={(e) => reset(setQ)(e.target.value)}
             />
@@ -98,22 +94,35 @@ export default function AdminOrders() {
             <th>Order</th>
             <th>Date</th>
             <th>Customer</th>
-            <th>Sales Channel</th>
+            <th>Items</th>
             <th>Payment</th>
-            <th>Fulfillment</th>
-            <th className="text-right">Order Total</th>
+            <th>Razorpay ID</th>
+            <th className="text-right">Total</th>
           </tr>
         </thead>
         <tbody>
-          {rows.length === 0 && <EmptyRow colSpan={7} label="No orders match your filters" />}
-          {rows.map((o) => (
+          {loading && (
+            <tr><td colSpan={7} className="py-12 text-center a-mute"><Loader2 size={16} className="mx-auto animate-spin" /></td></tr>
+          )}
+          {!loading && error && (
+            <tr><td colSpan={7} className="py-8 text-center text-red-600">{error}</td></tr>
+          )}
+          {!loading && !error && rows.length === 0 && (
+            <EmptyRow colSpan={7} label={q || status !== 'all' ? 'No orders match your filters' : 'No orders yet'} />
+          )}
+          {!loading && !error && rows.map((o) => (
             <tr key={o.id}>
-              <td className="font-medium">{o.id}</td>
-              <td className="a-dim">{fmtDate(o.date)}</td>
-              <td>{o.customer}</td>
-              <td className="a-dim">{o.channel}</td>
-              <td><StatusBadge status={o.payment} /></td>
-              <td><StatusBadge status={o.fulfillment} /></td>
+              <td className="font-medium">#{o.id}</td>
+              <td className="a-dim">{fmtDate(o.placed_at)}</td>
+              <td>
+                <p className="font-medium">{o.customer}</p>
+                <p className="text-[0.75rem] a-mute">{o.email}</p>
+              </td>
+              <td className="a-dim" title={o.items.map((i) => `${i.name} × ${i.qty}`).join(', ')}>
+                {o.item_count}
+              </td>
+              <td><StatusBadge status={badgeFor(o.status)} /></td>
+              <td className="a-dim a-mono text-[0.75rem]">{o.payment_id || '—'}</td>
               <td className="text-right a-mono a-dim">{inr(o.total)}</td>
             </tr>
           ))}
