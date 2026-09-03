@@ -18,6 +18,7 @@ import BlogPage from './components/BlogPage'
 import AccountPage from './components/AccountPage'
 import ProfilePage from './components/ProfilePage'
 import Products from './components/Products'
+import OilRange from './components/OilRange'
 import Benefits from './components/Benefits'
 import WhySamaha from './components/WhySamaha'
 import Faq from './components/Faq'
@@ -52,6 +53,7 @@ function Home() {
         <About />
         <TrustBar />
         <Benefits />
+        <OilRange />
         <WhySamaha />
         <Banner />
         <Faq />

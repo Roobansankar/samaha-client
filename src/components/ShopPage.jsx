@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Leaf, ShieldCheck, Truck, Star } from 'lucide-react'
-import { PRODUCTS, fromPrice } from '../data/products'
+import { PRODUCTS, OIL_VARIANTS, fromPrice } from '../data/products'
+import VariantCard from './VariantCard'
 
 const FILTERS = ['All', 'Coconut', 'Groundnut', 'Sesame']
 
@@ -143,6 +144,32 @@ export default function ShopPage() {
                 </div>
               </article>
             ))}
+          </div>
+
+          {/* individual size SKUs */}
+          <div className="mt-[clamp(3rem,7vw,4.5rem)] border-t border-line pt-[clamp(2.5rem,6vw,3.5rem)]">
+            <p className="eyebrow">By the bottle</p>
+            <h2 className="mt-2 font-display font-medium leading-[1.1] text-olive-900"
+                style={{ fontSize: 'clamp(1.6rem, 1.1rem + 2vw, 2.4rem)' }}>
+              Every size, every oil
+            </h2>
+
+            {OIL_VARIANTS
+              .filter((o) => activeFilter === 'All' || o.tag === activeFilter)
+              .map((oil) => (
+                <div key={oil.slug} className="mt-[clamp(2rem,5vw,3rem)]">
+                  <h3 className="font-display font-medium text-olive-900"
+                      style={{ fontSize: 'clamp(1.3rem, 1.05rem + 1vw, 1.7rem)' }}>
+                    {oil.name}
+                  </h3>
+                  <p className="mt-1 text-xs uppercase tracking-[0.14em] text-text-mute">{oil.blurb}</p>
+                  <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                    {oil.variants.map((v) => (
+                      <VariantCard key={v.id} v={v} tint={oil.tint} blurb={oil.blurb} />
+                    ))}
+                  </div>
+                </div>
+              ))}
           </div>
 
           {/* reassurance strip */}

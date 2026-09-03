@@ -106,3 +106,45 @@ export const HIGHLIGHTS = [
 
 export const getProduct = (slug) => PRODUCTS.find((p) => p.slug === slug)
 export const fromPrice = (p) => Math.min(...p.sizes.map((s) => s.price))
+
+/* ------------------------------------------------------------------ */
+/*  Individual size SKUs (1/2 L, 1 L, 5 L, 16 L tin) per oil.          */
+/*  Static "list price" (mrp) so cards can show a saving. Images are   */
+/*  placeholders for now — <VariantCard> draws a bottle silhouette.    */
+/* ------------------------------------------------------------------ */
+
+const VARIANT_BLURB = {
+  'coconut-oil': 'Cold Pressed | Own-farm coconuts',
+  'groundnut-oil': 'Wood Pressed | Small batch',
+  'sesame-oil': 'Stone Ground | Cold Pressed',
+}
+
+const SIZE_LONG = {
+  '1/2 L': '500 ml',
+  '1 L': '1 Litre',
+  '5 L': '5 Litres',
+  '16 L tin': '16 Litre Tin',
+}
+
+export const OIL_VARIANTS = PRODUCTS.map((p) => ({
+  name: p.name,
+  slug: p.slug,
+  tag: p.tag,
+  tint: p.tint,
+  blurb: VARIANT_BLURB[p.slug] ?? 'Cold Pressed | Unrefined',
+  variants: p.sizes.map((s) => {
+    const mrp = Math.round((s.price * 1.34) / 5) * 5
+    const sizeLong = SIZE_LONG[s.label] ?? s.label
+    return {
+      id: `${p.slug}-${s.label.replace(/[\s/]+/g, '').toLowerCase()}`,
+      slug: p.slug,
+      oil: p.name,
+      size: s.label,
+      sizeLong,
+      title: `Samaha Unrefined Cold-Pressed ${p.name} (Chekku) — ${sizeLong}`,
+      price: s.price,
+      mrp,
+      save: mrp - s.price,
+    }
+  }),
+}))
