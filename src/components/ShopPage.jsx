@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Leaf, ShieldCheck, Truck, Star } from 'lucide-react'
-import { PRODUCTS, OIL_VARIANTS, fromPrice } from '../data/products'
+import { ArrowRight, Leaf, ShieldCheck, Truck } from 'lucide-react'
+import { OIL_VARIANTS } from '../data/products'
 import VariantCard from './VariantCard'
 
 const FILTERS = ['All', 'Coconut', 'Groundnut', 'Sesame']
@@ -15,10 +15,8 @@ const PERKS = [
 export default function ShopPage() {
   const [activeFilter, setActiveFilter] = useState('All')
 
-  const filtered =
-    activeFilter === 'All'
-      ? PRODUCTS
-      : PRODUCTS.filter((p) => p.tag === activeFilter)
+  const oils = OIL_VARIANTS.filter((o) => activeFilter === 'All' || o.tag === activeFilter)
+  const skuCount = oils.reduce((n, o) => n + o.variants.length, 0)
 
   return (
     <div className="bg-paper-inset" id="shop-page">
@@ -66,8 +64,9 @@ export default function ShopPage() {
               <p className="eyebrow">Catalogue</p>
               <h2 className="mt-2 font-display font-medium leading-[1.1] text-olive-900"
                   style={{ fontSize: 'clamp(1.7rem, 1.2rem + 2vw, 2.5rem)' }}>
-                All oils
+                Every size, every oil
               </h2>
+              <p className="mt-1.5 text-sm text-text-mute">{skuCount} products</p>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -87,90 +86,21 @@ export default function ShopPage() {
             </div>
           </div>
 
-          {/* product grid */}
-          <div className="mt-[clamp(2rem,5vw,3rem)] grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-            {filtered.map((p) => (
-              <article
-                key={p.slug}
-                id={p.slug}
-                className="group flex scroll-mt-28 flex-col overflow-hidden rounded-[var(--radius-lg)] border border-line bg-paper transition-shadow duration-200 hover:shadow-md"
-              >
-                <Link to={`/shop/${p.slug}`} className="block" aria-label={p.name}>
-                  <div
-                    className="relative overflow-hidden"
-                    style={{ background: p.tint, aspectRatio: '1 / 1' }}
-                  >
-                    {p.badge && (
-                      <span className="absolute left-3 top-3 z-10 rounded-pill bg-olive-900 px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-paper">
-                        {p.badge}
-                      </span>
-                    )}
-                    <img
-                      src={p.images[0]}
-                      alt={p.name}
-                      loading="lazy"
-                      decoding="async"
-                      onError={(e) => { e.currentTarget.style.visibility = 'hidden' }}
-                      className="absolute inset-0 h-full w-full object-contain p-6 transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-                    />
-                  </div>
-                </Link>
-
-                <div className="flex flex-1 flex-col p-5">
-                  <div className="flex items-center gap-1.5 text-gold-500">
-                    <Star size={13} fill="currentColor" strokeWidth={0} />
-                    <span className="text-xs font-semibold text-olive-900">{p.rating.toFixed(1)}</span>
-                    <span className="text-xs text-text-mute">({p.reviews})</span>
-                  </div>
-
-                  <h3 className="mt-1.5 font-display text-xl font-medium text-olive-900">
-                    <Link to={`/shop/${p.slug}`} className="hover:text-olive-700">{p.name}</Link>
-                  </h3>
-                  <p className="mt-1.5 flex-1 text-sm leading-relaxed text-text-mute">
-                    {p.tagline}
-                  </p>
-
-                  <div className="mt-5 flex items-center justify-between gap-3">
-                    <span className="font-sans text-lg font-semibold text-olive-900">
-                      from ₹{fromPrice(p)}
-                    </span>
-                    <Link
-                      to={`/shop/${p.slug}`}
-                      className="rounded-pill bg-olive-900 px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-paper transition-colors duration-200 hover:bg-olive-800"
-                    >
-                      View
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          {/* individual size SKUs */}
-          <div className="mt-[clamp(3rem,7vw,4.5rem)] border-t border-line pt-[clamp(2.5rem,6vw,3.5rem)]">
-            <p className="eyebrow">By the bottle</p>
-            <h2 className="mt-2 font-display font-medium leading-[1.1] text-olive-900"
-                style={{ fontSize: 'clamp(1.6rem, 1.1rem + 2vw, 2.4rem)' }}>
-              Every size, every oil
-            </h2>
-
-            {OIL_VARIANTS
-              .filter((o) => activeFilter === 'All' || o.tag === activeFilter)
-              .map((oil) => (
-                <div key={oil.slug} className="mt-[clamp(2rem,5vw,3rem)]">
-                  <h3 className="font-display font-medium text-olive-900"
-                      style={{ fontSize: 'clamp(1.3rem, 1.05rem + 1vw, 1.7rem)' }}>
-                    {oil.name}
-                  </h3>
-                  <p className="mt-1 text-xs uppercase tracking-[0.14em] text-text-mute">{oil.blurb}</p>
-                  <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                    {oil.variants.map((v) => (
-                      <VariantCard key={v.id} v={v} tint={oil.tint} blurb={oil.blurb} />
-                    ))}
-                  </div>
-                </div>
-              ))}
-          </div>
+          {/* catalogue — every size as its own product */}
+          {oils.map((oil) => (
+            <div key={oil.slug} id={oil.slug} className="mt-[clamp(2.25rem,5vw,3.25rem)] scroll-mt-28">
+              <h3 className="font-display font-medium text-olive-900"
+                  style={{ fontSize: 'clamp(1.3rem, 1.05rem + 1vw, 1.7rem)' }}>
+                {oil.name}
+              </h3>
+              <p className="mt-1 text-xs uppercase tracking-[0.14em] text-text-mute">{oil.blurb}</p>
+              <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {oil.variants.map((v) => (
+                  <VariantCard key={v.id} v={v} tint={oil.tint} blurb={oil.blurb} />
+                ))}
+              </div>
+            </div>
+          ))}
 
           {/* reassurance strip */}
           <div className="mt-[clamp(3rem,7vw,4.5rem)] grid gap-5 rounded-[var(--radius-lg)] border border-line bg-paper-2 p-6 sm:grid-cols-3 sm:p-8">

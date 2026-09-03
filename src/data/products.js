@@ -126,25 +126,72 @@ const SIZE_LONG = {
   '16 L tin': '16 Litre Tin',
 }
 
+const SIZE_SLUG = {
+  '1/2 L': '500ml',
+  '1 L': '1l',
+  '5 L': '5l',
+  '16 L tin': '16l',
+}
+
+const OIL_IMG = {
+  'coconut-oil': '/products/coconut-oil.webp',
+  'groundnut-oil': '/products/groundnut-oil.webp',
+  'sesame-oil': '/products/sesame-oil.webp',
+}
+
+/* Every size is its own product with its own detail page. */
+export const VARIANT_PRODUCTS = PRODUCTS.flatMap((p) =>
+  p.sizes.map((s) => {
+    const mrp = Math.round((s.price * 1.34) / 5) * 5
+    const sizeLong = SIZE_LONG[s.label] ?? s.label
+    const image = OIL_IMG[p.slug]
+    return {
+      slug: `${p.slug}-${SIZE_SLUG[s.label] ?? s.label.replace(/[\s/]+/g, '').toLowerCase()}`,
+      oilSlug: p.slug,
+      oil: p.name,
+      tag: p.tag,
+      size: s.label,
+      sizeLong,
+      name: `Samaha Unrefined Cold-Pressed ${p.name} (Chekku) — ${sizeLong}`,
+      shortName: `Cold-Pressed ${p.name} — ${sizeLong}`,
+      blurb: VARIANT_BLURB[p.slug] ?? 'Cold Pressed | Unrefined',
+      tagline: p.tagline,
+      description: p.description,
+      specs: [['Pack size', sizeLong], ...p.specs],
+      images: [image],
+      image,
+      tint: p.tint,
+      rating: p.rating,
+      reviews: p.reviews,
+      badge: s.label === p.sizes[p.sizes.length - 1].label ? 'Best value' : p.badge || null,
+      price: s.price,
+      mrp,
+      save: mrp - s.price,
+    }
+  }),
+)
+
+export const getVariant = (slug) => VARIANT_PRODUCTS.find((v) => v.slug === slug)
+export const firstVariantSlug = (oilSlug) =>
+  VARIANT_PRODUCTS.find((v) => v.oilSlug === oilSlug)?.slug
+
+/* Grouped for the "shop by size" sections. */
 export const OIL_VARIANTS = PRODUCTS.map((p) => ({
   name: p.name,
   slug: p.slug,
   tag: p.tag,
   tint: p.tint,
   blurb: VARIANT_BLURB[p.slug] ?? 'Cold Pressed | Unrefined',
-  variants: p.sizes.map((s) => {
-    const mrp = Math.round((s.price * 1.34) / 5) * 5
-    const sizeLong = SIZE_LONG[s.label] ?? s.label
-    return {
-      id: `${p.slug}-${s.label.replace(/[\s/]+/g, '').toLowerCase()}`,
-      slug: p.slug,
-      oil: p.name,
-      size: s.label,
-      sizeLong,
-      title: `Samaha Unrefined Cold-Pressed ${p.name} (Chekku) — ${sizeLong}`,
-      price: s.price,
-      mrp,
-      save: mrp - s.price,
-    }
-  }),
+  variants: VARIANT_PRODUCTS.filter((v) => v.oilSlug === p.slug).map((v) => ({
+    id: v.slug,
+    slug: v.slug,
+    oil: v.oil,
+    size: v.size,
+    sizeLong: v.sizeLong,
+    title: v.name,
+    image: v.image,
+    price: v.price,
+    mrp: v.mrp,
+    save: v.save,
+  })),
 }))

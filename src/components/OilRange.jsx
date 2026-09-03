@@ -29,10 +29,10 @@ export default function OilRange() {
 
             <div className="mt-6 text-center">
               <Link
-                to={`/shop/${oil.slug}`}
+                to={`/shop#${oil.slug}`}
                 className="text-sm font-semibold text-olive-800 transition-colors hover:text-olive-600"
               >
-                View {oil.name} details &rarr;
+                Shop all {oil.name} sizes &rarr;
               </Link>
             </div>
           </div>

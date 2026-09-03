@@ -1,12 +1,15 @@
 import { useEffect, useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { Link, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import {
   ChevronRight, ChevronLeft, X,
   Minus, Plus, Check, Star, Truck, RotateCcw, ShieldCheck,
 } from 'lucide-react'
-import { PRODUCTS, HIGHLIGHTS, getProduct, fromPrice } from '../data/products'
+import { VARIANT_PRODUCTS, HIGHLIGHTS, getVariant, getProduct, firstVariantSlug } from '../data/products'
 import NotFound from './NotFound'
+import VariantCard from './VariantCard'
+
+const rupees = (n) => `₹${n.toLocaleString('en-IN')}`
 
 function BottleGlyph(props) {
   return (
@@ -120,20 +123,23 @@ function Gallery({ product }) {
           />
         )}
 
-        <button type="button" onClick={() => go(-1)} aria-label="Previous image" className={`${arrowCls} left-3`}>
-          <ChevronLeft size={18} />
-        </button>
-        <button type="button" onClick={() => go(1)} aria-label="Next image" className={`${arrowCls} right-3`}>
-          <ChevronRight size={18} />
-        </button>
-
-        <span className="absolute bottom-3 right-3 rounded-pill bg-olive-950/55 px-2.5 py-1 text-[0.65rem] font-medium text-paper">
-          {active + 1} / {count}
-        </span>
+        {count > 1 && (
+          <>
+            <button type="button" onClick={() => go(-1)} aria-label="Previous image" className={`${arrowCls} left-3`}>
+              <ChevronLeft size={18} />
+            </button>
+            <button type="button" onClick={() => go(1)} aria-label="Next image" className={`${arrowCls} right-3`}>
+              <ChevronRight size={18} />
+            </button>
+            <span className="absolute bottom-3 right-3 rounded-pill bg-olive-950/55 px-2.5 py-1 text-[0.65rem] font-medium text-paper">
+              {active + 1} / {count}
+            </span>
+          </>
+        )}
       </div>
 
       {/* thumbnails */}
-      <div className="mt-3 grid grid-cols-5 gap-2 sm:gap-3">
+      <div className={`mt-3 grid grid-cols-5 gap-2 sm:gap-3 ${count <= 1 ? 'hidden' : ''}`}>
         {images.map((src, i) => (
           <button
             key={i}
@@ -279,24 +285,27 @@ const DELIVERY = [
 
 export default function ProductPage() {
   const { slug } = useParams()
-  const product = getProduct(slug)
+  const product = getVariant(slug)
 
-  const [sizeIdx, setSizeIdx] = useState(1) // default 1 L
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
 
   useEffect(() => {
     window.scrollTo(0, 0)
-    setSizeIdx(1)
     setQty(1)
     setAdded(false)
   }, [slug])
 
-  if (!product) return <NotFound />
+  if (!product) {
+    const oil = getProduct(slug)
+    if (oil) return <Navigate to={`/shop/${firstVariantSlug(oil.slug)}`} replace />
+    return <NotFound />
+  }
 
-  const size = product.sizes[sizeIdx]
-  const total = size.price * qty
-  const others = PRODUCTS.filter((p) => p.slug !== product.slug)
+  const total = product.price * qty
+  const others = VARIANT_PRODUCTS.filter(
+    (v) => v.oilSlug === product.oilSlug && v.slug !== product.slug,
+  )
   const headingSize = 'clamp(1.35rem, 1.1rem + 1vw, 1.7rem)'
 
   return (
@@ -310,7 +319,7 @@ export default function ProductPage() {
             <ChevronRight size={14} className="text-text-mute/60" />
             <Link to="/shop" className="transition-colors hover:text-olive-800">Shop</Link>
             <ChevronRight size={14} className="text-text-mute/60" />
-            <span className="font-medium text-olive-900">{product.name}</span>
+            <span className="font-medium text-olive-900">{product.oil} — {product.sizeLong}</span>
           </nav>
 
           {/* main */}
@@ -321,8 +330,8 @@ export default function ProductPage() {
             <div>
               <p className="eyebrow">{product.tag} · Cold-pressed</p>
               <h1
-                className="mt-3 font-display font-medium leading-[1.05] text-olive-900"
-                style={{ fontSize: 'clamp(2rem, 1.4rem + 2.6vw, 3rem)' }}
+                className="mt-3 font-display font-medium leading-[1.12] text-olive-900"
+                style={{ fontSize: 'clamp(1.5rem, 1.2rem + 1.6vw, 2.2rem)' }}
               >
                 {product.name}
               </h1>
@@ -339,39 +348,18 @@ export default function ProductPage() {
                 {product.tagline}
               </p>
 
-              <div className="mt-7 flex items-baseline gap-2">
+              <div className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
                 <span className="font-sans text-[2rem] font-semibold leading-none text-olive-900">
-                  ₹{size.price}
+                  {rupees(product.price)}
                 </span>
-                <span className="text-sm text-text-mute">/ {size.label}</span>
+                <span className="text-base text-text-mute line-through">{rupees(product.mrp)}</span>
+                <span className="rounded bg-clay-500/10 px-2 py-0.5 text-xs font-semibold text-clay-600">
+                  Save {rupees(product.save)}
+                </span>
               </div>
-
-              {/* size */}
-              <fieldset className="mt-7">
-                <legend className="text-xs font-semibold uppercase tracking-[0.14em] text-text-mute">
-                  Size
-                </legend>
-                <div className="mt-3 flex flex-wrap gap-2.5">
-                  {product.sizes.map((s, i) => (
-                    <button
-                      key={s.label}
-                      type="button"
-                      onClick={() => { setSizeIdx(i); setAdded(false) }}
-                      aria-pressed={i === sizeIdx}
-                      className={`rounded-[var(--radius-sm)] border px-4 py-3 text-sm font-medium transition-colors cursor-pointer ${
-                        i === sizeIdx
-                          ? 'border-olive-800 bg-olive-900 text-paper'
-                          : 'border-line bg-paper text-olive-900 hover:border-olive-300'
-                      }`}
-                    >
-                      {s.label}
-                      <span className={`ml-2 text-xs ${i === sizeIdx ? 'text-paper/70' : 'text-text-mute'}`}>
-                        ₹{s.price}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </fieldset>
+              <p className="mt-2 text-sm text-text-mute">
+                Pack size: <span className="font-medium text-olive-900">{product.sizeLong}</span>
+              </p>
 
               {/* qty + add */}
               <div className="mt-7 flex flex-wrap items-center gap-3">
@@ -463,39 +451,18 @@ export default function ProductPage() {
           </div>
 
           {/* related */}
-          <div className="mt-[clamp(2rem,5vw,3.5rem)] border-t border-line pt-[clamp(2rem,5vw,3.5rem)]">
-            <h2 className="font-display font-medium text-olive-900" style={{ fontSize: headingSize }}>
-              More from Samaha
-            </h2>
-            <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-6">
-              {others.map((o) => (
-                <Link
-                  key={o.slug}
-                  to={`/shop/${o.slug}`}
-                  className="group flex flex-col overflow-hidden rounded-[var(--radius-lg)] border border-line bg-paper transition-shadow duration-200 hover:shadow-md"
-                >
-                  <div className="relative overflow-hidden" style={{ background: o.tint, aspectRatio: '1 / 1' }}>
-                    <img
-                      src={o.images[0]}
-                      alt={o.name}
-                      loading="lazy"
-                      decoding="async"
-                      onError={(e) => { e.currentTarget.style.visibility = 'hidden' }}
-                      className="absolute inset-0 h-full w-full object-contain p-6 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <p className="font-display text-sm font-medium leading-snug text-olive-900 sm:text-base">
-                      {o.name}
-                    </p>
-                    <p className="mt-1 text-xs text-text-mute sm:text-sm">
-                      from <span className="font-semibold text-olive-800">₹{fromPrice(o)}</span>
-                    </p>
-                  </div>
-                </Link>
-              ))}
+          {others.length > 0 && (
+            <div className="mt-[clamp(2rem,5vw,3.5rem)] border-t border-line pt-[clamp(2rem,5vw,3.5rem)]">
+              <h2 className="font-display font-medium text-olive-900" style={{ fontSize: headingSize }}>
+                {product.oil} — other sizes
+              </h2>
+              <div className="mt-6 grid gap-4 sm:grid-cols-3 sm:gap-5">
+                {others.map((o) => (
+                  <VariantCard key={o.slug} v={o} tint={o.tint} blurb={o.blurb} />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
       </div>
