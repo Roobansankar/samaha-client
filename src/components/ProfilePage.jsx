@@ -33,8 +33,8 @@ export default function ProfilePage({ view = 'dashboard' }) {
   const firstName = user.name?.trim().split(/\s+/)[0] || 'there'
 
   return (
-    <div className="min-h-[80svh] bg-[#f4f1eb] px-[var(--spacing-gutter)] py-[clamp(2rem,5vw,3.5rem)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
-      <div className="mx-auto max-w-[1000px]">
+    <div className="min-h-[80svh] bg-[#f4f1eb] px-[clamp(1rem,3.5vw,2rem)] py-[clamp(2rem,5vw,3.5rem)]">
+      <div className="mx-auto max-w-[1040px]">
 
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
