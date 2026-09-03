@@ -260,6 +260,13 @@ export default function Navbar() {
     return () => window.removeEventListener('keydown', onKey)
   }, [menuOpen])
 
+  // The mobile tab bar's search button opens the full-page overlay via this event.
+  useEffect(() => {
+    const open = () => setSearchOpen(true)
+    window.addEventListener('samaha:search', open)
+    return () => window.removeEventListener('samaha:search', open)
+  }, [])
+
   const isActive = (link) =>
     link.exact ? location.pathname === link.href : location.pathname.startsWith(link.href)
 
@@ -314,7 +321,7 @@ export default function Navbar() {
         <div className="-mr-2 ml-auto flex items-center gap-0.5 min-[901px]:ml-0">
           <button
             type="button"
-            className="nav-icon"
+            className="nav-icon max-[900px]:hidden"
             aria-label="Search"
             onClick={() => setSearchOpen(true)}
           >

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import AnnouncementBar from './components/AnnouncementBar'
 import Navbar from './components/Navbar'
+import MobileTabBar from './components/MobileTabBar'
 import ImageSlider from './components/ImageSlider'
 import Hero from './components/Hero'
 import TrustBar from './components/TrustBar'
@@ -119,6 +120,13 @@ function AppContent() {
         <Route path="*" element={<NotFound />} />
       </Routes>
       {!isAdmin && <Footer />}
+      {!isAdmin && (
+        <>
+          {/* keeps the tab bar from covering the last of the page */}
+          <div className="h-[76px] min-[901px]:hidden" aria-hidden="true" />
+          <MobileTabBar />
+        </>
+      )}
     </>
   )
 }
