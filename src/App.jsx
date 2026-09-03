@@ -123,7 +123,7 @@ function AppContent() {
       {!isAdmin && (
         <>
           {/* keeps the tab bar from covering the last of the page */}
-          <div className="h-[76px] min-[901px]:hidden" aria-hidden="true" />
+          <div className="h-[62px] min-[901px]:hidden" aria-hidden="true" />
           <MobileTabBar />
         </>
       )}
