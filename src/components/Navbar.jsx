@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useScrolled } from '../hooks/useScrolled'
 import { useAccount } from '../lib/account'
+import { useCart } from '../lib/cart'
 import { Search, UserRound, Handbag, Menu, X, ChevronRight, ChevronDown } from 'lucide-react'
 
 const initialOf = (name) => (name || '').trim().charAt(0).toUpperCase() || 'U'
@@ -26,8 +27,6 @@ const SEARCH_HINTS = [
   'groundnut oil',
   'sesame oil',
 ]
-
-const CART_COUNT = 2
 
 /* Typewriter that cycles through phrases; static first phrase if reduced-motion. */
 function useTypewriter(words, active) {
@@ -248,6 +247,7 @@ export default function Navbar() {
   const [shopOpen, setShopOpen] = useState(false)
   const location = useLocation()
   const account = useAccount()
+  const { count: cartCount } = useCart()
 
   useEffect(() => {
     document.body.classList.toggle('no-scroll', menuOpen)
@@ -348,9 +348,9 @@ export default function Navbar() {
               </span>
             )}
           </Link>
-          <Link to="/cart" className="nav-icon relative" aria-label={`Cart, ${CART_COUNT} items`}>
+          <Link to="/cart" className="nav-icon relative" aria-label={`Cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}>
             <Handbag size={20} strokeWidth={1.8} />
-            {CART_COUNT > 0 && <span className="nav-badge">{CART_COUNT}</span>}
+            {cartCount > 0 && <span className="nav-badge">{cartCount > 99 ? '99+' : cartCount}</span>}
           </Link>
         </div>
       </div>

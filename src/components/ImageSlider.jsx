@@ -26,6 +26,16 @@ const SLIDES = [
     href: '/shop/groundnut-oil',
     steps: ['Sun-dried groundnuts', 'Wood-pressed the slow way', 'Small, dated lots'],
   },
+  {
+    src: '/slide3.png',
+    srcMobile: '/slidem3.png',
+    alt: 'Samaha cold-pressed sesame oil on a stone plinth',
+    eyebrow: 'Stone-ground · Cold-pressed',
+    title: 'Sesame Oil',
+    text: 'Rich, aromatic and deeply nutty — the finishing oil of choice.',
+    href: '/shop/sesame-oil',
+    steps: ['Stone-ground whole seeds', 'Cold-pressed to keep the aroma', 'A little goes a long way'],
+  },
 ]
 
 const REDUCED_MOTION =

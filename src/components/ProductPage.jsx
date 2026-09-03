@@ -5,7 +5,9 @@ import {
   ChevronRight, ChevronLeft, X,
   Minus, Plus, Check, Star, Truck, RotateCcw, ShieldCheck,
 } from 'lucide-react'
+import toast from 'react-hot-toast'
 import { VARIANT_PRODUCTS, HIGHLIGHTS, getVariant, getProduct, firstVariantSlug } from '../data/products'
+import { addToCart } from '../lib/cart'
 import NotFound from './NotFound'
 import VariantCard from './VariantCard'
 
@@ -386,10 +388,15 @@ export default function ProductPage() {
 
                 <button
                   type="button"
-                  onClick={() => setAdded(true)}
+                  onClick={() => {
+                    addToCart(product.slug, qty)
+                    toast.success(qty > 1 ? `${qty} added to cart` : 'Added to cart')
+                    setAdded(true)
+                    setTimeout(() => setAdded(false), 1600)
+                  }}
                   className="btn btn-primary min-w-[14rem] flex-1"
                 >
-                  {added ? <>Added to cart <Check size={16} strokeWidth={2.5} /></> : <>Add to cart — ₹{total}</>}
+                  {added ? <>Added to cart <Check size={16} strokeWidth={2.5} /></> : <>Add to cart — {rupees(total)}</>}
                 </button>
               </div>
 

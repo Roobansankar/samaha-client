@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import AnnouncementBar from './components/AnnouncementBar'
@@ -30,6 +31,7 @@ import Footer from './components/Footer'
 import NotFound from './components/NotFound'
 import ScrollToTop from './components/ScrollToTop'
 import ScrollReveal from './components/ScrollReveal'
+import { initCart } from './lib/cart'
 
 // Admin imports
 import AdminLayout from './components/admin/AdminLayout'
@@ -77,6 +79,10 @@ export default function App() {
 function AppContent() {
   const location = useLocation()
   const isAdmin = location.pathname.startsWith('/admin')
+
+  useEffect(() => {
+    initCart()
+  }, [])
 
   return (
     <>

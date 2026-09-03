@@ -1,16 +1,29 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Check } from 'lucide-react'
+import toast from 'react-hot-toast'
+import { addToCart } from '../lib/cart'
 
 const rupees = (n) => `₹${n.toLocaleString('en-IN')}`
 
 export default function VariantCard({ v, tint, blurb }) {
   const [broken, setBroken] = useState(false)
+  const [added, setAdded] = useState(false)
+
+  const onAdd = (e) => {
+    // read the slug off the DOM node so it can never be a stale closure value
+    const slug = e.currentTarget.dataset.slug
+    addToCart(slug, 1)
+    toast.success('Added to cart')
+    setAdded(true)
+    setTimeout(() => setAdded(false), 1400)
+  }
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-md border border-line bg-white transition-shadow duration-200 hover:shadow-md">
 
       {/* image */}
-      <div className="relative aspect-[4/3]" style={{ background: tint || 'var(--color-paper-2)' }}>
+      <Link to={`/shop/${v.slug}`} className="relative block aspect-[4/3]" style={{ background: tint || 'var(--color-paper-2)' }}>
         <span className="absolute inset-y-0 left-0 z-10 grid w-8 place-items-center overflow-hidden bg-olive-900">
           <span className="rotate-180 whitespace-nowrap px-1 text-[0.5rem] font-semibold uppercase tracking-[0.1em] text-on-olive [writing-mode:vertical-rl]">
             Cold Pressed · {v.sizeLong}
@@ -20,7 +33,7 @@ export default function VariantCard({ v, tint, blurb }) {
         {v.image && !broken ? (
           <img
             src={v.image}
-            alt={v.title || `${v.oil} ${v.sizeLong}`}
+            alt={v.title || v.name || `${v.oil} ${v.sizeLong}`}
             loading="lazy"
             decoding="async"
             onError={() => setBroken(true)}
@@ -35,13 +48,16 @@ export default function VariantCard({ v, tint, blurb }) {
         <span className="absolute right-3 top-3 z-10 rounded-md bg-clay-500 px-2.5 py-1 text-[0.66rem] font-semibold text-white">
           Save {rupees(v.save)}
         </span>
-      </div>
+      </Link>
 
       {/* body */}
       <div className="flex flex-1 flex-col p-4">
-        <h4 className="text-[0.9rem] font-semibold leading-snug text-olive-900">
+        <Link
+          to={`/shop/${v.slug}`}
+          className="text-[0.9rem] font-semibold leading-snug text-olive-900 transition-colors hover:text-olive-700"
+        >
           {v.title || v.name || `${v.oil} — ${v.sizeLong}`}
-        </h4>
+        </Link>
 
         <p className="mt-2.5 text-[0.72rem] font-medium text-text-mute">Bestseller</p>
         {blurb && (
@@ -55,12 +71,14 @@ export default function VariantCard({ v, tint, blurb }) {
           <span className="text-sm text-text-mute line-through">{rupees(v.mrp)}</span>
         </div>
 
-        <Link
-          to={`/shop/${v.slug}`}
-          className="mt-3.5 rounded bg-olive-900 py-3 text-center text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-paper transition-colors hover:bg-olive-800"
+        <button
+          type="button"
+          data-slug={v.slug}
+          onClick={onAdd}
+          className="mt-3.5 flex items-center justify-center gap-1.5 rounded bg-olive-900 py-3 text-center text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-paper transition-colors hover:bg-olive-800 cursor-pointer"
         >
-          Add to cart
-        </Link>
+          {added ? <><Check size={13} strokeWidth={3} /> Added</> : 'Add to cart'}
+        </button>
       </div>
     </article>
   )

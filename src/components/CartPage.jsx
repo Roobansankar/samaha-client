@@ -1,21 +1,14 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ChevronRight, Minus, Plus, Trash2, ArrowRight,
-  Tag, ShieldCheck, Truck, ShoppingBag,
+  ShieldCheck, Truck, ShoppingBag,
 } from 'lucide-react'
-import { getProduct } from '../data/products'
+import { useCart } from '../lib/cart'
 
 const PAD = 'px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]'
-const FREE_SHIP = 5000
-const SHIP_FEE = 60
 
-const INITIAL = [
-  { id: 'coconut-oil::1', slug: 'coconut-oil', sizeIdx: 1, qty: 1 },
-  { id: 'groundnut-oil::1', slug: 'groundnut-oil', sizeIdx: 1, qty: 1 },
-]
-
-const money = (n) => `₹${n.toLocaleString('en-IN')}`
+const money = (n) =>
+  `₹${(Number(n) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
 function Breadcrumb() {
   return (
@@ -28,32 +21,13 @@ function Breadcrumb() {
 }
 
 export default function CartPage() {
-  const [items, setItems] = useState(INITIAL)
-  const [promo, setPromo] = useState('')
+  const { items, count, subtotal, savings, setQty, remove } = useCart()
 
-  const setQty = (id, delta) =>
-    setItems((list) =>
-      list.map((it) => (it.id === id ? { ...it, qty: Math.max(1, Math.min(99, it.qty + delta)) } : it)),
-    )
-  const remove = (id) => setItems((list) => list.filter((it) => it.id !== id))
-
-  const lines = items
-    .map((it) => {
-      const product = getProduct(it.slug)
-      if (!product) return null
-      const size = product.sizes[it.sizeIdx]
-      return { ...it, product, size, lineTotal: size.price * it.qty }
-    })
-    .filter(Boolean)
-
-  const subtotal = lines.reduce((s, l) => s + l.lineTotal, 0)
-  const count = lines.reduce((s, l) => s + l.qty, 0)
-  const shipping = subtotal === 0 || subtotal >= FREE_SHIP ? 0 : SHIP_FEE
+  const shipping = 0
   const total = subtotal + shipping
-  const toFree = Math.max(0, FREE_SHIP - subtotal)
 
   /* ---------- empty ---------- */
-  if (lines.length === 0) {
+  if (items.length === 0) {
     return (
       <div className="bg-paper">
         <div className={`${PAD} py-[clamp(2.5rem,6vw,4rem)]`}>
@@ -98,16 +72,16 @@ export default function CartPage() {
             {/* items */}
             <div>
               <ul className="border-t border-line">
-                {lines.map((l) => (
-                  <li key={l.id} className="flex gap-4 border-b border-line py-5">
-                    <Link to={`/shop/${l.slug}`} className="shrink-0" aria-label={l.product.name}>
+                {items.map(({ slug, qty, product }) => (
+                  <li key={slug} className="flex gap-4 border-b border-line py-5">
+                    <Link to={`/shop/${slug}`} className="shrink-0" aria-label={product.name}>
                       <div
                         className="relative h-24 w-24 overflow-hidden rounded-[var(--radius-md)] border border-line sm:h-28 sm:w-28"
-                        style={{ background: l.product.tint }}
+                        style={{ background: product.tint }}
                       >
                         <img
-                          src={l.product.images[0]}
-                          alt={l.product.name}
+                          src={product.image}
+                          alt={product.name}
                           loading="lazy"
                           decoding="async"
                           onError={(e) => { e.currentTarget.style.visibility = 'hidden' }}
@@ -119,17 +93,18 @@ export default function CartPage() {
                     <div className="flex flex-1 flex-col">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <Link to={`/shop/${l.slug}`} className="font-display text-lg font-medium text-olive-900 transition-colors hover:text-olive-700">
-                            {l.product.name}
+                          <Link to={`/shop/${slug}`} className="text-sm font-semibold leading-snug text-olive-900 transition-colors hover:text-olive-700 sm:text-[0.95rem]">
+                            {product.name}
                           </Link>
-                          <p className="mt-0.5 text-xs text-text-mute">
-                            {l.size.label} · {money(l.size.price)}
+                          <p className="mt-1 text-xs text-text-mute">
+                            {money(product.price)}{' '}
+                            <span className="line-through">{money(product.mrp)}</span>
                           </p>
                         </div>
                         <button
                           type="button"
-                          onClick={() => remove(l.id)}
-                          aria-label={`Remove ${l.product.name}`}
+                          onClick={() => remove(slug)}
+                          aria-label={`Remove ${product.name}`}
                           className="text-text-mute transition-colors hover:text-clay-600 cursor-pointer"
                         >
                           <Trash2 size={17} />
@@ -140,24 +115,23 @@ export default function CartPage() {
                         <div className="flex items-center rounded-pill border border-line">
                           <button
                             type="button"
-                            onClick={() => setQty(l.id, -1)}
-                            disabled={l.qty <= 1}
+                            onClick={() => setQty(slug, qty - 1)}
                             aria-label="Decrease quantity"
-                            className="grid h-9 w-9 place-items-center text-olive-800 transition-colors hover:text-olive-950 disabled:opacity-30 cursor-pointer"
+                            className="grid h-9 w-9 place-items-center text-olive-800 transition-colors hover:text-olive-950 cursor-pointer"
                           >
                             <Minus size={14} />
                           </button>
-                          <span className="w-7 text-center text-sm font-semibold text-olive-900">{l.qty}</span>
+                          <span className="w-7 text-center text-sm font-semibold text-olive-900">{qty}</span>
                           <button
                             type="button"
-                            onClick={() => setQty(l.id, 1)}
+                            onClick={() => setQty(slug, qty + 1)}
                             aria-label="Increase quantity"
                             className="grid h-9 w-9 place-items-center text-olive-800 transition-colors hover:text-olive-950 cursor-pointer"
                           >
                             <Plus size={14} />
                           </button>
                         </div>
-                        <span className="font-sans font-semibold text-olive-900">{money(l.lineTotal)}</span>
+                        <span className="font-sans font-semibold text-olive-900">{money(product.price * qty)}</span>
                       </div>
                     </div>
                   </li>
@@ -174,42 +148,24 @@ export default function CartPage() {
               <div className="rounded-[var(--radius-lg)] border border-line bg-paper-2 p-6">
                 <h2 className="font-display text-lg font-medium text-olive-900">Order summary</h2>
 
-                {toFree > 0 ? (
-                  <p className="mt-4 rounded-[var(--radius-md)] bg-paper px-3.5 py-2.5 text-xs leading-relaxed text-text-soft">
-                    Add <span className="font-semibold text-olive-900">{money(toFree)}</span> more for free shipping.
-                  </p>
-                ) : (
-                  <p className="mt-4 flex items-center gap-2 rounded-[var(--radius-md)] bg-paper px-3.5 py-2.5 text-xs font-medium text-olive-800">
-                    <Truck size={14} /> You&rsquo;ve unlocked free shipping.
-                  </p>
-                )}
-
-                <div className="mt-4 flex gap-2">
-                  <div className="relative flex-1">
-                    <Tag size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-mute" />
-                    <input
-                      value={promo}
-                      onChange={(e) => setPromo(e.target.value)}
-                      placeholder="Promo code"
-                      className="w-full rounded-pill border border-line bg-paper py-2.5 pl-10 pr-3 text-sm text-olive-900 outline-none transition placeholder:text-text-mute/70 focus:border-olive-500"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    className="rounded-pill bg-olive-900 px-4 text-xs font-semibold uppercase tracking-[0.08em] text-paper transition-colors hover:bg-olive-800 cursor-pointer"
-                  >
-                    Apply
-                  </button>
-                </div>
+                <p className="mt-4 flex items-center gap-2 rounded-[var(--radius-md)] bg-paper px-3.5 py-2.5 text-xs font-medium text-olive-800">
+                  <Truck size={14} /> Free shipping on every order.
+                </p>
 
                 <dl className="mt-5 space-y-2.5 border-t border-line pt-5 text-sm">
                   <div className="flex justify-between">
                     <dt className="text-text-mute">Subtotal</dt>
                     <dd className="font-medium text-olive-900">{money(subtotal)}</dd>
                   </div>
+                  {savings > 0 && (
+                    <div className="flex justify-between text-clay-600">
+                      <dt>You save</dt>
+                      <dd className="font-medium">− {money(savings)}</dd>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <dt className="text-text-mute">Shipping</dt>
-                    <dd className="font-medium text-olive-900">{shipping === 0 ? 'Free' : money(shipping)}</dd>
+                    <dd className="font-medium text-olive-900">{money(shipping)}</dd>
                   </div>
                 </dl>
 
