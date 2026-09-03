@@ -21,7 +21,7 @@ export default function MobileTabBar() {
           const inner = (
             <>
               <span className="tabbar__icon">
-                <Icon size={19} strokeWidth={2} />
+                <Icon size={20} strokeWidth={2} />
               </span>
               {t.label}
             </>

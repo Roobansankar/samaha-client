@@ -940,17 +940,16 @@
     display: flex;
     max-width: 34rem;
     margin-inline: auto;
-    padding-inline: 0.35rem;
+    padding: 0.5rem 0.35rem;
   }
 
   .tabbar__tab {
-    position: relative;
     display: flex;
     flex: 1;
     flex-direction: column;
     align-items: center;
-    gap: 0.13rem;
-    padding: 0.45rem 0 0.4rem;
+    gap: 0.28rem;
+    padding: 0.15rem 0;
     border: 0;
     background: none;
     font-family: inherit;
@@ -962,31 +961,21 @@
     transition: color 0.18s var(--ease-default);
   }
 
-  .tabbar__tab::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 1.4rem;
-    height: 3px;
-    border-radius: 0 0 3px 3px;
-    background: var(--color-olive-700);
-    transform: scaleX(0);
-    transition: transform 0.2s var(--ease-out);
-  }
-
   .tabbar__tab.is-active {
     color: var(--color-olive-900);
-    font-weight: 700;
-  }
-
-  .tabbar__tab.is-active::before {
-    transform: scaleX(1);
   }
 
   .tabbar__icon {
     position: relative;
     display: grid;
     place-items: center;
+    padding: 0.3rem 1.15rem;
+    border-radius: 999px;
+    transition: background-color 0.2s var(--ease-default);
+  }
+
+  .tabbar__tab.is-active .tabbar__icon {
+    background: var(--color-gold-200);
   }
 
   .tabbar__badge {
@@ -1114,5 +1103,5 @@
   .why-col__rule, .js-anim .sr-section .why-col__rule { transform: none; }
   .why-col__icon, .why-col:hover .why-col__icon { transform: none; }
   .about-card, .about-card:hover, .about-stat, .about-stat:hover { transform: none; }
-  .tabbar__tab::before { transition: none; }
+  .tabbar__icon { transition: none; }
 }
