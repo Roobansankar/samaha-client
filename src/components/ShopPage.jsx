@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowRight, Leaf, ShieldCheck, Truck } from 'lucide-react'
 import { OIL_VARIANTS } from '../data/products'
 import VariantCard from './VariantCard'
@@ -13,10 +13,24 @@ const PERKS = [
 ]
 
 export default function ShopPage() {
-  const [activeFilter, setActiveFilter] = useState('All')
+  const [params, setParams] = useSearchParams()
+
+  const oilParam = (params.get('oil') || '').toLowerCase()
+  const activeFilter = FILTERS.find((f) => f.toLowerCase() === oilParam) || 'All'
+  const setActiveFilter = (f) =>
+    setParams(f === 'All' ? {} : { oil: f.toLowerCase() }, { replace: true })
 
   const oils = OIL_VARIANTS.filter((o) => activeFilter === 'All' || o.tag === activeFilter)
   const skuCount = oils.reduce((n, o) => n + o.variants.length, 0)
+
+  // arriving from an "Our oils" tile — jump past the hero to the filtered list
+  const catRef = useRef(null)
+  useEffect(() => {
+    if (oilParam && catRef.current) {
+      catRef.current.scrollIntoView({ block: 'start' })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div className="bg-paper-inset" id="shop-page">
@@ -55,7 +69,7 @@ export default function ShopPage() {
       </section>
 
       {/* ---------- Catalogue ---------- */}
-      <section className="px-[var(--spacing-gutter)] py-[clamp(3rem,7vw,5rem)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
+      <section ref={catRef} className="scroll-mt-24 px-[var(--spacing-gutter)] py-[clamp(3rem,7vw,5rem)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
         <div className="mx-auto max-w-[1200px]">
 
           {/* header + filters */}

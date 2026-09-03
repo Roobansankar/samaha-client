@@ -2,16 +2,16 @@ import { ArrowUpRight, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const PRODUCTS = [
-  { name: 'Coconut Oil', slug: 'coconut-oil', img: '/hcoconut.png', pos: '50% 40%' },
-  { name: 'Groundnut Oil', slug: 'groundnut-oil', img: '/hground.png', pos: '50% 50%' },
-  { name: 'Sesame Oil', slug: 'sesame-oil', img: '/hseasme.png', pos: '50% 50%' },
+  { name: 'Coconut Oil', slug: 'coconut-oil', tag: 'Coconut', img: '/hcoconut.png', pos: '50% 40%' },
+  { name: 'Groundnut Oil', slug: 'groundnut-oil', tag: 'Groundnut', img: '/hground.png', pos: '50% 50%' },
+  { name: 'Sesame Oil', slug: 'sesame-oil', tag: 'Sesame', img: '/hseasme.png', pos: '50% 50%' },
 ]
 
 function Tile({ p, className = '' }) {
   return (
     <Link
-      to={`/shop/${p.slug}`}
-      aria-label={`Shop ${p.name}`}
+      to={`/shop?oil=${p.tag.toLowerCase()}`}
+      aria-label={`Shop all ${p.name} sizes`}
       className={`group relative block overflow-hidden rounded-[var(--radius-lg)] bg-paper-2 ${className}`}
     >
       <img

@@ -50,10 +50,10 @@ function Home() {
       <main>
         
         <Products />
-        <About />
-        <TrustBar />
-        <Benefits />
         <OilRange />
+        <TrustBar />
+        <About />
+        <Benefits />
         <WhySamaha />
         <Banner />
         <Faq />
