@@ -1,13 +1,33 @@
-import { useState } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Grid2x2, Square } from 'lucide-react'
 import { OIL_VARIANTS } from '../data/products'
 import { useVisibleProducts } from '../lib/catalog'
 import VariantCard from './VariantCard'
 
+const REDUCED_MOTION =
+  typeof window !== 'undefined' &&
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
 export default function OilRange() {
   const [active, setActive] = useState(0)
+  const [phase, setPhase] = useState('idle') // idle | exiting | entering
+  const timerRef = useRef(null)
   const isVisible = useVisibleProducts()
+
+  const switchTab = useCallback((i) => {
+    if (i === active || phase !== 'idle') return
+    if (REDUCED_MOTION) { setActive(i); return }
+
+    setPhase('exiting')
+    clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
+      setActive(i)
+      setPhase('entering')
+      timerRef.current = setTimeout(() => setPhase('idle'), 320)
+    }, 160)
+  }, [active, phase])
+
   const oil = OIL_VARIANTS[active]
   const variants = oil.variants.filter((v) => isVisible(v.slug))
 
@@ -44,7 +64,7 @@ export default function OilRange() {
             <button
               key={o.slug}
               type="button"
-              onClick={() => setActive(i)}
+              onClick={() => switchTab(i)}
               aria-pressed={i === active}
               className={`rounded-pill px-5 py-2.5 text-sm font-semibold transition-colors duration-200 cursor-pointer ${
                 i === active
@@ -86,9 +106,19 @@ export default function OilRange() {
         </div>
 
         {/* cards for the active oil */}
-        <div className={`mt-4 grid gap-3 sm:mt-[clamp(1.5rem,4vw,2.5rem)] sm:gap-5 ${cols === 1 ? 'grid-cols-1' : 'grid-cols-2'} sm:grid-cols-2 lg:grid-cols-4`}>
-          {variants.map((v) => (
-            <VariantCard key={v.id} v={v} tint={oil.tint} blurb={oil.blurb} />
+        <div
+          className={`mt-4 grid gap-3 sm:mt-[clamp(1.5rem,4vw,2.5rem)] sm:gap-5 ${cols === 1 ? 'grid-cols-1' : 'grid-cols-2'} sm:grid-cols-2 lg:grid-cols-4 ${
+            phase === 'exiting' ? 'cards-exit' : phase === 'entering' ? 'cards-enter' : ''
+          }`}
+        >
+          {variants.map((v, i) => (
+            <div
+              key={v.id}
+              className={phase === 'entering' ? 'card-enter' : ''}
+              style={phase === 'entering' ? { animationDelay: `${i * 40}ms` } : undefined}
+            >
+              <VariantCard v={v} tint={oil.tint} blurb={oil.blurb} />
+            </div>
           ))}
         </div>
 

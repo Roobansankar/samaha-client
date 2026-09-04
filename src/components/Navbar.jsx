@@ -247,10 +247,11 @@ export default function Navbar() {
   const [shopOpen, setShopOpen] = useState(false)
   const location = useLocation()
   const account = useAccount()
-  const { count: cartCount } = useCart()
+  const { count: cartCount, uniqueCount } = useCart()
 
   useEffect(() => {
     document.body.classList.toggle('no-scroll', menuOpen)
+    if (!menuOpen) setShopOpen(false)
     return () => document.body.classList.remove('no-scroll')
   }, [menuOpen])
 
@@ -348,9 +349,9 @@ export default function Navbar() {
               </span>
             )}
           </Link>
-          <Link to="/cart" className="nav-icon relative" aria-label={`Cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}>
+          <Link to="/cart" className="nav-icon relative" aria-label={`Cart, ${uniqueCount} ${uniqueCount === 1 ? 'item' : 'items'}`}>
             <Handbag size={20} strokeWidth={1.8} />
-            {cartCount > 0 && <span className="nav-badge">{cartCount > 99 ? '99+' : cartCount}</span>}
+            {uniqueCount > 0 && <span className="nav-badge">{uniqueCount > 99 ? '99+' : uniqueCount}</span>}
           </Link>
         </div>
       </div>
@@ -391,7 +392,7 @@ export default function Navbar() {
                   />
                 </button>
                 {shopOpen && (
-                  <div className="flex flex-col gap-1 pb-4 pl-1">
+                  <div className="shop-dropdown flex flex-col gap-1 pb-4 pl-1">
                     {link.menu.map((c) => (
                       <Link
                         key={c.href}

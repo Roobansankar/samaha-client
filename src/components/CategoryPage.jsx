@@ -1,10 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ChevronRight, ArrowRight, Grid2x2, Square } from 'lucide-react'
 import { getProduct, OIL_VARIANTS } from '../data/products'
 import { useVisibleProducts } from '../lib/catalog'
 import VariantCard from './VariantCard'
 import NotFound from './NotFound'
+
+const REDUCED_MOTION =
+  typeof window !== 'undefined' &&
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 const HERO = {
   'coconut-oil': '/slide1.webp',
@@ -25,6 +29,8 @@ export default function CategoryPage() {
 
   const [picked, setPicked] = useState(() => new Set())
   const [sort, setSort] = useState('size')
+  const [phase, setPhase] = useState('idle')
+  const timerRef = useRef(null)
   const [cols, setCols] = useState(() => {
     try { return localStorage.getItem('shopCols') === '2' ? 2 : 1 } catch { return 1 }
   })
@@ -32,12 +38,26 @@ export default function CategoryPage() {
     setCols(n)
     try { localStorage.setItem('shopCols', String(n)) } catch { /* ignore */ }
   }
+  const animateUpdate = useCallback((updater) => {
+    if (REDUCED_MOTION) { updater(); return }
+    setPhase('exiting')
+    clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
+      updater()
+      setPhase('entering')
+      timerRef.current = setTimeout(() => setPhase('idle'), 320)
+    }, 160)
+  }, [])
   const toggleSize = (s) =>
-    setPicked((prev) => {
-      const n = new Set(prev)
-      n.has(s) ? n.delete(s) : n.add(s)
-      return n
-    })
+    animateUpdate(() =>
+      setPicked((prev) => {
+        const n = new Set(prev)
+        n.has(s) ? n.delete(s) : n.add(s)
+        return n
+      }),
+    )
+  const clearSizes = () =>
+    animateUpdate(() => setPicked(new Set()))
   const isVisible = useVisibleProducts()
 
   useEffect(() => {
@@ -135,7 +155,7 @@ export default function CategoryPage() {
               {picked.size > 0 && (
                 <button
                   type="button"
-                  onClick={() => setPicked(new Set())}
+                  onClick={clearSizes}
                   className="ml-1 text-xs font-medium text-clay-600 hover:underline cursor-pointer"
                 >
                   Clear
@@ -177,9 +197,17 @@ export default function CategoryPage() {
             </div>
           </div>
 
-          <div className={`mt-6 grid gap-3 sm:gap-5 ${cols === 1 ? 'grid-cols-1' : 'grid-cols-2'} sm:grid-cols-2 lg:grid-cols-4`}>
-            {shown.map((v) => (
-              <VariantCard key={v.id} v={v} tint={group.tint} blurb={group.blurb} />
+          <div className={`mt-6 grid gap-3 sm:gap-5 ${cols === 1 ? 'grid-cols-1' : 'grid-cols-2'} sm:grid-cols-2 lg:grid-cols-4 ${
+            phase === 'exiting' ? 'cards-exit' : phase === 'entering' ? 'cards-enter' : ''
+          }`}>
+            {shown.map((v, i) => (
+              <div
+                key={v.id}
+                className={phase === 'entering' ? 'card-enter' : ''}
+                style={phase === 'entering' ? { animationDelay: `${i * 40}ms` } : undefined}
+              >
+                <VariantCard v={v} tint={group.tint} blurb={group.blurb} />
+              </div>
             ))}
           </div>
 

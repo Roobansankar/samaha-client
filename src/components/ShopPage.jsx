@@ -1,9 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowRight, Leaf, ShieldCheck, Truck, SlidersHorizontal, X, Grid2x2, Square } from 'lucide-react'
 import { OIL_VARIANTS } from '../data/products'
 import { useVisibleProducts } from '../lib/catalog'
 import VariantCard from './VariantCard'
+
+const REDUCED_MOTION =
+  typeof window !== 'undefined' &&
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 const CATEGORIES = ['Coconut', 'Groundnut', 'Sesame']
 const SIZES = ['500 ml', '1 Litre', '5 Litres', '16 Litre Tin']
@@ -41,6 +45,8 @@ export default function ShopPage() {
   const [cols, setCols] = useState(() => {
     try { return localStorage.getItem('shopCols') === '2' ? 2 : 1 } catch { return 1 }
   })
+  const [phase, setPhase] = useState('idle')
+  const timerRef = useRef(null)
   const chooseCols = (n) => {
     setCols(n)
     try { localStorage.setItem('shopCols', String(n)) } catch { /* ignore */ }
@@ -59,10 +65,29 @@ export default function ShopPage() {
     if (b !== 'all') p.set('price', b)
     setParams(p, { replace: true })
   }
-  const toggleCat = (v) => { const n = new Set(cats); n.has(v) ? n.delete(v) : n.add(v); apply(n, sizes, band) }
-  const toggleSize = (v) => { const n = new Set(sizes); n.has(v) ? n.delete(v) : n.add(v); apply(cats, n, band) }
-  const pickBand = (v) => apply(cats, sizes, v)
-  const clearAll = () => setParams({}, { replace: true })
+  const triggerFilter = useCallback((c, s, b) => {
+    if (REDUCED_MOTION) { apply(c, s, b); return }
+    setPhase('exiting')
+    clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
+      apply(c, s, b)
+      setPhase('entering')
+      timerRef.current = setTimeout(() => setPhase('idle'), 320)
+    }, 160)
+  }, [])
+  const toggleCat = (v) => { const n = new Set(cats); n.has(v) ? n.delete(v) : n.add(v); triggerFilter(n, sizes, band) }
+  const toggleSize = (v) => { const n = new Set(sizes); n.has(v) ? n.delete(v) : n.add(v); triggerFilter(cats, n, band) }
+  const pickBand = (v) => triggerFilter(cats, sizes, v)
+  const clearAll = () => {
+    if (REDUCED_MOTION) { setParams({}, { replace: true }); return }
+    setPhase('exiting')
+    clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
+      setParams({}, { replace: true })
+      setPhase('entering')
+      timerRef.current = setTimeout(() => setPhase('idle'), 320)
+    }, 160)
+  }
 
   const isVisible = useVisibleProducts()
   const bandTest = PRICE_BANDS.find((b) => b.id === band).test
@@ -211,9 +236,17 @@ export default function ShopPage() {
                   </button>
                 </div>
               ) : (
-                <div className={`grid gap-3 sm:gap-5 ${cols === 1 ? 'grid-cols-1' : 'grid-cols-2'} sm:grid-cols-2 xl:grid-cols-3`}>
-                  {items.map((v) => (
-                    <VariantCard key={v.id} v={v} tint={v.tint} blurb={v.blurb} />
+                <div className={`grid gap-3 sm:gap-5 ${cols === 1 ? 'grid-cols-1' : 'grid-cols-2'} sm:grid-cols-2 xl:grid-cols-3 ${
+                  phase === 'exiting' ? 'cards-exit' : phase === 'entering' ? 'cards-enter' : ''
+                }`}>
+                  {items.map((v, i) => (
+                    <div
+                      key={v.id}
+                      className={phase === 'entering' ? 'card-enter' : ''}
+                      style={phase === 'entering' ? { animationDelay: `${i * 40}ms` } : undefined}
+                    >
+                      <VariantCard v={v} tint={v.tint} blurb={v.blurb} />
+                    </div>
                   ))}
                 </div>
               )}

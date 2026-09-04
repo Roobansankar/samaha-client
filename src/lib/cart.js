@@ -158,12 +158,14 @@ export function useCart() {
     .filter((i) => i.product)
 
   const count = items.reduce((n, i) => n + i.qty, 0)
+  const uniqueCount = items.length
   const subtotal = items.reduce((n, i) => n + i.qty * i.product.price, 0)
   const mrpTotal = items.reduce((n, i) => n + i.qty * i.product.mrp, 0)
 
   return {
     items,
     count,
+    uniqueCount,
     subtotal,
     savings: Math.max(0, mrpTotal - subtotal),
     loading: s.loading,

@@ -986,6 +986,45 @@ select:-webkit-autofill {
     border: 2px solid var(--color-paper);
   }
 
+  /* ---- OilRange card transition ---- */
+  .cards-exit {
+    animation: card-fade-out 160ms var(--ease-out) forwards;
+  }
+
+  .cards-enter {
+    animation: card-fade-in 320ms var(--ease-out) forwards;
+  }
+
+  .card-enter {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: card-item-in 320ms var(--ease-out) forwards;
+  }
+
+  @keyframes card-fade-out {
+    to { opacity: 0; transform: translateY(12px); }
+  }
+
+  @keyframes card-fade-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  @keyframes card-item-in {
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ---- Mobile nav shop dropdown ---- */
+  .shop-dropdown {
+    overflow: hidden;
+    animation: dropdown-open 280ms var(--ease-out) forwards;
+  }
+
+  @keyframes dropdown-open {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: none; }
+  }
+
 }
 
 /* ============================================================
@@ -1114,4 +1153,6 @@ select:-webkit-autofill {
   .why-col__icon, .why-col:hover .why-col__icon { transform: none; }
   .about-card, .about-card:hover, .about-stat, .about-stat:hover { transform: none; }
   .tabbar__icon { transition: none; }
+  .cards-exit, .cards-enter, .card-enter { animation: none; opacity: 1; transform: none; }
+  .shop-dropdown { animation: none; opacity: 1; transform: none; }
 }
