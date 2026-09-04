@@ -2,15 +2,18 @@ import { useEffect, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import {
   LayoutDashboard, Package, MapPin, User as UserIcon, LogOut,
-  Plus, Pencil, Trash2, Check, Loader2,
+  Plus, Pencil, Trash2, Check, Loader2, FileDown,
 } from 'lucide-react'
 import {
   useAccount, updateAccount, logout,
   fetchAddresses, createAddress, updateAddress, deleteAddress, makeAddressDefault,
 } from '../lib/account'
 import { fetchOrders } from '../lib/checkout'
+import { getVariant } from '../data/products'
+import { downloadOrderInvoice } from '../lib/orderInvoice'
 
-const money = (n) => `₹${(Number(n) || 0).toLocaleString('en-IN')}`
+const money2 = (n) =>
+  `₹${(Number(n) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
 const NAV = [
   { key: 'dashboard', label: 'Dashboard', to: '/profile', Icon: LayoutDashboard },
@@ -427,20 +430,9 @@ function OrderList({ limit }) {
   const shown = limit ? orders.slice(0, limit) : orders
 
   return (
-    <div className="mt-4 space-y-3">
+    <div className="mt-4 space-y-4">
       {shown.map((o) => (
-        <div key={o.id} className="rounded-xl border border-olive-900/10 p-4">
-          <div className="flex items-center justify-between text-sm">
-            <span className="font-semibold text-olive-900">Order #{o.id}</span>
-            <span className="text-olive-700/60">{o.placed_at}</span>
-          </div>
-          <ul className="mt-2 space-y-0.5 text-xs text-olive-700/70">
-            {o.items.map((it, i) => (
-              <li key={i}>{it.name} × {it.qty}</li>
-            ))}
-          </ul>
-          <p className="mt-2 text-sm font-semibold text-olive-900">{money(o.total)}</p>
-        </div>
+        <OrderCard key={o.id} order={o} compact={Boolean(limit)} />
       ))}
       {limit && orders.length > limit && (
         <Link to="/profile/orders" className="inline-block text-sm font-semibold text-olive-900 underline underline-offset-2">
@@ -448,5 +440,110 @@ function OrderList({ limit }) {
         </Link>
       )}
     </div>
+  )
+}
+
+function OrderCard({ order, compact }) {
+  const items = order.items.map((it) => {
+    const v = getVariant(it.slug)
+    return {
+      ...it,
+      image: v?.image || null,
+      size: v?.sizeLong || null,
+      display: v?.shortName || it.name,
+    }
+  })
+  const units = items.reduce((s, i) => s + i.qty, 0)
+  const subtotal = order.subtotal ?? items.reduce((s, i) => s + i.price * i.qty, 0)
+  const shipping = order.shipping ?? 0
+  const total = order.total ?? subtotal + shipping
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-olive-900/10">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 bg-[#faf8f3] px-4 py-3">
+        <div>
+          <p className="text-sm font-semibold text-olive-900">Order #{order.id}</p>
+          <p className="text-xs text-olive-700/60">
+            {fmtDate(order.placed_at)} · {units} {units === 1 ? 'item' : 'items'}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="rounded-full bg-olive-100 px-2.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-olive-800">
+            {order.status === 'paid' ? 'Paid' : order.status}
+          </span>
+          <span className="text-sm font-semibold text-olive-900">{money2(total)}</span>
+        </div>
+      </div>
+
+      <ul className="divide-y divide-olive-900/5">
+        {items.map((it, i) => (
+          <li key={i} className="flex items-center gap-3 px-4 py-3">
+            {it.image ? (
+              <img
+                src={it.image}
+                alt=""
+                className="h-14 w-14 shrink-0 rounded-lg border border-olive-900/10 bg-white object-contain p-1"
+              />
+            ) : (
+              <span className="h-14 w-14 shrink-0 rounded-lg border border-olive-900/10 bg-olive-100/50" />
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-olive-900">{it.display}</p>
+              {it.size && <p className="text-xs text-olive-700/60">{it.size}</p>}
+              <p className="mt-0.5 text-xs text-olive-700/70">{money2(it.price)} × {it.qty}</p>
+            </div>
+            <p className="shrink-0 text-sm font-medium text-olive-900">{money2(it.price * it.qty)}</p>
+          </li>
+        ))}
+      </ul>
+
+      <div className="space-y-1 border-t border-olive-900/10 bg-[#faf8f3] px-4 py-3 text-sm">
+        <div className="flex justify-between text-olive-700/70">
+          <span>Subtotal</span>
+          <span>{money2(subtotal)}</span>
+        </div>
+        <div className="flex justify-between text-olive-700/70">
+          <span>Shipping</span>
+          <span>{money2(shipping)}</span>
+        </div>
+        <div className="flex justify-between pt-1 font-semibold text-olive-900">
+          <span>Total</span>
+          <span>{money2(total)}</span>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-olive-900/10 pt-2.5">
+          {!compact && order.payment_id ? (
+            <p className="text-[0.7rem] text-olive-700/45">
+              Payment ID: <span className="font-mono">{order.payment_id}</span>
+            </p>
+          ) : <span />}
+          <DownloadBillButton order={order} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function DownloadBillButton({ order }) {
+  const [busy, setBusy] = useState(false)
+  return (
+    <button
+      type="button"
+      disabled={busy}
+      onClick={async () => {
+        setBusy(true)
+        try {
+          await downloadOrderInvoice(order)
+        } catch {
+          alert('Could not generate the bill. Please try again.')
+        } finally {
+          setBusy(false)
+        }
+      }}
+      className="inline-flex items-center gap-1.5 rounded-lg border border-olive-900/15 bg-white px-3 py-1.5 text-xs font-semibold text-olive-800 transition-colors hover:bg-olive-900 hover:text-paper disabled:opacity-60 cursor-pointer"
+    >
+      {busy ? <Loader2 size={13} className="animate-spin" /> : <FileDown size={13} />}
+      {busy ? 'Preparing…' : 'Download bill'}
+    </button>
   )
 }
