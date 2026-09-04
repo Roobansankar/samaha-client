@@ -11,6 +11,7 @@ import {
   MailCheck,
   Menu,
   LogOut,
+  Trash2,
   PanelLeftClose,
   PanelLeftOpen,
   Bell,
@@ -25,7 +26,8 @@ import { AdminThemeContext } from './theme'
 const NAV = [
   { to: '/admin', end: true, label: 'Dashboard', icon: LayoutDashboard, page: 'dashboard' },
   { to: '/admin/orders', label: 'Orders', icon: ShoppingBag, page: 'orders' },
-  { to: '/admin/products', label: 'Products', icon: Package, page: 'products' },
+  { to: '/admin/products', end: true, label: 'Products', icon: Package, page: 'products' },
+  { to: '/admin/products/trash', label: 'Deleted products', icon: Trash2, page: 'products' },
   { to: '/admin/customers', label: 'Customers', icon: Users, page: 'customers' },
   { to: '/admin/messages', label: 'Messages', icon: MessageSquare, page: 'messages', adminOnly: true },
   { to: '/admin/staff', label: 'Staff', icon: UserCog, page: 'staff', adminOnly: true },

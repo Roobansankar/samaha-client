@@ -11,7 +11,7 @@ import About from './components/About'
 import AboutPage from './components/AboutPage'
 import ContactPage from './components/ContactPage'
 import ShopPage from './components/ShopPage'
-import ProductPage from './components/ProductPage'
+import ShopSlug from './components/ShopSlug'
 import HealthBenefitsPage from './components/HealthBenefitsPage'
 import CartPage from './components/CartPage'
 import WhyUsPage from './components/WhyUsPage'
@@ -41,8 +41,12 @@ import AdminLayout from './components/admin/AdminLayout'
 import AdminLogin from './components/admin/AdminLogin'
 import AdminDashboard from './components/admin/AdminDashboard'
 import AdminOrders from './components/admin/AdminOrders'
+import AdminOrderView from './components/admin/AdminOrderView'
 import AdminCustomers from './components/admin/AdminCustomers'
 import AdminProducts from './components/admin/AdminProducts'
+import AdminProductForm from './components/admin/AdminProductForm'
+import AdminProductView from './components/admin/AdminProductView'
+import AdminProductsTrash from './components/admin/AdminProductsTrash'
 import AdminSettings from './components/admin/AdminSettings'
 import AdminStaff from './components/admin/AdminStaff'
 import AdminMessages from './components/admin/AdminMessages'
@@ -101,7 +105,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/shop" element={<ShopPage />} />
-        <Route path="/shop/:slug" element={<ProductPage />} />
+        <Route path="/shop/:slug" element={<ShopSlug />} />
         <Route path="/health-benefits" element={<HealthBenefitsPage />} />
         <Route path="/whyus" element={<WhyUsPage />} />
         <Route path="/blog" element={<BlogPage />} />
@@ -135,8 +139,13 @@ function AppContent() {
         >
           <Route index element={<AdminDashboard />} />
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="orders/:id" element={<AdminOrderView />} />
           <Route path="customers" element={<AdminCustomers />} />
           <Route path="products" element={<AdminProducts />} />
+          <Route path="products/new" element={<AdminProductForm />} />
+          <Route path="products/trash" element={<AdminProductsTrash />} />
+          <Route path="products/:id" element={<AdminProductView />} />
+          <Route path="products/:id/edit" element={<AdminProductForm />} />
           <Route path="settings" element={<AdminSettings />} />
           <Route path="staff" element={<AdminStaff />} />
           <Route path="messages" element={<AdminMessages />} />

@@ -1,5 +1,7 @@
 import { ArrowUpRight, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { OIL_VARIANTS } from '../data/products'
+import { useVisibleProducts } from '../lib/catalog'
 
 const PRODUCTS = [
   { name: 'Coconut Oil', slug: 'coconut-oil', tag: 'Coconut', img: '/hcoconut.png', pos: '50% 40%' },
@@ -10,7 +12,7 @@ const PRODUCTS = [
 function Tile({ p, className = '' }) {
   return (
     <Link
-      to={`/shop?oil=${p.tag.toLowerCase()}`}
+      to={`/shop/${p.slug}`}
       aria-label={`Shop all ${p.name} sizes`}
       className={`group relative block overflow-hidden rounded-[var(--radius-lg)] bg-paper-2 ${className}`}
     >
@@ -34,6 +36,13 @@ function Tile({ p, className = '' }) {
 }
 
 export default function Products() {
+  const isVisible = useVisibleProducts()
+  const oils = PRODUCTS.filter((p) => {
+    const g = OIL_VARIANTS.find((o) => o.slug === p.slug)
+    return !g || g.variants.some((v) => isVisible(v.slug))
+  })
+  if (oils.length === 0) return null
+
   return (
     <section className="bg-paper" id="shop">
       <div className="mx-auto max-w-[1500px] px-[clamp(1.75rem,5vw,5rem)] pb-[clamp(1.75rem,3.5vw,3rem)] pt-[clamp(1.5rem,3vw,2.5rem)]">
@@ -59,10 +68,10 @@ export default function Products() {
 
         <div className="grid gap-4 sm:grid-cols-5">
           <Tile
-            p={PRODUCTS[0]}
+            p={oils[0]}
             className="aspect-[4/3] sm:col-span-3 sm:row-span-2 sm:aspect-auto sm:min-h-[440px]"
           />
-          {PRODUCTS.slice(1).map((p) => (
+          {oils.slice(1).map((p) => (
             <Tile
               key={p.slug}
               p={p}

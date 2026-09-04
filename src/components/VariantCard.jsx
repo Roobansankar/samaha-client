@@ -60,7 +60,8 @@ export default function VariantCard({ v, tint, blurb }) {
           </span>
         )}
 
-        <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+        {/* price + button anchor to the bottom so CTAs line up across a row */}
+        <div className="mt-auto flex flex-wrap items-baseline gap-x-2 gap-y-0.5 pt-3.5">
           <span className="text-base font-semibold text-clay-600">{rupees(v.price)}</span>
           <span className="text-sm text-text-mute line-through">{rupees(v.mrp)}</span>
         </div>
@@ -69,7 +70,7 @@ export default function VariantCard({ v, tint, blurb }) {
           type="button"
           data-slug={v.slug}
           onClick={onAdd}
-          className="mt-3.5 flex items-center justify-center gap-1.5 rounded bg-olive-900 py-3 text-center text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-paper transition-colors hover:bg-olive-800 cursor-pointer"
+          className="mt-3 flex items-center justify-center gap-1.5 rounded bg-olive-900 py-3 text-center text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-paper transition-colors hover:bg-olive-800 cursor-pointer"
         >
           {added ? <><Check size={13} strokeWidth={3} /> Added</> : 'Add to cart'}
         </button>

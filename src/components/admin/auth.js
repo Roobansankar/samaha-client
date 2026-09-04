@@ -73,6 +73,73 @@ export async function fetchOrders(params = {}) {
   return request(`${API_URL}/admin/orders${qs ? `?${qs}` : ''}`)
 }
 
+export async function fetchOrder(id) {
+  return request(`${API_URL}/admin/orders/${id}`)
+}
+
+/* ---- Products ---- */
+
+export async function fetchProducts(params = {}) {
+  const qs = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => v && v !== 'all'),
+  ).toString()
+  return request(`${API_URL}/admin/products${qs ? `?${qs}` : ''}`)
+}
+
+export async function fetchProduct(id) {
+  return request(`${API_URL}/admin/products/${id}`)
+}
+
+export async function createProduct(data) {
+  return request(`${API_URL}/admin/products`, { method: 'POST', body: JSON.stringify(data) })
+}
+
+export async function updateProduct(id, data) {
+  return request(`${API_URL}/admin/products/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+}
+
+export async function updateProductStock(id, stock) {
+  return request(`${API_URL}/admin/products/${id}/stock`, { method: 'PATCH', body: JSON.stringify({ stock }) })
+}
+
+export async function deleteProduct(id) {
+  return request(`${API_URL}/admin/products/${id}`, { method: 'DELETE' })
+}
+
+export async function fetchTrashedProducts() {
+  return request(`${API_URL}/admin/products/trashed`)
+}
+
+export async function restoreProduct(id) {
+  return request(`${API_URL}/admin/products/${id}/restore`, { method: 'POST' })
+}
+
+export async function forceDeleteProduct(id) {
+  return request(`${API_URL}/admin/products/${id}/force`, { method: 'DELETE' })
+}
+
+export async function uploadProductImage(file) {
+  const token = getToken()
+  const body = new FormData()
+  body.append('image', file)
+
+  const response = await fetch(`${API_URL}/admin/products/images`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}`, Accept: 'application/json' } : { Accept: 'application/json' },
+    body,
+  })
+
+  const text = await response.text()
+  let data = {}
+  if (text) {
+    try { data = JSON.parse(text) } catch { throw new Error('Upload failed — bad server response.') }
+  }
+  if (!response.ok) {
+    throw new Error(data.message || data.errors?.image?.[0] || 'Image upload failed')
+  }
+  return data
+}
+
 export async function fetchStaff() {
   return request(`${API_URL}/admin/staff`)
 }

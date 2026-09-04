@@ -1,16 +1,27 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Grid2x2, Square } from 'lucide-react'
 import { OIL_VARIANTS } from '../data/products'
+import { useVisibleProducts } from '../lib/catalog'
 import VariantCard from './VariantCard'
 
 export default function OilRange() {
   const [active, setActive] = useState(0)
+  const isVisible = useVisibleProducts()
   const oil = OIL_VARIANTS[active]
+  const variants = oil.variants.filter((v) => isVisible(v.slug))
+
+  const [cols, setCols] = useState(() => {
+    try { return localStorage.getItem('shopCols') === '2' ? 2 : 1 } catch { return 1 }
+  })
+  const chooseCols = (n) => {
+    setCols(n)
+    try { localStorage.setItem('shopCols', String(n)) } catch { /* ignore */ }
+  }
 
   return (
     <section className="bg-paper-inset" id="sizes" aria-label="Shop oils by size">
-      <div className="mx-auto max-w-[1500px] px-[clamp(1.75rem,5vw,5rem)] py-[clamp(2.5rem,6vw,4.5rem)]">
+      <div className="mx-auto max-w-[1500px] px-4 py-[clamp(2.5rem,6vw,4.5rem)] sm:px-[clamp(1.75rem,5vw,5rem)]">
 
         {/* heading */}
         <div className="mx-auto max-w-[42rem] text-center">
@@ -50,9 +61,33 @@ export default function OilRange() {
           {oil.blurb}
         </p>
 
+        {/* mobile: one / two per row */}
+        <div className="mt-6 flex justify-center sm:hidden">
+          <div className="flex overflow-hidden rounded-lg border border-line bg-paper">
+            <button
+              type="button"
+              onClick={() => chooseCols(1)}
+              aria-label="One per row"
+              aria-pressed={cols === 1}
+              className={`grid h-9 w-11 place-items-center transition-colors ${cols === 1 ? 'bg-olive-900 text-paper' : 'text-olive-700'}`}
+            >
+              <Square size={15} />
+            </button>
+            <button
+              type="button"
+              onClick={() => chooseCols(2)}
+              aria-label="Two per row"
+              aria-pressed={cols === 2}
+              className={`grid h-9 w-11 place-items-center transition-colors ${cols === 2 ? 'bg-olive-900 text-paper' : 'text-olive-700'}`}
+            >
+              <Grid2x2 size={15} />
+            </button>
+          </div>
+        </div>
+
         {/* cards for the active oil */}
-        <div className="mt-[clamp(1.5rem,4vw,2.5rem)] grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {oil.variants.map((v) => (
+        <div className={`mt-4 grid gap-3 sm:mt-[clamp(1.5rem,4vw,2.5rem)] sm:gap-5 ${cols === 1 ? 'grid-cols-1' : 'grid-cols-2'} sm:grid-cols-2 lg:grid-cols-4`}>
+          {variants.map((v) => (
             <VariantCard key={v.id} v={v} tint={oil.tint} blurb={oil.blurb} />
           ))}
         </div>

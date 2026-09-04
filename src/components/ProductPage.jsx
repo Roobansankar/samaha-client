@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { VARIANT_PRODUCTS, HIGHLIGHTS, getVariant, getProduct, firstVariantSlug } from '../data/products'
+import { useVisibleProducts } from '../lib/catalog'
 import { addToCart } from '../lib/cart'
 import NotFound from './NotFound'
 import VariantCard from './VariantCard'
@@ -287,26 +288,58 @@ const DELIVERY = [
 
 export default function ProductPage() {
   const { slug } = useParams()
-  const product = getVariant(slug)
+  const base = getVariant(slug)
 
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
+  const [db, setDb] = useState(null)
+  const [gone, setGone] = useState(false)
+  const isVisible = useVisibleProducts()
 
   useEffect(() => {
     window.scrollTo(0, 0)
     setQty(1)
     setAdded(false)
+    setDb(null)
+    setGone(false)
+
+    let alive = true
+    fetch(`/api/products/${slug}`)
+      .then((r) => {
+        if (r.status === 404) { if (alive) setGone(true); return null }
+        return r.ok ? r.json() : null
+      })
+      .then((d) => { if (alive && d && d.slug) setDb(d) })
+      .catch(() => {})
+    return () => { alive = false }
   }, [slug])
 
-  if (!product) {
+  if (!base) {
     const oil = getProduct(slug)
     if (oil) return <Navigate to={`/shop/${firstVariantSlug(oil.slug)}`} replace />
     return <NotFound />
   }
 
+  // admin hid this product (API says 404 / not in the live list)
+  if (gone || !isVisible(slug)) return <NotFound />
+
+  // Merge in whatever the admin has set (extra images, price, stock).
+  const product = db
+    ? {
+        ...base,
+        images: db.images?.length ? db.images : base.images,
+        price: db.price ?? base.price,
+        mrp: db.mrp ?? base.mrp,
+        save: Math.max(0, (db.mrp ?? base.mrp) - (db.price ?? base.price)),
+        stock: typeof db.stock === 'number' ? db.stock : null,
+      }
+    : base
+
+  const soldOut = product.stock === 0
+  const maxQty = Math.min(99, product.stock ?? 99)
   const total = product.price * qty
   const others = VARIANT_PRODUCTS.filter(
-    (v) => v.oilSlug === product.oilSlug && v.slug !== product.slug,
+    (v) => v.oilSlug === product.oilSlug && v.slug !== product.slug && isVisible(v.slug),
   )
   const headingSize = 'clamp(1.35rem, 1.1rem + 1vw, 1.7rem)'
 
@@ -378,8 +411,9 @@ export default function ProductPage() {
                   <span className="w-9 text-center text-sm font-semibold text-olive-900">{qty}</span>
                   <button
                     type="button"
-                    onClick={() => setQty((q) => Math.min(99, q + 1))}
-                    className="grid h-12 w-12 place-items-center text-olive-800 transition-colors hover:text-olive-950 cursor-pointer"
+                    onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
+                    disabled={qty >= maxQty}
+                    className="grid h-12 w-12 place-items-center text-olive-800 transition-colors hover:text-olive-950 disabled:opacity-30 cursor-pointer"
                     aria-label="Increase quantity"
                   >
                     <Plus size={16} />
@@ -388,15 +422,16 @@ export default function ProductPage() {
 
                 <button
                   type="button"
+                  disabled={soldOut}
                   onClick={() => {
                     addToCart(product.slug, qty)
                     toast.success(qty > 1 ? `${qty} added to cart` : 'Added to cart')
                     setAdded(true)
                     setTimeout(() => setAdded(false), 1600)
                   }}
-                  className="btn btn-primary min-w-[14rem] flex-1"
+                  className="btn btn-primary min-w-[14rem] flex-1 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {added ? <>Added to cart <Check size={16} strokeWidth={2.5} /></> : <>Add to cart — {rupees(total)}</>}
+                  {soldOut ? 'Out of stock' : added ? <>Added to cart <Check size={16} strokeWidth={2.5} /></> : <>Add to cart — {rupees(total)}</>}
                 </button>
               </div>
 

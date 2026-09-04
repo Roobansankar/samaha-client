@@ -8,14 +8,14 @@ import { Search, UserRound, Handbag, Menu, X, ChevronRight, ChevronDown } from '
 const initialOf = (name) => (name || '').trim().charAt(0).toUpperCase() || 'U'
 
 const CATEGORIES = [
-  { label: 'Coconut Oil', href: '/shop?oil=coconut', note: 'Mild & versatile', img: '/products/coconut-oil.webp' },
-  { label: 'Groundnut Oil', href: '/shop?oil=groundnut', note: 'Deep & nutty', img: '/products/groundnut-oil.webp' },
-  { label: 'Sesame Oil', href: '/shop?oil=sesame', note: 'Rich & aromatic', img: '/products/sesame-oil.webp' },
+  { label: 'Coconut Oil', href: '/shop/coconut-oil', note: 'Mild & versatile', img: '/products/coconut-oil.webp' },
+  { label: 'Groundnut Oil', href: '/shop/groundnut-oil', note: 'Deep & nutty', img: '/products/groundnut-oil.webp' },
+  { label: 'Sesame Oil', href: '/shop/sesame-oil', note: 'Rich & aromatic', img: '/products/sesame-oil.webp' },
 ]
 
 const LINKS = [
   { label: 'Home', href: '/', exact: true },
-  { label: 'Shop', href: '/shop' },
+  { label: 'Shop', href: '/shop', exact: true },
   { label: 'Shop by Category', href: '/shop', menu: CATEGORIES },
   { label: 'Health Benefits', href: '/health-benefits' },
   { label: 'About', href: '/about' },
