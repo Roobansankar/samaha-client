@@ -1,128 +1,169 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Eye, Users, ShoppingBag, CircleDollarSign, ArrowUpRight } from 'lucide-react'
-import { PageHeader, StatCard, StatusBadge } from './ui'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Users, ShoppingBag, CircleDollarSign, MessageSquare, ArrowUpRight, RefreshCw } from 'lucide-react'
+import { PageHeader, StatCard, StatusBadge, Loader } from './ui'
+import { fetchDashboard } from './auth'
 
-const KPIS = [
-  { label: 'Store visits', value: '42,236', delta: 59.3, extra: '35,000', icon: Eye },
-  { label: 'Customers', value: '78,250', delta: 70.5, extra: '8,900', icon: Users },
-  { label: 'Orders', value: '18,800', delta: -27.4, extra: '1,943', icon: ShoppingBag },
-  { label: 'Revenue', value: '$35,078', delta: -12.4, extra: '$20,395', icon: CircleDollarSign },
-]
+const inr = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`
+const fmtDate = (d) =>
+  d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: '2-digit' }) : '—'
+const badgeFor = (s) => (s === 'created' ? 'Pending' : s === 'paid' ? 'Paid' : 'Failed')
+const initials = (n) => (n || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase()
 
-const TRAFFIC = {
-  Month: {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    views: [76, 148, 62, 101, 88, 96, 105, 91, 118, 84, 79, 132],
-    sessions: [58, 100, 44, 66, 60, 72, 80, 68, 92, 70, 62, 96],
-  },
-  Week: {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    views: [88, 124, 96, 140, 118, 150, 132],
-    sessions: [64, 92, 74, 104, 88, 118, 100],
-  },
-}
+/* ---------- charts ---------- */
 
-const WEEK_INCOME = [
-  { d: 'Mon', v: 108 },
-  { d: 'Tue', v: 128 },
-  { d: 'Wed', v: 95 },
-  { d: 'Thu', v: 60 },
-  { d: 'Fri', v: 88 },
-  { d: 'Sat', v: 76 },
-  { d: 'Sun', v: 105 },
-]
+function AreaChart({ labels, values, height = 210, id = 'adm-rev' }) {
+  const wrapRef = useRef(null)
+  const [hover, setHover] = useState(null)
 
-const RECENT_ORDERS = [
-  { id: 'SAM-1042', customer: 'Aarti Menon', total: '$78.00', status: 'Paid', date: 'Aug 31' },
-  { id: 'SAM-1041', customer: 'Daniel Rowe', total: '$46.50', status: 'Processing', date: 'Aug 31' },
-  { id: 'SAM-1040', customer: 'Priya Shah', total: '$122.00', status: 'Shipped', date: 'Aug 30' },
-  { id: 'SAM-1039', customer: 'Karthik Rao', total: '$31.00', status: 'Paid', date: 'Aug 30' },
-  { id: 'SAM-1038', customer: 'Lena Fischer', total: '$88.00', status: 'Pending', date: 'Aug 29' },
-]
-
-const TOP_PRODUCTS = [
-  { name: 'Virgin Coconut Oil · 500 ml', sold: 412, revenue: '$6,180', pct: 100 },
-  { name: 'Wood-pressed Groundnut Oil · 1 L', sold: 288, revenue: '$4,320', pct: 70 },
-  { name: 'Cold-pressed Peanut Oil · 500 ml', sold: 201, revenue: '$2,613', pct: 49 },
-  { name: 'Virgin Coconut Oil · 250 ml', sold: 174, revenue: '$1,392', pct: 42 },
-]
-
-function TrafficChart({ data }) {
   const w = 720
-  const h = 260
-  const pl = 34
-  const pr = 8
-  const pt_ = 12
-  const pb = 22
-  const all = [...data.views, ...data.sessions]
-  const max = Math.ceil((Math.max(...all) * 1.1) / 20) * 20
+  const h = height
+  const pl = 10
+  const pr = 10
+  const pt = 12
+  const pb = 4
+  const max = Math.max(1, Math.ceil((Math.max(...values, 1) * 1.15) / 10) * 10)
   const iw = w - pl - pr
-  const ih = h - pt_ - pb
-  const x = (i) => pl + (i / (data.labels.length - 1)) * iw
-  const y = (v) => pt_ + ih - (v / max) * ih
-  const path = (arr) => arr.map((v, i) => `${i ? 'L' : 'M'}${x(i)},${y(v)}`).join(' ')
-  const area = `${path(data.views)} L${x(data.views.length - 1)},${pt_ + ih} L${pl},${pt_ + ih} Z`
-  const ticks = [0, max / 4, max / 2, (3 * max) / 4, max]
+  const ih = h - pt - pb
+  const x = (i) => (values.length <= 1 ? pl + iw / 2 : pl + (i / (values.length - 1)) * iw)
+  const y = (v) => pt + ih - (v / max) * ih
+  const line = values.map((v, i) => `${i ? 'L' : 'M'}${x(i)},${y(v)}`).join(' ')
+  const area = `${line} L${x(values.length - 1)},${pt + ih} L${x(0)},${pt + ih} Z`
+  const ticks = [0, max / 2, max]
+
+  const onMove = (e) => {
+    const rect = wrapRef.current?.getBoundingClientRect()
+    if (!rect) return
+    const px = ((e.clientX - rect.left) / rect.width) * w
+    let best = 0
+    let bd = Infinity
+    values.forEach((_, i) => {
+      const d = Math.abs(x(i) - px)
+      if (d < bd) { bd = d; best = i }
+    })
+    setHover(best)
+  }
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="h-[260px] w-full">
-      <defs>
-        <linearGradient id="adm-traffic" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="var(--a-teal)" stopOpacity="0.28" />
-          <stop offset="1" stopColor="var(--a-teal)" stopOpacity="0.02" />
-        </linearGradient>
-      </defs>
-      {ticks.map((t) => (
-        <g key={t}>
-          <line x1={pl} x2={w - pr} y1={y(t)} y2={y(t)} stroke="var(--a-border)" strokeDasharray="3 4" />
-          <text x={pl - 8} y={y(t) + 3} fontSize="9" textAnchor="end" fill="var(--a-text-mute)">
-            {Math.round(t)}
-          </text>
-        </g>
-      ))}
-      <path d={area} fill="url(#adm-traffic)" />
-      <path d={path(data.views)} fill="none" stroke="var(--a-teal)" strokeWidth="2.25" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-      <path
-        d={path(data.sessions)}
-        fill="none"
-        stroke="var(--a-teal)"
-        strokeOpacity="0.45"
-        strokeWidth="2"
-        strokeDasharray="1 5"
-        strokeLinecap="round"
-        vectorEffect="non-scaling-stroke"
-      />
-      {data.labels.map((l, i) => (
-        <text key={l} x={x(i)} y={h - 5} fontSize="9" textAnchor="middle" fill="var(--a-text-mute)">
-          {l}
-        </text>
-      ))}
-    </svg>
-  )
-}
+    <div>
+      <div
+        ref={wrapRef}
+        className="relative cursor-crosshair"
+        onMouseMove={onMove}
+        onMouseLeave={() => setHover(null)}
+      >
+        <svg viewBox={`0 0 ${w} ${h}`} style={{ height }} className="block w-full" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="var(--a-teal)" stopOpacity="0.28" />
+              <stop offset="1" stopColor="var(--a-teal)" stopOpacity="0.02" />
+            </linearGradient>
+          </defs>
+          {ticks.map((t) => (
+            <line key={t} x1={pl} x2={w - pr} y1={y(t)} y2={y(t)} stroke="var(--a-border)" strokeDasharray="3 4" />
+          ))}
+          <path d={area} fill={`url(#${id})`} />
+          <path d={line} fill="none" stroke="var(--a-teal)" strokeWidth="2.25" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+          {hover != null && (
+            <line x1={x(hover)} x2={x(hover)} y1={pt} y2={pt + ih} stroke="var(--a-border-strong)" />
+          )}
+        </svg>
 
-function IncomeBars({ data }) {
-  const max = Math.max(...data.map((d) => d.v))
-  return (
-    <div className="flex h-[150px] items-end gap-2.5">
-      {data.map((d) => (
-        <div key={d.d} className="flex flex-1 flex-col items-center gap-2">
-          <div
-            className="w-full rounded-t-[5px]"
-            style={{ height: `${(d.v / max) * 100}%`, background: 'var(--a-teal)' }}
-          />
-          <span className="text-[0.68rem] a-mute">{d.d}</span>
-        </div>
-      ))}
+        {hover != null && (
+          <>
+            <span
+              className="pointer-events-none absolute h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2"
+              style={{
+                left: `${(x(hover) / w) * 100}%`,
+                top: `${(y(values[hover]) / h) * 100}%`,
+                background: 'var(--a-teal)',
+                ['--tw-ring-color']: 'var(--a-surface)',
+              }}
+            />
+            <span
+              className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-md px-2 py-1 text-[0.7rem] font-semibold whitespace-nowrap shadow"
+              style={{
+                left: `${Math.min(88, Math.max(12, (x(hover) / w) * 100))}%`,
+                top: `${(y(values[hover]) / h) * 100}%`,
+                marginTop: -10,
+                background: 'var(--a-text)',
+                color: 'var(--a-bg)',
+              }}
+            >
+              {labels[hover]} · {inr(values[hover])}
+            </span>
+          </>
+        )}
+      </div>
+
+      <div className="mt-1.5 flex justify-between px-1 text-[0.65rem] a-mute">
+        {labels.map((l, i) => <span key={i}>{l}</span>)}
+      </div>
     </div>
   )
 }
 
-const initials = (n) => n.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()
+/* ---------- page ---------- */
 
 export default function AdminDashboard() {
+  const navigate = useNavigate()
+  const [data, setData] = useState(null)
+  const [error, setError] = useState('')
   const [range, setRange] = useState('Month')
+
+  const load = async () => {
+    setError('')
+    try {
+      setData(await fetchDashboard())
+    } catch (e) {
+      setError(e.message || 'Could not load the dashboard.')
+    }
+  }
+
+  useEffect(() => { load() }, [])
+
+  if (error) {
+    return (
+      <div>
+        <PageHeader title="Dashboard" />
+        <div className="a-card a-card-pad text-center text-red-600">{error}</div>
+      </div>
+    )
+  }
+  if (!data) return <Loader text="Loading dashboard…" />
+
+  const k = data.kpis
+  const kpis = [
+    {
+      label: 'Revenue',
+      value: inr(k.revenue.value),
+      delta: k.revenue.delta,
+      extra: k.revenue.this_month ? inr(k.revenue.this_month) : null,
+      icon: CircleDollarSign,
+    },
+    {
+      label: 'Paid orders',
+      value: k.orders.value.toLocaleString('en-IN'),
+      delta: k.orders.delta,
+      extra: k.orders.this_month ? `${k.orders.this_month} orders` : null,
+      icon: ShoppingBag,
+    },
+    {
+      label: 'Customers',
+      value: k.customers.value.toLocaleString('en-IN'),
+      delta: k.customers.delta,
+      extra: k.customers.this_month ? `${k.customers.this_month} sign-ups` : null,
+      icon: Users,
+    },
+    {
+      label: 'Messages',
+      value: (k.messages?.value ?? 0).toLocaleString('en-IN'),
+      extra: k.messages?.unread ? `${k.messages.unread} unread` : null,
+      icon: MessageSquare,
+    },
+  ]
+
+  const series = range === 'Month' ? data.monthly : data.weekly
 
   return (
     <div>
@@ -130,46 +171,50 @@ export default function AdminDashboard() {
         title="Dashboard"
         subtitle="Welcome back — here's how the store is doing."
         actions={
-          <Link to="/admin/orders" className="a-btn a-btn-primary">
-            View orders <ArrowUpRight size={15} />
-          </Link>
+          <>
+            <button className="a-btn a-btn-sm" onClick={load}><RefreshCw size={14} /> Refresh</button>
+            <Link to="/admin/orders" className="a-btn a-btn-primary">
+              View orders <ArrowUpRight size={15} />
+            </Link>
+          </>
         }
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {KPIS.map((k) => (
-          <StatCard key={k.label} {...k} />
-        ))}
+        {kpis.map((kpi) => <StatCard key={kpi.label} {...kpi} />)}
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[1.65fr_1fr]">
-        {/* Traffic */}
+        {/* Revenue trend */}
         <div className="a-card">
           <div className="flex flex-wrap items-center justify-between gap-3 px-5 pt-4">
             <div>
-              <h2 className="text-[0.95rem] font-semibold">Store traffic</h2>
-              <p className="a-sub">Page views vs. sessions</p>
+              <h2 className="text-[0.95rem] font-semibold">Revenue</h2>
+              <p className="a-sub">From paid orders</p>
             </div>
             <div className="a-seg">
               {['Month', 'Week'].map((r) => (
-                <button key={r} data-active={range === r} onClick={() => setRange(r)}>
-                  {r}
-                </button>
+                <button key={r} data-active={range === r} onClick={() => setRange(r)}>{r}</button>
               ))}
             </div>
           </div>
-          <div className="px-2 pb-3 pt-3">
-            <TrafficChart data={TRAFFIC[range]} />
+          <div className="px-3 pb-3 pt-3">
+            <AreaChart labels={series.map((s) => s.label)} values={series.map((s) => s.revenue)} />
           </div>
         </div>
 
-        {/* Income overview */}
+        {/* This week */}
         <div className="a-card a-card-pad">
-          <h2 className="text-[0.95rem] font-semibold">Income overview</h2>
-          <p className="a-sub">This week statistics</p>
-          <p className="mt-3 text-[1.7rem] font-semibold tracking-tight a-mono">$7,650</p>
+          <h2 className="text-[0.95rem] font-semibold">Income this week</h2>
+          <p className="a-sub">Last 7 days</p>
+          <p className="mt-3 text-[1.7rem] font-semibold tracking-tight a-mono">{inr(data.week_revenue)}</p>
           <div className="mt-4">
-            <IncomeBars data={WEEK_INCOME} />
+            <AreaChart
+              id="adm-week"
+              height={150}
+              labels={data.weekly.map((d) => d.label)}
+              values={data.weekly.map((d) => d.revenue)}
+            />
           </div>
         </div>
       </div>
@@ -177,10 +222,7 @@ export default function AdminDashboard() {
       <div className="mt-4 grid gap-4 lg:grid-cols-[1.65fr_1fr]">
         {/* Recent orders */}
         <div className="a-card overflow-hidden">
-          <div
-            className="flex items-center justify-between px-5 py-3.5"
-            style={{ borderBottom: '1px solid var(--a-border)' }}
-          >
+          <div className="flex items-center justify-between px-5 py-3.5" style={{ borderBottom: '1px solid var(--a-border)' }}>
             <h2 className="text-[0.95rem] font-semibold">Recent orders</h2>
             <Link to="/admin/orders" className="text-[0.8rem] font-medium a-dim hover:text-[var(--a-text)] hover:underline">
               View all
@@ -198,9 +240,12 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {RECENT_ORDERS.map((o) => (
-                  <tr key={o.id}>
-                    <td className="font-semibold a-mono">{o.id}</td>
+                {data.recent_orders.length === 0 && (
+                  <tr><td colSpan={5} className="px-6 py-10 text-center a-mute">No orders yet</td></tr>
+                )}
+                {data.recent_orders.map((o) => (
+                  <tr key={o.id} className="cursor-pointer" onClick={() => navigate(`/admin/orders/${o.id}`)}>
+                    <td className="font-semibold a-mono">#{o.id}</td>
                     <td>
                       <span className="flex items-center gap-2.5">
                         <span
@@ -212,9 +257,9 @@ export default function AdminDashboard() {
                         {o.customer}
                       </span>
                     </td>
-                    <td className="a-dim">{o.date}</td>
-                    <td><StatusBadge status={o.status} /></td>
-                    <td className="text-right font-semibold a-mono">{o.total}</td>
+                    <td className="a-dim">{fmtDate(o.placed_at)}</td>
+                    <td><StatusBadge status={badgeFor(o.status)} /></td>
+                    <td className="text-right font-semibold a-mono">{inr(o.total)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -225,25 +270,27 @@ export default function AdminDashboard() {
         {/* Top products */}
         <div className="a-card a-card-pad">
           <h2 className="mb-4 text-[0.95rem] font-semibold">Top products</h2>
-          <div className="space-y-3.5">
-            {TOP_PRODUCTS.map((p, i) => (
-              <div key={p.name}>
-                <div className="mb-1.5 flex items-center justify-between gap-3 text-[0.82rem]">
-                  <span className="flex min-w-0 items-center gap-2">
-                    <span className="w-3.5 shrink-0 text-[0.72rem] a-mute">{i + 1}</span>
-                    <span className="truncate font-medium">{p.name}</span>
-                  </span>
-                  <span className="shrink-0 font-semibold a-mono">{p.revenue}</span>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <div className="a-progress flex-1">
-                    <span style={{ width: `${p.pct}%` }} />
+          {data.top_products.length === 0 ? (
+            <p className="a-mute text-sm">No sales yet.</p>
+          ) : (
+            <div className="space-y-3.5">
+              {data.top_products.map((p, i) => (
+                <div key={i}>
+                  <div className="mb-1.5 flex items-center justify-between gap-3 text-[0.82rem]">
+                    <span className="flex min-w-0 items-center gap-2">
+                      <span className="w-3.5 shrink-0 text-[0.72rem] a-mute">{i + 1}</span>
+                      <span className="truncate font-medium">{p.name}</span>
+                    </span>
+                    <span className="shrink-0 font-semibold a-mono">{inr(p.revenue)}</span>
                   </div>
-                  <span className="shrink-0 text-[0.7rem] a-mute">{p.sold}</span>
+                  <div className="flex items-center gap-2.5">
+                    <div className="a-progress flex-1"><span style={{ width: `${p.pct}%` }} /></div>
+                    <span className="shrink-0 text-[0.7rem] a-mute">{p.sold} sold</span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -19,9 +19,12 @@ import {
   Moon,
   ExternalLink,
   Search,
+  X,
 } from 'lucide-react'
-import { signOut, getUser, isAdmin, hasPermission, fetchNotifications, markAllNotificationsRead } from './auth'
+import { signOut, getUser, isAdmin, hasPermission, fetchNotifications, markAllNotificationsRead, deleteNotification } from './auth'
 import { AdminThemeContext } from './theme'
+
+const NOTIF_ICON = { order: ShoppingBag, product: Package, subscriber: MailCheck, message: MessageSquare }
 
 const NAV = [
   { to: '/admin', end: true, label: 'Dashboard', icon: LayoutDashboard, page: 'dashboard' },
@@ -53,7 +56,6 @@ export default function AdminLayout() {
   const [notifOpen, setNotifOpen] = useState(false)
   const [notifications, setNotifications] = useState([])
   const [showAll, setShowAll] = useState(false)
-  const [dismissed, setDismissed] = useState([])
 
   const loadNotifications = async () => {
     try {
@@ -62,8 +64,13 @@ export default function AdminLayout() {
     } catch {}
   }
 
-  const unreadCount = notifications.filter((n) => !n.read && !dismissed.includes(n.id)).length
-  const visibleNotifications = showAll ? notifications : notifications.filter((n) => !dismissed.includes(n.id)).slice(0, 8)
+  const removeNotification = async (id) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id))
+    try { await deleteNotification(id) } catch { /* already gone / offline */ }
+  }
+
+  const unreadCount = notifications.filter((n) => !n.read).length
+  const visibleNotifications = showAll ? notifications : notifications.slice(0, 8)
 
   useEffect(() => {
     if (isAdmin()) {
@@ -246,31 +253,38 @@ export default function AdminLayout() {
                             <p className="text-sm a-mute">No notifications</p>
                           </div>
                         ) : (
-                          visibleNotifications.map((n) => (
-                            <div
-                              key={n.id}
-                              className="flex items-start gap-3 px-4 py-3 transition-colors"
-                              style={{ borderBottom: '1px solid var(--a-border)', opacity: n.read && !dismissed.includes(n.id) ? 0.6 : 1 }}
-                            >
-                              <span
-                                className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-[0.7rem] font-bold"
-                                style={{
-                                  background: n.type === 'subscriber' ? 'var(--a-teal)' : 'var(--a-accent)',
-                                  color: '#fff',
-                                }}
+                          visibleNotifications.map((n) => {
+                            const Icon = NOTIF_ICON[n.type] || Bell
+                            return (
+                              <div
+                                key={n.id}
+                                className="group flex items-start gap-3 px-4 py-3 transition-colors"
+                                style={{ borderBottom: '1px solid var(--a-border)', opacity: n.read ? 0.6 : 1 }}
                               >
-                                {n.type === 'subscriber' ? <MailCheck size={14} /> : <MessageSquare size={14} />}
-                              </span>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-[0.8rem] font-medium truncate">{n.title}</p>
-                                <p className="text-[0.72rem] a-mute truncate">{n.body}</p>
-                                <p className="text-[0.68rem] a-mute mt-0.5">{new Date(n.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
+                                <span
+                                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full"
+                                  style={{ background: 'var(--a-accent-soft)', color: 'var(--a-text)' }}
+                                >
+                                  <Icon size={14} />
+                                </span>
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-[0.8rem] font-medium truncate">{n.title}</p>
+                                  <p className="text-[0.72rem] a-mute truncate">{n.body}</p>
+                                  <p className="text-[0.68rem] a-mute mt-0.5">{new Date(n.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
+                                </div>
+                                <div className="flex shrink-0 items-center gap-1.5">
+                                  {!n.read && <span className="mt-1 h-2 w-2 rounded-full" style={{ background: 'var(--a-danger)' }} />}
+                                  <button
+                                    className="a-iconbtn h-6 w-6"
+                                    aria-label="Dismiss notification"
+                                    onClick={(e) => { e.stopPropagation(); removeNotification(n.id) }}
+                                  >
+                                    <X size={13} />
+                                  </button>
+                                </div>
                               </div>
-                              {!n.read && !dismissed.includes(n.id) && (
-                                <span className="mt-1 h-2 w-2 shrink-0 rounded-full" style={{ background: 'var(--a-danger)' }} />
-                              )}
-                            </div>
-                          ))
+                            )
+                          })
                         )}
                       </div>
 
