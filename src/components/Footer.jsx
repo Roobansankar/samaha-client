@@ -21,12 +21,12 @@ const COLS = [
     ],
   },
   {
-    title: 'Help',
+    title: 'Policies',
     links: [
-      ['FAQ', '/'],
-      ['Shipping & returns', '/'],
-      ['Contact', '/contact'],
-      ['Wholesale', '/contact'],
+      ['Shipping & delivery', '/shipping-policy'],
+      ['Refund & cancellation', '/refund-policy'],
+      ['Terms & conditions', '/terms-and-conditions'],
+      ['Privacy policy', '/privacy-policy'],
     ],
   },
 ]
@@ -88,10 +88,11 @@ export default function Footer() {
 
         <div className="mt-[clamp(2.5rem,6vw,4rem)] flex flex-col gap-3 border-t border-line-on-olive pt-6 text-xs text-on-olive-mute sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 Samaha. All rights reserved.</p>
-          <div className="flex gap-5">
-            <a href="#" className="transition-colors duration-200 hover:text-on-olive-soft">Privacy</a>
-            <a href="#" className="transition-colors duration-200 hover:text-on-olive-soft">Terms</a>
-            <a href="#" className="transition-colors duration-200 hover:text-on-olive-soft">Refund policy</a>
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            <Link to="/privacy-policy" className="transition-colors duration-200 hover:text-on-olive-soft">Privacy</Link>
+            <Link to="/terms-and-conditions" className="transition-colors duration-200 hover:text-on-olive-soft">Terms</Link>
+            <Link to="/refund-policy" className="transition-colors duration-200 hover:text-on-olive-soft">Refund policy</Link>
+            <Link to="/shipping-policy" className="transition-colors duration-200 hover:text-on-olive-soft">Shipping</Link>
           </div>
         </div>
       </div>

@@ -21,6 +21,7 @@ import ProfilePage from './components/ProfilePage'
 import AuthCallback from './components/AuthCallback'
 import CheckoutPage from './components/CheckoutPage'
 import CheckoutSuccessPage from './components/CheckoutSuccessPage'
+import PolicyPage from './components/PolicyPage'
 import Products from './components/Products'
 import OilRange from './components/OilRange'
 import Benefits from './components/Benefits'
@@ -115,6 +116,12 @@ function AppContent() {
         <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
+
+        {/* Policy pages */}
+        <Route path="/privacy-policy" element={<PolicyPage slug="privacy-policy" />} />
+        <Route path="/terms-and-conditions" element={<PolicyPage slug="terms-and-conditions" />} />
+        <Route path="/refund-policy" element={<PolicyPage slug="refund-policy" />} />
+        <Route path="/shipping-policy" element={<PolicyPage slug="shipping-policy" />} />
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
