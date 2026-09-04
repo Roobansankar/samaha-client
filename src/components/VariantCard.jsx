@@ -24,12 +24,6 @@ export default function VariantCard({ v, tint, blurb }) {
 
       {/* image */}
       <Link to={`/shop/${v.slug}`} className="relative block aspect-[4/3]" style={{ background: tint || 'var(--color-paper-2)' }}>
-        <span className="absolute inset-y-0 left-0 z-10 grid w-8 place-items-center overflow-hidden bg-olive-900">
-          <span className="rotate-180 whitespace-nowrap px-1 text-[0.5rem] font-semibold uppercase tracking-[0.1em] text-on-olive [writing-mode:vertical-rl]">
-            Cold Pressed · {v.sizeLong}
-          </span>
-        </span>
-
         {v.image && !broken ? (
           <img
             src={v.image}
@@ -37,10 +31,10 @@ export default function VariantCard({ v, tint, blurb }) {
             loading="lazy"
             decoding="async"
             onError={() => setBroken(true)}
-            className="absolute inset-0 h-full w-full object-contain py-3 pl-10 pr-3 transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+            className="absolute inset-0 h-full w-full object-contain p-3 transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           />
         ) : (
-          <div className="absolute inset-0 grid place-items-center pl-8 text-center text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-olive-900/25">
+          <div className="absolute inset-0 grid place-items-center text-center text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-olive-900/25">
             Image coming soon
           </div>
         )}
