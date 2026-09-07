@@ -306,7 +306,7 @@
 }
 .a-table th {
   text-align: left;
-  padding: 0.8rem 1.25rem;
+  padding: 0.8rem 1.1rem;
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--a-text-dim);
@@ -315,14 +315,21 @@
   white-space: nowrap;
 }
 .a-table td {
-  padding: 0.95rem 1.25rem;
+  padding: 0.9rem 1.1rem;
   border-bottom: 1px solid var(--a-border);
   color: var(--a-text);
   vertical-align: middle;
 }
+.a-table th.text-right,
+.a-table td.text-right { text-align: right; }
 .a-table tbody tr:last-child td { border-bottom: 0; }
 .a-table tbody tr { transition: background-color 0.12s ease; }
 .a-table tbody tr:hover td { background: var(--a-surface-2); }
+
+@media (max-width: 1024px) {
+  .a-table th,
+  .a-table td { padding-left: 0.7rem; padding-right: 0.7rem; }
+}
 
 /* ---- Inline status: colored square + label ---- */
 .a-status {

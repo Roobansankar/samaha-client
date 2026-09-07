@@ -107,12 +107,12 @@ export default function AdminProducts() {
       <table className="a-table">
         <thead>
           <tr>
-            <th style={{ width: 56 }}>S.No</th>
+            <th className="hidden md:table-cell" style={{ width: 48 }}>#</th>
             <th>Product</th>
-            <th>Category</th>
+            <th className="hidden xl:table-cell">Category</th>
             <th className="text-right">Price</th>
-            <th>Inventory</th>
-            <th>Status</th>
+            <th>Stock</th>
+            <th className="hidden sm:table-cell">Status</th>
             <th className="text-right">Actions</th>
           </tr>
         </thead>
@@ -128,42 +128,45 @@ export default function AdminProducts() {
           )}
           {!loading && !error && rows.map((p, i) => (
             <tr key={p.id} className="cursor-pointer" onClick={() => navigate(`/admin/products/${p.id}`)}>
-              <td className="a-mono a-dim">{(safePage - 1) * PER_PAGE + i + 1}</td>
+              <td className="hidden md:table-cell a-mono a-dim">{(safePage - 1) * PER_PAGE + i + 1}</td>
               <td>
                 <div className="flex items-center gap-3">
                   {p.images?.[0] ? (
                     <img
                       src={p.images[0]}
                       alt=""
-                      className="h-10 w-10 shrink-0 rounded-[7px] border object-contain"
+                      className="h-9 w-9 shrink-0 rounded-[7px] border object-contain"
                       style={{ borderColor: 'var(--a-border)', background: p.tint || 'var(--a-surface-2)' }}
                     />
                   ) : (
                     <span
-                      className="grid h-10 w-10 shrink-0 place-items-center rounded-[7px] text-[0.7rem] font-bold"
+                      className="grid h-9 w-9 shrink-0 place-items-center rounded-[7px] text-[0.7rem] font-bold"
                       style={{ background: TINT[p.tag] || 'var(--a-surface-3)', color: '#5b4a2e' }}
                     >
                       {(p.tag || p.oil || '?')[0]}
                     </span>
                   )}
-                  <div>
-                    <p className="font-medium">{p.oil}</p>
-                    <p className="text-[0.75rem] a-mute">{p.size_long}</p>
+                  <div className="min-w-0">
+                    <p className="font-medium leading-tight">{p.oil}</p>
+                    <p className="text-[0.74rem] a-mute">
+                      {p.size_long}
+                      <span className="xl:hidden"> · {p.tag}</span>
+                    </p>
                   </div>
                 </div>
               </td>
-              <td className="a-dim">{p.tag}</td>
-              <td className="text-right">
+              <td className="hidden xl:table-cell a-dim">{p.tag}</td>
+              <td className="text-right whitespace-nowrap">
                 <span className="a-mono">{inr(p.price)}</span>
                 {p.mrp > p.price && <span className="a-mute ml-1.5 text-[0.72rem] line-through">{inr(p.mrp)}</span>}
               </td>
               <td>
-                <span className="flex items-center gap-2.5">
+                <span className="flex items-center gap-2 whitespace-nowrap" title={p.stock_status}>
                   <span className="a-mono">{p.stock}</span>
-                  <StatusBadge status={p.stock_status} />
+                  <span className="hidden lg:inline-flex"><StatusBadge status={p.stock_status} /></span>
                 </span>
               </td>
-              <td><StatusBadge status={p.is_active ? 'Active' : 'Draft'} /></td>
+              <td className="hidden sm:table-cell"><StatusBadge status={p.is_active ? 'Active' : 'Draft'} /></td>
               <td className="text-right" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-end gap-1">
                   <button className="a-iconbtn" title="Edit" onClick={() => navigate(`/admin/products/${p.id}/edit`)}>

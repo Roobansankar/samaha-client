@@ -76,15 +76,15 @@ export default function AdminProductView() {
             {images.length === 0 ? (
               <p className="a-mute text-sm">No images uploaded yet.</p>
             ) : (
-              <>
+              <div className="flex flex-wrap items-start gap-4">
                 <div
-                  className="aspect-square overflow-hidden rounded-lg border"
+                  className="aspect-square w-[220px] shrink-0 overflow-hidden rounded-lg border"
                   style={{ borderColor: 'var(--a-border)', background: p.tint || 'var(--a-surface-2)' }}
                 >
-                  <img src={images[active]} alt="" className="h-full w-full object-contain p-5" />
+                  <img src={images[active]} alt="" className="h-full w-full object-contain p-4" />
                 </div>
                 {images.length > 1 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {images.map((src, i) => (
                       <button
                         key={i}
@@ -98,7 +98,7 @@ export default function AdminProductView() {
                     ))}
                   </div>
                 )}
-              </>
+              </div>
             )}
           </Card>
 
