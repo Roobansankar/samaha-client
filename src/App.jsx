@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { ProductsProvider } from './context/ProductsContext'
 import AnnouncementBar from './components/AnnouncementBar'
 import Navbar from './components/Navbar'
 import MobileTabBar from './components/MobileTabBar'
@@ -78,7 +79,9 @@ function Home() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <ProductsProvider>
+        <AppContent />
+      </ProductsProvider>
     </BrowserRouter>
   )
 }

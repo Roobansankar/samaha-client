@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowRight, Leaf, ShieldCheck, Truck, SlidersHorizontal, X, Grid2x2, Square } from 'lucide-react'
-import { OIL_VARIANTS } from '../data/products'
+import { useProducts } from '../context/ProductsContext'
 import { useVisibleProducts } from '../lib/catalog'
 import VariantCard from './VariantCard'
 
@@ -40,6 +40,7 @@ const setFrom = (raw, resolve) =>
   )
 
 export default function ShopPage() {
+  const { oilGroups: OIL_VARIANTS, loading: productsLoading, error: productsError } = useProducts()
   const [params, setParams] = useSearchParams()
   const [drawer, setDrawer] = useState(false)
   const [cols, setCols] = useState(() => {
@@ -228,7 +229,25 @@ export default function ShopPage() {
                 </div>
               </div>
 
-              {total === 0 ? (
+              {productsLoading ? (
+                <div className={`grid gap-3 sm:gap-5 ${cols === 1 ? 'grid-cols-1' : 'grid-cols-2'} sm:grid-cols-2 xl:grid-cols-3`}>
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div key={i} className="overflow-hidden rounded-xl border border-line bg-paper">
+                      <div className="aspect-[3/4] animate-pulse bg-olive-100" />
+                      <div className="space-y-3 p-4">
+                        <div className="h-3 w-20 animate-pulse rounded bg-olive-100" />
+                        <div className="h-4 w-3/4 animate-pulse rounded bg-olive-100" />
+                        <div className="h-5 w-1/3 animate-pulse rounded bg-olive-100" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : productsError ? (
+                <div className="rounded-[var(--radius-lg)] border border-dashed border-line py-20 text-center">
+                  <p className="text-base font-medium text-olive-900">{productsError}</p>
+                  <p className="mt-2 text-sm text-text-mute">Products will appear here once they are added.</p>
+                </div>
+              ) : total === 0 ? (
                 <div className="rounded-[var(--radius-lg)] border border-dashed border-line py-20 text-center">
                   <p className="text-sm text-text-mute">No products match these filters.</p>
                   <button onClick={clearAll} className="mt-3 text-sm font-semibold text-olive-900 underline underline-offset-2 cursor-pointer">

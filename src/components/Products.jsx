@@ -1,6 +1,6 @@
 import { ArrowUpRight, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { OIL_VARIANTS } from '../data/products'
+import { useProducts } from '../context/ProductsContext'
 import { useVisibleProducts } from '../lib/catalog'
 
 const PRODUCTS = [
@@ -36,12 +36,13 @@ function Tile({ p, className = '' }) {
 }
 
 export default function Products() {
+  const { oilGroups: OIL_VARIANTS, loading } = useProducts()
   const isVisible = useVisibleProducts()
   const oils = PRODUCTS.filter((p) => {
     const g = OIL_VARIANTS.find((o) => o.slug === p.slug)
     return !g || g.variants.some((v) => isVisible(v.slug))
   })
-  if (oils.length === 0) return null
+  if (loading || oils.length === 0) return null
 
   return (
     <section className="bg-paper" id="shop">

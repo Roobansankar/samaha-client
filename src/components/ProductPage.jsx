@@ -6,7 +6,8 @@ import {
   Minus, Plus, Check, Star, Truck, RotateCcw, ShieldCheck,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { VARIANT_PRODUCTS, HIGHLIGHTS, getVariant, getProduct, firstVariantSlug } from '../data/products'
+import { HIGHLIGHTS } from '../data/products'
+import { useProducts } from '../context/ProductsContext'
 import { useVisibleProducts } from '../lib/catalog'
 import { addToCart } from '../lib/cart'
 import NotFound from './NotFound'
@@ -288,58 +289,56 @@ const DELIVERY = [
 
 export default function ProductPage() {
   const { slug } = useParams()
+  const { getVariant, getProduct, firstVariantSlug, oilGroups, loading: productsLoading } = useProducts()
   const base = getVariant(slug)
 
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
-  const [db, setDb] = useState(null)
-  const [gone, setGone] = useState(false)
   const isVisible = useVisibleProducts()
 
   useEffect(() => {
     window.scrollTo(0, 0)
     setQty(1)
     setAdded(false)
-    setDb(null)
-    setGone(false)
-
-    let alive = true
-    fetch(`/api/products/${slug}`)
-      .then((r) => {
-        if (r.status === 404) { if (alive) setGone(true); return null }
-        return r.ok ? r.json() : null
-      })
-      .then((d) => { if (alive && d && d.slug) setDb(d) })
-      .catch(() => {})
-    return () => { alive = false }
   }, [slug])
 
   if (!base) {
+    if (productsLoading) {
+      return (
+        <div className="bg-paper">
+          <div className="px-[var(--spacing-gutter)] py-[clamp(1.75rem,4vw,3rem)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
+            <div className="mx-auto max-w-[1280px]">
+              <div className="h-4 w-48 animate-pulse rounded bg-olive-100" />
+              <div className="mt-8 grid gap-[clamp(2rem,5vw,4.5rem)] lg:grid-cols-2">
+                <div className="aspect-square animate-pulse rounded-[var(--radius-lg)] bg-olive-100" />
+                <div className="space-y-4">
+                  <div className="h-4 w-24 animate-pulse rounded bg-olive-100" />
+                  <div className="h-8 w-3/4 animate-pulse rounded bg-olive-100" />
+                  <div className="h-4 w-32 animate-pulse rounded bg-olive-100" />
+                  <div className="h-6 w-40 animate-pulse rounded bg-olive-100" />
+                  <div className="h-12 w-full animate-pulse rounded-xl bg-olive-100" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
     const oil = getProduct(slug)
     if (oil) return <Navigate to={`/shop/${firstVariantSlug(oil.slug)}`} replace />
     return <NotFound />
   }
 
-  // admin hid this product (API says 404 / not in the live list)
-  if (gone || !isVisible(slug)) return <NotFound />
+  if (!isVisible(slug)) return <NotFound />
 
-  // Merge in whatever the admin has set (extra images, price, stock).
-  const product = db
-    ? {
-        ...base,
-        images: db.images?.length ? db.images : base.images,
-        price: db.price ?? base.price,
-        mrp: db.mrp ?? base.mrp,
-        save: Math.max(0, (db.mrp ?? base.mrp) - (db.price ?? base.price)),
-        stock: typeof db.stock === 'number' ? db.stock : null,
-      }
-    : base
+  const product = base
 
   const soldOut = product.stock === 0
   const maxQty = Math.min(99, product.stock ?? 99)
   const total = product.price * qty
-  const others = VARIANT_PRODUCTS.filter(
-    (v) => v.oilSlug === product.oilSlug && v.slug !== product.slug && isVisible(v.slug),
+  const oilGroup = oilGroups.find((g) => g.slug === product.oilSlug)
+  const others = (oilGroup?.variants || []).filter(
+    (v) => v.slug !== product.slug && isVisible(v.slug),
   )
   const headingSize = 'clamp(1.35rem, 1.1rem + 1vw, 1.7rem)'
 

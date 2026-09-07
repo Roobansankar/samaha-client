@@ -1,6 +1,5 @@
 import { useSyncExternalStore } from 'react'
 import { getToken, getUser } from './account'
-import { getVariant } from '../data/products'
 
 const GUEST_KEY = 'samahaCart'
 const MAX = 99
@@ -150,13 +149,15 @@ if (typeof window !== 'undefined') {
 /*  hook                                                               */
 /* ------------------------------------------------------------------ */
 
-export function useCart() {
+export function useCart(getVariant) {
   const s = useSyncExternalStore(subscribe, () => snapshot, () => snapshot)
 
   const items = s.raw
-    .map((i) => ({ slug: i.slug, qty: i.qty, product: getVariant(i.slug) }))
+    .map((i) => ({ slug: i.slug, qty: i.qty, product: getVariant ? getVariant(i.slug) : null }))
     .filter((i) => i.product)
 
+  const rawCount = s.raw.reduce((n, i) => n + i.qty, 0)
+  const rawUniqueCount = s.raw.length
   const count = items.reduce((n, i) => n + i.qty, 0)
   const uniqueCount = items.length
   const subtotal = items.reduce((n, i) => n + i.qty * i.product.price, 0)
@@ -164,8 +165,8 @@ export function useCart() {
 
   return {
     items,
-    count,
-    uniqueCount,
+    count: rawCount,
+    uniqueCount: rawUniqueCount,
     subtotal,
     savings: Math.max(0, mrpTotal - subtotal),
     loading: s.loading,

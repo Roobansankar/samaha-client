@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ChevronRight, ArrowRight, Grid2x2, Square } from 'lucide-react'
-import { getProduct, OIL_VARIANTS } from '../data/products'
+import { useProducts } from '../context/ProductsContext'
 import { useVisibleProducts } from '../lib/catalog'
 import VariantCard from './VariantCard'
 import NotFound from './NotFound'
@@ -24,8 +24,9 @@ const SORTS = [
 
 export default function CategoryPage() {
   const { slug } = useParams()
+  const { getProduct, oilGroups, loading: productsLoading } = useProducts()
   const oil = getProduct(slug)
-  const group = OIL_VARIANTS.find((o) => o.slug === slug)
+  const group = oilGroups.find((o) => o.slug === slug)
 
   const [picked, setPicked] = useState(() => new Set())
   const [sort, setSort] = useState('size')
@@ -63,6 +64,27 @@ export default function CategoryPage() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+
+  if (productsLoading) {
+    return (
+      <div className="bg-paper-inset">
+        <section className="relative flex min-h-[clamp(340px,48vh,500px)] items-center overflow-hidden bg-olive-950">
+          <div className="img-shimmer absolute inset-0 h-full w-full bg-olive-900/30" />
+        </section>
+        <section className="px-[var(--spacing-gutter)] py-[clamp(3rem,7vw,5rem)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
+          <div className="mx-auto max-w-[1200px] space-y-6">
+            <div className="h-6 w-48 animate-pulse rounded bg-olive-100" />
+            <div className="h-4 w-32 animate-pulse rounded bg-olive-100" />
+            <div className="grid gap-3 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="aspect-[3/4] animate-pulse rounded-xl bg-olive-100" />
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    )
+  }
 
   if (!oil || !group) return <NotFound />
 

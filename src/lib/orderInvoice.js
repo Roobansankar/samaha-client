@@ -1,5 +1,3 @@
-import { getVariant } from '../data/products'
-
 /* jsPDF's built-in fonts have no ₹ glyph, so the PDF uses "Rs." */
 const rs = (n) =>
   `Rs. ${(Number(n) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
@@ -24,9 +22,9 @@ const MUTE = [107, 120, 100]
 const LINE = [217, 226, 209]
 
 /** Attach the storefront image / size / oil name to each order line. */
-export function enrichItems(items = []) {
+export function enrichItems(items = [], getVariant) {
   return items.map((it) => {
-    const v = getVariant(it.slug)
+    const v = getVariant ? getVariant(it.slug) : null
     return {
       ...it,
       image: v?.image || null,
@@ -70,7 +68,7 @@ function loadThumb(src) {
  * (no print dialog). Works for both the admin order shape and the
  * customer /profile/orders shape.
  */
-export async function downloadOrderInvoice(order) {
+export async function downloadOrderInvoice(order, getVariant) {
   if (!order) return
 
   const [{ jsPDF }, autoTableMod] = await Promise.all([
@@ -79,7 +77,7 @@ export async function downloadOrderInvoice(order) {
   ])
   const autoTable = autoTableMod.default || autoTableMod.autoTable
 
-  const items = enrichItems(order.items)
+  const items = enrichItems(order.items, getVariant)
   const thumbs = await Promise.all(items.map((i) => (i.image ? loadThumb(i.image) : Promise.resolve(null))))
 
   const subtotal = order.subtotal ?? items.reduce((s, i) => s + i.price * i.qty, 0)

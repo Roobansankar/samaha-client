@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Grid2x2, Square } from 'lucide-react'
-import { OIL_VARIANTS } from '../data/products'
+import { useProducts } from '../context/ProductsContext'
 import { useVisibleProducts } from '../lib/catalog'
 import VariantCard from './VariantCard'
 
@@ -10,6 +10,7 @@ const REDUCED_MOTION =
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 export default function OilRange() {
+  const { oilGroups: OIL_VARIANTS, loading: productsLoading } = useProducts()
   const [active, setActive] = useState(0)
   const [phase, setPhase] = useState('idle') // idle | exiting | entering
   const timerRef = useRef(null)
@@ -27,6 +28,8 @@ export default function OilRange() {
       timerRef.current = setTimeout(() => setPhase('idle'), 320)
     }, 160)
   }, [active, phase])
+
+  if (productsLoading || OIL_VARIANTS.length === 0) return null
 
   const oil = OIL_VARIANTS[active]
   const variants = oil.variants.filter((v) => isVisible(v.slug))

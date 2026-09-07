@@ -4,6 +4,7 @@ import { ArrowLeft, FileDown, Loader2 } from 'lucide-react'
 import { StatusBadge } from './ui'
 import { fetchOrder } from './auth'
 import { enrichItems, downloadOrderInvoice } from '../../lib/orderInvoice'
+import { useProducts } from '../../context/ProductsContext'
 
 const inr = (n) => `₹ ${Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 const fmtDateTime = (d) =>
@@ -12,6 +13,7 @@ const badgeFor = (s) => (s === 'created' ? 'Pending' : s === 'paid' ? 'Paid' : '
 
 export default function AdminOrderView() {
   const { id } = useParams()
+  const { getVariant } = useProducts()
   const [order, setOrder] = useState(null)
   const [err, setErr] = useState('')
 
@@ -35,7 +37,7 @@ export default function AdminOrderView() {
     return <div className="grid place-items-center py-24"><Loader2 size={20} className="animate-spin a-mute" /></div>
   }
 
-  const items = enrichItems(order.items)
+  const items = enrichItems(order.items, getVariant)
   const subtotal = order.subtotal ?? items.reduce((s, i) => s + i.price * i.qty, 0)
   const shipping = order.shipping ?? 0
   const total = order.total ?? subtotal + shipping
@@ -52,7 +54,7 @@ export default function AdminOrderView() {
           <p className="a-mute text-[0.78rem]">{fmtDateTime(order.placed_at)}</p>
         </div>
         <StatusBadge status={badgeFor(order.status)} />
-        <button className="a-btn a-btn-sm a-btn-primary" onClick={() => downloadOrderInvoice(order)}>
+        <button className="a-btn a-btn-sm a-btn-primary" onClick={() => downloadOrderInvoice(order, getVariant)}>
           <FileDown size={14} /> Download PDF
         </button>
       </div>

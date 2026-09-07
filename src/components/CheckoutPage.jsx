@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { ChevronRight, Loader2, ShieldCheck, Lock } from 'lucide-react'
 import { useCart, clearCart } from '../lib/cart'
+import { useProducts } from '../context/ProductsContext'
 import { useAccount, fetchAddresses } from '../lib/account'
 import { loadRazorpay, createOrder, verifyPayment } from '../lib/checkout'
 
@@ -17,7 +18,8 @@ const fmtAddress = (a) => [a.line1, a.line2, a.city, a.state, a.pincode].filter(
 export default function CheckoutPage() {
   const account = useAccount()
   const navigate = useNavigate()
-  const { items, subtotal, savings } = useCart()
+  const { getVariant } = useProducts()
+  const { items, subtotal, savings } = useCart(getVariant)
 
   const [addresses, setAddresses] = useState([])
   const [form, setForm] = useState({

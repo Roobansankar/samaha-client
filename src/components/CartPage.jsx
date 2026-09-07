@@ -4,6 +4,7 @@ import {
   ShieldCheck, Truck, ShoppingBag,
 } from 'lucide-react'
 import { useCart } from '../lib/cart'
+import { useProducts } from '../context/ProductsContext'
 
 const PAD = 'px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]'
 
@@ -21,7 +22,8 @@ function Breadcrumb() {
 }
 
 export default function CartPage() {
-  const { items, count, subtotal, savings, setQty, remove } = useCart()
+  const { getVariant } = useProducts()
+  const { items, count, subtotal, savings, setQty, remove } = useCart(getVariant)
 
   const shipping = 0
   const total = subtotal + shipping

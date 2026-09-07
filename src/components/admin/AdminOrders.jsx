@@ -4,6 +4,7 @@ import { Search, RefreshCw, ListFilter, Loader2, FileDown, Eye } from 'lucide-re
 import { Panel, StatusBadge, EmptyRow, ResultCount, Pager } from './ui'
 import { fetchOrders } from './auth'
 import { enrichItems, downloadOrderInvoice } from '../../lib/orderInvoice'
+import { useProducts } from '../../context/ProductsContext'
 
 const PER_PAGE = 10
 const inr = (n) => `₹ ${Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
@@ -13,6 +14,7 @@ const badgeFor = (s) => (s === 'created' ? 'Pending' : s === 'paid' ? 'Paid' : '
 
 export default function AdminOrders() {
   const navigate = useNavigate()
+  const { getVariant } = useProducts()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -117,7 +119,7 @@ export default function AdminOrders() {
             <EmptyRow colSpan={8} label={q || status !== 'all' ? 'No orders match your filters' : 'No orders yet'} />
           )}
           {!loading && !error && rows.map((o, idx) => {
-            const items = enrichItems(o.items)
+            const items = enrichItems(o.items, getVariant)
             return (
               <tr key={o.id} className="cursor-pointer" onClick={() => open(o.id)}>
                 <td className="a-mono a-dim">{(safePage - 1) * PER_PAGE + idx + 1}</td>
@@ -163,7 +165,7 @@ export default function AdminOrders() {
                     <button className="a-iconbtn" title="View order" onClick={() => open(o.id)}>
                       <Eye size={15} />
                     </button>
-                    <button className="a-iconbtn" title="Download PDF invoice" onClick={() => downloadOrderInvoice(o)}>
+                    <button className="a-iconbtn" title="Download PDF invoice" onClick={() => downloadOrderInvoice(o, getVariant)}>
                       <FileDown size={15} />
                     </button>
                   </div>

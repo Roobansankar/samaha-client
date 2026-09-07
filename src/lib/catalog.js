@@ -1,41 +1,20 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
+import { useProducts } from '../context/ProductsContext'
 
 /**
- * Storefront visibility. The pages render from the bundled catalogue, but the
- * admin can hide a product (Active → off). This hook asks the API which
- * products are live and returns a predicate.
+ * Returns a predicate `isVisible(slug)` that checks whether a product slug
+ * is in the live product list fetched by ProductsContext.
  *
- *   cache === undefined  → not fetched yet          → show everything
- *   cache === null        → API unreachable          → show everything (fail-open)
- *   cache instanceof Set  → the live product slugs   → show only these
+ * If the context is still loading or the API is unreachable, everything is
+ * considered visible (fail-open) so the UI isn't blanked out prematurely.
  */
-let cache
-let inflight
-
-function fetchLiveSlugs() {
-  if (inflight) return inflight
-  inflight = fetch('/api/products')
-    .then((r) => (r.ok ? r.json() : null))
-    .then((list) => {
-      cache = Array.isArray(list) && list.length ? new Set(list.map((p) => p.slug)) : null
-      return cache
-    })
-    .catch(() => {
-      cache = null
-      return null
-    })
-  return inflight
-}
-
 export function useVisibleProducts() {
-  const [slugs, setSlugs] = useState(() => cache)
+  const { products, loading } = useProducts()
 
-  useEffect(() => {
-    if (cache !== undefined) return // resolved already — initial state holds it
-    let alive = true
-    fetchLiveSlugs().then((s) => { if (alive) setSlugs(s) })
-    return () => { alive = false }
-  }, [])
+  const visibleSet = loading ? null : new Set(products.map((p) => p.slug))
 
-  return useCallback((slug) => !slugs || slugs.has(slug), [slugs])
+  return useCallback(
+    (slug) => !visibleSet || visibleSet.has(slug),
+    [visibleSet],
+  )
 }

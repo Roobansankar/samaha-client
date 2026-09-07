@@ -9,7 +9,7 @@ import {
   fetchAddresses, createAddress, updateAddress, deleteAddress, makeAddressDefault,
 } from '../lib/account'
 import { fetchOrders } from '../lib/checkout'
-import { getVariant } from '../data/products'
+import { useProducts } from '../context/ProductsContext'
 import { downloadOrderInvoice } from '../lib/orderInvoice'
 
 const money2 = (n) =>
@@ -444,6 +444,7 @@ function OrderList({ limit }) {
 }
 
 function OrderCard({ order, compact }) {
+  const { getVariant } = useProducts()
   const items = order.items.map((it) => {
     const v = getVariant(it.slug)
     return {
@@ -525,6 +526,7 @@ function OrderCard({ order, compact }) {
 }
 
 function DownloadBillButton({ order }) {
+  const { getVariant } = useProducts()
   const [busy, setBusy] = useState(false)
   return (
     <button
@@ -533,7 +535,7 @@ function DownloadBillButton({ order }) {
       onClick={async () => {
         setBusy(true)
         try {
-          await downloadOrderInvoice(order)
+          await downloadOrderInvoice(order, getVariant)
         } catch {
           alert('Could not generate the bill. Please try again.')
         } finally {

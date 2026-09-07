@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useScrolled } from '../hooks/useScrolled'
 import { useAccount } from '../lib/account'
 import { useCart } from '../lib/cart'
+import { useProducts } from '../context/ProductsContext'
 import { Search, UserRound, Handbag, Menu, X, ChevronRight, ChevronDown } from 'lucide-react'
 
 const initialOf = (name) => (name || '').trim().charAt(0).toUpperCase() || 'U'
@@ -247,7 +248,7 @@ export default function Navbar() {
   const [shopOpen, setShopOpen] = useState(false)
   const location = useLocation()
   const account = useAccount()
-  const { count: cartCount, uniqueCount } = useCart()
+  const { count: cartCount, uniqueCount } = useCart(null)
 
   useEffect(() => {
     document.body.classList.toggle('no-scroll', menuOpen)
