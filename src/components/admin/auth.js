@@ -70,8 +70,12 @@ export async function fetchReviews(q = '') {
   return request(`${API_URL}/admin/reviews${qs}`)
 }
 
-export async function updateReview(id, isApproved) {
-  return request(`${API_URL}/admin/reviews/${id}`, { method: 'PUT', body: JSON.stringify({ is_approved: isApproved }) })
+export async function createReview(data) {
+  return request(`${API_URL}/admin/reviews`, { method: 'POST', body: JSON.stringify(data) })
+}
+
+export async function saveReview(id, data) {
+  return request(`${API_URL}/admin/reviews/${id}`, { method: 'PUT', body: JSON.stringify(data) })
 }
 
 export async function deleteReview(id) {

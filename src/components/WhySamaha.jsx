@@ -4,28 +4,24 @@ const REASONS = [
   {
     n: '01',
     Icon: Sun,
-    tint: 'bg-olive-100',
     title: 'Pressed within hours',
     text: 'Harvest to cold press on the same day, so nothing turns on the way to the bottle.',
   },
   {
     n: '02',
     Icon: Sprout,
-    tint: 'bg-gold-200',
     title: 'Single origin, never blended',
     text: 'Every oil traces back to one farm and one crop. Nothing is mixed in to stretch it.',
   },
   {
     n: '03',
     Icon: Leaf,
-    tint: 'bg-paper',
     title: 'Nothing added or stripped',
     text: 'Unrefined, unfiltered, unbleached. No solvents, no deodorising, no shortcuts.',
   },
   {
     n: '04',
     Icon: Boxes,
-    tint: 'bg-paper-2',
     title: 'Small, dated lots',
     text: 'Bottled by hand in short runs, stamped with the pressing date so you know its age.',
   },
@@ -53,19 +49,21 @@ export default function WhySamaha() {
         </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
-          {REASONS.map(({ n, Icon, tint, title, text }) => (
+          {REASONS.map(({ n, Icon, title, text }) => (
             <article
               key={title}
-              className={`why-col rounded-[var(--radius-md)] p-[clamp(1.25rem,2.6vw,1.75rem)] ${tint}`}
+              className="why-col flex flex-col rounded-[var(--radius-md)] border border-line bg-white p-[clamp(1.4rem,2.6vw,1.9rem)]"
             >
-              <div className="flex items-center gap-3">
-                <span className="font-display text-sm font-semibold tracking-[0.15em] text-clay-600">
+              <div className="flex items-center justify-between">
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-olive-100 text-olive-800">
+                  <Icon size={20} strokeWidth={1.6} className="why-col__icon" />
+                </span>
+                <span className="font-display text-[0.8rem] font-semibold tracking-[0.2em] text-gold-700">
                   {n}
                 </span>
-                <span className="why-col__rule" />
               </div>
-              <Icon size={26} strokeWidth={1.5} className="why-col__icon mt-6 text-olive-800" />
-              <h3 className="mt-4 font-display font-medium text-olive-950" style={{ fontSize: '1.05rem' }}>
+
+              <h3 className="mt-6 font-display font-medium text-olive-950" style={{ fontSize: '1.05rem' }}>
                 {title}
               </h3>
               <p className="mt-2 text-sm leading-[1.6] text-text-soft">{text}</p>
