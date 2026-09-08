@@ -14,7 +14,7 @@ export default function LifeGallery() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
           {LIFE.map((src, i) => (
             <div
               key={src}
