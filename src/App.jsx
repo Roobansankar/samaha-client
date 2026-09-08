@@ -29,6 +29,7 @@ import Benefits from './components/Benefits'
 import WhySamaha from './components/WhySamaha'
 import Faq from './components/Faq'
 import Reviews from './components/Reviews'
+import LifeGallery from './components/LifeGallery'
 import Banner from './components/Banner'
 import Cta from './components/Cta'
 import Footer from './components/Footer'
@@ -70,7 +71,7 @@ function Home() {
         <Banner />
         <Faq />
         <Reviews />
-        
+        <LifeGallery />
         <Cta />
       </main>
     </>
