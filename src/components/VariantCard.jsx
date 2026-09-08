@@ -20,7 +20,7 @@ export default function VariantCard({ v, tint, blurb }) {
   }
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-md border border-line bg-white transition-shadow duration-200 hover:shadow-md">
+    <article className="group flex h-full flex-col overflow-hidden rounded-md border border-line bg-white transition-shadow duration-200 hover:shadow-md">
 
       {/* image */}
       <Link to={`/shop/${v.slug}`} className="relative block aspect-[4/3]" style={{ background: tint || 'var(--color-paper-2)' }}>

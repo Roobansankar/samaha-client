@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react'
 import { Star } from 'lucide-react'
+import { fetchFeaturedReviews } from '../lib/reviews'
 
 const TINTS = ['var(--color-olive-200)', 'var(--color-gold-200)', 'var(--color-olive-300)']
 
@@ -102,7 +104,28 @@ function Card({ quote, name, meta, tint, hidden }) {
 }
 
 export default function Reviews() {
-  const loop = [...REVIEWS, ...REVIEWS]
+  const [data, setData] = useState(null)
+
+  useEffect(() => {
+    fetchFeaturedReviews().then(setData).catch(() => {})
+  }, [])
+
+  const list =
+    data?.reviews?.length
+      ? data.reviews.map((r, i) => ({
+          quote: r.quote,
+          name: r.name,
+          meta: `Verified buyer · ${r.product}`,
+          tint: TINTS[i % TINTS.length],
+        }))
+      : REVIEWS
+
+  const summary =
+    data?.count
+      ? `${data.average} average from ${data.count} ${data.count === 1 ? 'review' : 'reviews'}`
+      : '4.9 average from 380+ verified buyers'
+
+  const loop = [...list, ...list]
 
   return (
     <section className="overflow-hidden bg-paper" id="reviews" aria-label="Customer reviews">
@@ -115,7 +138,7 @@ export default function Reviews() {
           </h2>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-text-soft">
             <Stars size={16} />
-            <span>4.9 average from 380+ verified buyers</span>
+            <span>{summary}</span>
           </div>
         </div>
       </div>
@@ -123,7 +146,7 @@ export default function Reviews() {
       <div className="reviews-viewport pb-[clamp(3.5rem,7vw,5rem)]">
         <div className="reviews-track">
           {loop.map((r, i) => (
-            <Card key={i} {...r} hidden={i >= REVIEWS.length} />
+            <Card key={i} {...r} hidden={i >= list.length} />
           ))}
         </div>
       </div>

@@ -65,6 +65,19 @@ export async function fetchDashboard() {
   return request(`${API_URL}/admin/dashboard`)
 }
 
+export async function fetchReviews(q = '') {
+  const qs = q ? `?q=${encodeURIComponent(q)}` : ''
+  return request(`${API_URL}/admin/reviews${qs}`)
+}
+
+export async function updateReview(id, isApproved) {
+  return request(`${API_URL}/admin/reviews/${id}`, { method: 'PUT', body: JSON.stringify({ is_approved: isApproved }) })
+}
+
+export async function deleteReview(id) {
+  return request(`${API_URL}/admin/reviews/${id}`, { method: 'DELETE' })
+}
+
 export async function fetchCustomers(q = '') {
   const qs = q ? `?q=${encodeURIComponent(q)}` : ''
   return request(`${API_URL}/admin/customers${qs}`)

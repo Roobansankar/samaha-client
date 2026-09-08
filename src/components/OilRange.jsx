@@ -13,8 +13,16 @@ export default function OilRange() {
   const { oilGroups: OIL_VARIANTS, loading: productsLoading } = useProducts()
   const [active, setActive] = useState(0)
   const [phase, setPhase] = useState('idle') // idle | exiting | entering
+  const [cols, setCols] = useState(() => {
+    try { return localStorage.getItem('shopCols') === '2' ? 2 : 1 } catch { return 1 }
+  })
   const timerRef = useRef(null)
   const isVisible = useVisibleProducts()
+
+  const chooseCols = (n) => {
+    setCols(n)
+    try { localStorage.setItem('shopCols', String(n)) } catch { /* ignore */ }
+  }
 
   const switchTab = useCallback((i) => {
     if (i === active || phase !== 'idle') return
@@ -33,14 +41,6 @@ export default function OilRange() {
 
   const oil = OIL_VARIANTS[active]
   const variants = oil.variants.filter((v) => isVisible(v.slug))
-
-  const [cols, setCols] = useState(() => {
-    try { return localStorage.getItem('shopCols') === '2' ? 2 : 1 } catch { return 1 }
-  })
-  const chooseCols = (n) => {
-    setCols(n)
-    try { localStorage.setItem('shopCols', String(n)) } catch { /* ignore */ }
-  }
 
   return (
     <section className="bg-paper-inset" id="sizes" aria-label="Shop oils by size">
@@ -117,7 +117,7 @@ export default function OilRange() {
           {variants.map((v, i) => (
             <div
               key={v.id}
-              className={phase === 'entering' ? 'card-enter' : ''}
+              className={`h-full ${phase === 'entering' ? 'card-enter' : ''}`}
               style={phase === 'entering' ? { animationDelay: `${i * 40}ms` } : undefined}
             >
               <VariantCard v={v} tint={oil.tint} blurb={oil.blurb} />

@@ -9,9 +9,11 @@ import toast from 'react-hot-toast'
 import { HIGHLIGHTS } from '../data/products'
 import { useProducts } from '../context/ProductsContext'
 import { useVisibleProducts } from '../lib/catalog'
+import { fetchReviews } from '../lib/reviews'
 import { addToCart } from '../lib/cart'
 import NotFound from './NotFound'
 import VariantCard from './VariantCard'
+import ProductReviews from './ProductReviews'
 
 const rupees = (n) => `₹${n.toLocaleString('en-IN')}`
 
@@ -294,12 +296,21 @@ export default function ProductPage() {
 
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
+  const [reviews, setReviews] = useState(null)
   const isVisible = useVisibleProducts()
+
+  const loadReviews = () =>
+    fetchReviews(slug)
+      .then(setReviews)
+      .catch(() => setReviews({ average: 0, count: 0, distribution: {}, reviews: [] }))
 
   useEffect(() => {
     window.scrollTo(0, 0)
     setQty(1)
     setAdded(false)
+    setReviews(null)
+    loadReviews()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug])
 
   if (!base) {
@@ -371,10 +382,12 @@ export default function ProductPage() {
               </h1>
 
               <div className="mt-3 flex items-center gap-2.5">
-                <Stars rating={product.rating} />
-                <span className="text-sm text-text-mute">
-                  {product.rating.toFixed(1)} · {product.reviews} reviews
-                </span>
+                <Stars rating={reviews?.count ? reviews.average : product.rating} />
+                <a href="#reviews" className="text-sm text-text-mute transition-colors hover:text-olive-800">
+                  {Number(reviews?.count ? reviews.average : product.rating).toFixed(1)} ·{' '}
+                  {(reviews?.count ?? product.reviews) || 0}{' '}
+                  {(reviews?.count ?? product.reviews) === 1 ? 'review' : 'reviews'}
+                </a>
               </div>
 
               <p className="mt-5 max-w-[48ch] leading-relaxed text-text-soft"
@@ -461,6 +474,9 @@ export default function ProductPage() {
               </section>
             </div>
           </div>
+
+          {/* reviews */}
+          <ProductReviews slug={slug} data={reviews} onChange={loadReviews} />
 
           {/* why samaha + shipping */}
           <div className="mt-[clamp(2rem,5vw,3.5rem)] border-t border-line pt-[clamp(2rem,5vw,3.5rem)] space-y-6 lg:grid lg:grid-cols-2 lg:gap-x-16 lg:space-y-0">
