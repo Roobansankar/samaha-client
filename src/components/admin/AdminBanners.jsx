@@ -5,6 +5,44 @@ import {
   fetchAdminBanners, createBanner, saveBanner, deleteBanner, uploadBannerImage,
 } from './auth'
 
+/* Ready-made banners (the ones the site shipped with). Picking one fills the
+   whole form — image, link and text — so a bad edit is one click to undo. */
+const PRESETS = [
+  {
+    label: 'Coconut Oil',
+    image: '/slide1.webp',
+    image_mobile: '/slidem1.webp',
+    alt: 'Samaha cold-pressed coconut oil on a stone plinth',
+    link: '/shop/coconut-oil',
+    eyebrow: 'Cold-pressed · Unrefined',
+    title: 'Coconut Oil',
+    text: 'Pressed from fresh white kernel within hours of cracking.',
+    steps: ['Fresh kernel, milled same day', 'Cold-pressed below 27°C', 'Unfiltered, bottled by hand'],
+  },
+  {
+    label: 'Groundnut Oil',
+    image: '/slide2.webp',
+    image_mobile: '/slidem2.webp',
+    alt: 'Samaha wood-pressed groundnut oil on a stone plinth',
+    link: '/shop/groundnut-oil',
+    eyebrow: 'Wood-pressed · Small batch',
+    title: 'Groundnut Oil',
+    text: 'Deep, warm and nutty — the way it was always meant to be made.',
+    steps: ['Sun-dried groundnuts', 'Wood-pressed the slow way', 'Small, dated lots'],
+  },
+  {
+    label: 'Sesame Oil',
+    image: '/slide3.png',
+    image_mobile: '/slidem3.png',
+    alt: 'Samaha cold-pressed sesame oil on a stone plinth',
+    link: '/shop/sesame-oil',
+    eyebrow: 'Stone-ground · Cold-pressed',
+    title: 'Sesame Oil',
+    text: 'Rich, aromatic and deeply nutty — the finishing oil of choice.',
+    steps: ['Stone-ground whole seeds', 'Cold-pressed to keep the aroma', 'A little goes a long way'],
+  },
+]
+
 export default function AdminBanners() {
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
@@ -145,6 +183,20 @@ function BannerForm({ banner, onClose, onSaved }) {
   const set = (k) => (e) =>
     setF((s) => ({ ...s, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }))
 
+  const applyPreset = (p) =>
+    setF((s) => ({
+      ...s,
+      image: p.image,
+      image_mobile: p.image_mobile,
+      alt: p.alt,
+      link: p.link,
+      plain: false,
+      eyebrow: p.eyebrow,
+      title: p.title,
+      text: p.text,
+      steps: p.steps.join('\n'),
+    }))
+
   const save = async () => {
     setErr('')
     if (!f.image) return setErr('Upload the desktop / laptop image.')
@@ -187,6 +239,30 @@ function BannerForm({ banner, onClose, onSaved }) {
         </div>
 
         <div className="flex-1 space-y-4 overflow-y-auto px-6 py-5">
+          {/* start from a default */}
+          <div className="rounded-lg border p-3.5" style={{ borderColor: 'var(--a-border)' }}>
+            <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-wide a-mute">
+              Start from a default banner
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {PRESETS.map((p) => (
+                <button
+                  key={p.label}
+                  type="button"
+                  onClick={() => applyPreset(p)}
+                  className="flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-sm transition-colors hover:bg-[var(--a-surface-2)]"
+                  style={{ borderColor: 'var(--a-border-strong)' }}
+                >
+                  <img src={p.image} alt="" className="h-6 w-11 rounded object-cover" />
+                  {p.label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-[0.72rem] a-mute">
+              Fills the image, link and text below with the shipped design. Tweak anything after, or click again to reset it.
+            </p>
+          </div>
+
           <div className="grid gap-4 sm:grid-cols-2">
             <Dropzone
               label="Laptop / desktop image *"
