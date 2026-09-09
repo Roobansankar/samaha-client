@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { fetchBanners } from '../lib/banners'
 
+// Fallback used until /api/banners answers (or if it can't be reached).
 // `src`       — landscape image for >=640px, exported 8:3 (2048x768 / 2560x960)
 // `srcMobile` — portrait image for <640px, exported ~3:4 (1080x1440). Keep the
 //               left third of it clear — the copy is overlaid there on mobile.
-const SLIDES = [
+const FALLBACK = [
   {
     src: '/slide1.webp',
     srcMobile: '/slidem1.webp',
@@ -44,9 +46,20 @@ const REDUCED_MOTION =
 
 export default function ImageSlider() {
   const [current, setCurrent] = useState(0)
+  const [remote, setRemote] = useState(null)
 
-  const next = useCallback(() => setCurrent((c) => (c + 1) % SLIDES.length), [])
-  const prev = useCallback(() => setCurrent((c) => (c - 1 + SLIDES.length) % SLIDES.length), [])
+  useEffect(() => {
+    fetchBanners()
+      .then((b) => { if (Array.isArray(b) && b.length) setRemote(b) })
+      .catch(() => {})
+  }, [])
+
+  const SLIDES = remote || FALLBACK
+  const count = SLIDES.length
+  const active = count ? current % count : 0
+
+  const next = useCallback(() => setCurrent((c) => (c + 1) % count), [count])
+  const prev = useCallback(() => setCurrent((c) => (c - 1 + count) % count), [count])
 
   useEffect(() => {
     const timer = setInterval(next, 5000)
@@ -80,7 +93,7 @@ export default function ImageSlider() {
       <div
         className="flex h-full"
         style={{
-          transform: `translateX(-${current * 100}%)`,
+          transform: `translateX(-${active * 100}%)`,
           transition: REDUCED_MOTION ? 'none' : 'transform 620ms var(--ease-default)',
           willChange: 'transform',
         }}
@@ -89,8 +102,8 @@ export default function ImageSlider() {
           <div
             key={s.src}
             className="relative h-full w-full shrink-0"
-            aria-hidden={i !== current}
-            inert={i !== current}
+            aria-hidden={i !== active}
+            inert={i !== active}
           >
             <picture>
               {s.srcMobile && <source media="(max-width: 639px)" srcSet={s.srcMobile} />}
@@ -133,7 +146,7 @@ export default function ImageSlider() {
                   </p>
 
                   {/* mobile-only process steps */}
-                  {s.steps.length > 0 && (
+                  {(s.steps?.length ?? 0) > 0 && (
                   <ol className="mt-4 space-y-2 sm:hidden">
                     {s.steps.map((step, n) => (
                       <li key={step} className="flex items-center gap-2.5 leading-tight text-text-soft"
@@ -183,10 +196,10 @@ export default function ImageSlider() {
             key={i}
             onClick={() => setCurrent(i)}
             className={`h-2.5 w-2.5 rounded-full transition-colors cursor-pointer ${
-              i === current ? 'bg-olive-900' : 'bg-olive-900/35'
+              i === active ? 'bg-olive-900' : 'bg-olive-900/35'
             }`}
             aria-label={`Go to slide ${i + 1}`}
-            aria-current={i === current}
+            aria-current={i === active}
           />
         ))}
       </div>

@@ -46,6 +46,7 @@ import AdminOrders from './components/admin/AdminOrders'
 import AdminOrderView from './components/admin/AdminOrderView'
 import AdminCustomers from './components/admin/AdminCustomers'
 import AdminReviews from './components/admin/AdminReviews'
+import AdminBanners from './components/admin/AdminBanners'
 import AdminProducts from './components/admin/AdminProducts'
 import AdminProductForm from './components/admin/AdminProductForm'
 import AdminProductView from './components/admin/AdminProductView'
@@ -147,6 +148,7 @@ function AppContent() {
           <Route path="orders/:id" element={<AdminOrderView />} />
           <Route path="customers" element={<AdminCustomers />} />
           <Route path="reviews" element={<AdminReviews />} />
+          <Route path="banners" element={<AdminBanners />} />
           <Route path="products" element={<AdminProducts />} />
           <Route path="products/new" element={<AdminProductForm />} />
           <Route path="products/trash" element={<AdminProductsTrash />} />

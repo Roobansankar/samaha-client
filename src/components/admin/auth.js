@@ -65,6 +65,45 @@ export async function fetchDashboard() {
   return request(`${API_URL}/admin/dashboard`)
 }
 
+/* ---- Home banners ---- */
+
+export async function fetchAdminBanners() {
+  return request(`${API_URL}/admin/banners`)
+}
+
+export async function createBanner(data) {
+  return request(`${API_URL}/admin/banners`, { method: 'POST', body: JSON.stringify(data) })
+}
+
+export async function saveBanner(id, data) {
+  return request(`${API_URL}/admin/banners/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+}
+
+export async function deleteBanner(id) {
+  return request(`${API_URL}/admin/banners/${id}`, { method: 'DELETE' })
+}
+
+export async function uploadBannerImage(file) {
+  const token = getToken()
+  const body = new FormData()
+  body.append('image', file)
+
+  const response = await fetch(`${API_URL}/admin/banners/images`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}`, Accept: 'application/json' } : { Accept: 'application/json' },
+    body,
+  })
+  const text = await response.text()
+  let data = {}
+  if (text) {
+    try { data = JSON.parse(text) } catch { throw new Error('Upload failed — bad server response.') }
+  }
+  if (!response.ok) {
+    throw new Error(data.message || data.errors?.image?.[0] || 'Image upload failed')
+  }
+  return data
+}
+
 export async function fetchReviews(q = '') {
   const qs = q ? `?q=${encodeURIComponent(q)}` : ''
   return request(`${API_URL}/admin/reviews${qs}`)
