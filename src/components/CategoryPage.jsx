@@ -112,7 +112,7 @@ export default function CategoryPage() {
           className="img-shimmer absolute inset-0 h-full w-full object-cover opacity-[0.55]"
         />
         <div className="relative mx-auto w-full max-w-[1500px] px-[clamp(1.75rem,5vw,5rem)] py-[clamp(3rem,8vw,5rem)]">
-          <nav className="flex items-center gap-2 text-xs text-on-olive-mute">
+          <nav className="flex items-center gap-2 text-sm text-on-olive-mute">
             <Link to="/" className="transition-colors hover:text-on-olive-soft">Home</Link>
             <ChevronRight size={13} />
             <Link to="/shop" className="transition-colors hover:text-on-olive-soft">Shop</Link>
