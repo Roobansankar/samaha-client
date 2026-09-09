@@ -117,14 +117,26 @@ export default function ImageSlider() {
               />
             </picture>
 
-            {/* legibility wash — desktop only, from the left */}
-            <div
-              className="pointer-events-none absolute inset-0 hidden sm:block"
-              style={{
-                background:
-                  'linear-gradient(90deg, rgba(233,240,228,0.78) 0%, rgba(233,240,228,0.34) 36%, rgba(233,240,228,0) 58%)',
-              }}
-            />
+            {/* whole slide is a link when a navigate link is set */}
+            {s.href && (
+              <Link
+                to={s.href}
+                className="absolute inset-0"
+                aria-label={s.title ? `Shop ${s.title}` : (s.alt || 'View')}
+                tabIndex={i === active ? 0 : -1}
+              />
+            )}
+
+            {/* legibility wash — only when there's text to keep readable */}
+            {s.title && (
+              <div
+                className="pointer-events-none absolute inset-0 hidden sm:block"
+                style={{
+                  background:
+                    'linear-gradient(90deg, rgba(233,240,228,0.78) 0%, rgba(233,240,228,0.34) 36%, rgba(233,240,228,0) 58%)',
+                }}
+              />
+            )}
 
             {/* Caption — overlaid top-left on mobile, vertically centred on desktop */}
             {s.title && (

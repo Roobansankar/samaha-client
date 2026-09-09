@@ -68,7 +68,7 @@ export default function CategoryPage() {
   if (productsLoading) {
     return (
       <div className="bg-paper-inset">
-        <section className="relative flex min-h-[clamp(340px,48vh,500px)] items-center overflow-hidden bg-olive-950">
+        <section className="relative flex min-h-[clamp(420px,62vh,660px)] items-center overflow-hidden bg-olive-950">
           <div className="img-shimmer absolute inset-0 h-full w-full bg-olive-900/30" />
         </section>
         <section className="px-[var(--spacing-gutter)] py-[clamp(3rem,7vw,5rem)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
@@ -102,18 +102,14 @@ export default function CategoryPage() {
   return (
     <div className="bg-paper-inset">
       {/* ---------- hero ---------- */}
-      <section className="relative flex min-h-[clamp(340px,48vh,500px)] items-center overflow-hidden bg-olive-950 text-on-olive">
+      <section className="relative flex min-h-[clamp(420px,62vh,660px)] items-center overflow-hidden bg-olive-950 text-on-olive">
         <img
           src={HERO[slug] || '/banner.webp'}
           alt=""
           loading="eager"
           fetchPriority="high"
           decoding="async"
-          className="img-shimmer absolute inset-0 h-full w-full object-cover opacity-45"
-        />
-        <div
-          className="absolute inset-0 bg-gradient-to-r from-olive-950/92 via-olive-950/68 to-olive-950/30"
-          aria-hidden="true"
+          className="img-shimmer absolute inset-0 h-full w-full object-cover opacity-[0.55]"
         />
         <div className="relative mx-auto w-full max-w-[1500px] px-[clamp(1.75rem,5vw,5rem)] py-[clamp(3rem,8vw,5rem)]">
           <nav className="flex items-center gap-2 text-xs text-on-olive-mute">
@@ -233,33 +229,7 @@ export default function CategoryPage() {
             ))}
           </div>
 
-          {/* about + specs */}
-          <div className="mt-[clamp(3rem,6vw,4.5rem)] grid gap-[clamp(2rem,5vw,4rem)] border-t border-line pt-[clamp(2.5rem,5vw,3.5rem)] lg:grid-cols-[1.25fr_1fr]">
-            <div>
-              <h2
-                className="font-display font-medium text-olive-900"
-                style={{ fontSize: 'clamp(1.4rem, 1.1rem + 1.2vw, 1.9rem)' }}
-              >
-                About {oil.name}
-              </h2>
-              <div className="mt-4 space-y-4 leading-[1.8] text-text-soft">
-                {oil.description.map((para) => <p key={para}>{para}</p>)}
-              </div>
-            </div>
-            <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-text-mute">Specifications</h3>
-              <dl className="mt-4 divide-y divide-line overflow-hidden rounded-xl border border-line">
-                {oil.specs.map(([k, val]) => (
-                  <div key={k} className="flex justify-between gap-6 bg-paper-inset px-5 py-3.5 text-sm">
-                    <dt className="text-text-mute">{k}</dt>
-                    <dd className="text-right font-medium text-olive-900">{val}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-          </div>
-
-          <div className="mt-12 text-center">
+          <div className="mt-[clamp(3rem,6vw,4.5rem)] border-t border-line pt-10 text-center">
             <Link to="/shop" className="btn btn-ghost">
               Browse all oils <ArrowRight size={16} strokeWidth={2} />
             </Link>
