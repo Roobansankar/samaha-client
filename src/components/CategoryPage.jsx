@@ -102,7 +102,7 @@ export default function CategoryPage() {
   return (
     <div className="bg-paper-inset">
       {/* ---------- hero ---------- */}
-      <section className="relative flex min-h-[clamp(420px,62vh,660px)] items-center overflow-hidden bg-olive-950 text-on-olive">
+      <section className="relative flex min-h-[clamp(300px,50vh,660px)] items-center overflow-hidden bg-olive-950 text-on-olive">
         <img
           src={HERO[slug] || '/banner.webp'}
           alt=""
