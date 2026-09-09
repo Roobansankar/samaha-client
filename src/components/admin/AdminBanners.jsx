@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Plus, RefreshCw, Loader2, Trash2, Pencil, X, UploadCloud, ExternalLink } from 'lucide-react'
 import { Panel, StatusBadge, EmptyRow } from './ui'
 import {
@@ -177,13 +177,17 @@ function BannerForm({ banner, onClose, onSaved }) {
     is_active: banner?.is_active ?? true,
     sort_order: banner?.sort_order ?? 0,
   }))
+  const [imageFile, setImageFile] = useState(null)   // picked but not uploaded yet
+  const [mobileFile, setMobileFile] = useState(null)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
 
   const set = (k) => (e) =>
     setF((s) => ({ ...s, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }))
 
-  const applyPreset = (p) =>
+  const applyPreset = (p) => {
+    setImageFile(null)
+    setMobileFile(null)
     setF((s) => ({
       ...s,
       image: p.image,
@@ -196,27 +200,34 @@ function BannerForm({ banner, onClose, onSaved }) {
       text: p.text,
       steps: p.steps.join('\n'),
     }))
+  }
 
   const save = async () => {
     setErr('')
-    if (!f.image) return setErr('Upload the desktop / laptop image.')
-
-    const payload = {
-      image: f.image,
-      image_mobile: f.image_mobile || null,
-      alt: f.alt.trim() || null,
-      link: f.link.trim() || null,
-      plain: f.plain,
-      eyebrow: f.plain ? null : (f.eyebrow.trim() || null),
-      title: f.plain ? null : (f.title.trim() || null),
-      text: f.plain ? null : (f.text.trim() || null),
-      steps: f.plain ? [] : f.steps.split('\n').map((s) => s.trim()).filter(Boolean).slice(0, 5),
-      is_active: f.is_active,
-      sort_order: Number(f.sort_order) || 0,
-    }
+    if (!f.image && !imageFile) return setErr('Add the desktop / laptop image.')
 
     setBusy(true)
     try {
+      // upload happens only now — on save
+      let imageUrl = f.image
+      let mobileUrl = f.image_mobile
+      if (imageFile) imageUrl = (await uploadBannerImage(imageFile)).url
+      if (mobileFile) mobileUrl = (await uploadBannerImage(mobileFile)).url
+
+      const payload = {
+        image: imageUrl,
+        image_mobile: mobileUrl || null,
+        alt: f.alt.trim() || null,
+        link: f.link.trim() || null,
+        plain: f.plain,
+        eyebrow: f.plain ? null : (f.eyebrow.trim() || null),
+        title: f.plain ? null : (f.title.trim() || null),
+        text: f.plain ? null : (f.text.trim() || null),
+        steps: f.plain ? [] : f.steps.split('\n').map((s) => s.trim()).filter(Boolean).slice(0, 5),
+        is_active: f.is_active,
+        sort_order: Number(f.sort_order) || 0,
+      }
+
       if (isNew) await createBanner(payload)
       else await saveBanner(banner.id, payload)
       onSaved()
@@ -268,15 +279,22 @@ function BannerForm({ banner, onClose, onSaved }) {
               label="Laptop / desktop image *"
               hint="Wide — around 2048 × 768"
               url={f.image}
-              onChange={(url) => setF((s) => ({ ...s, image: url || '' }))}
+              file={imageFile}
+              onFile={setImageFile}
+              onClear={() => { setImageFile(null); setF((s) => ({ ...s, image: '' })) }}
             />
             <Dropzone
               label="Mobile image"
               hint="Portrait — around 1080 × 1440"
               url={f.image_mobile}
-              onChange={(url) => setF((s) => ({ ...s, image_mobile: url || '' }))}
+              file={mobileFile}
+              onFile={setMobileFile}
+              onClear={() => { setMobileFile(null); setF((s) => ({ ...s, image_mobile: '' })) }}
             />
           </div>
+          {(imageFile || mobileFile) && (
+            <p className="text-[0.72rem] a-mute">New image will upload when you {isNew ? 'create' : 'save'} the banner.</p>
+          )}
 
           <Field label="Navigate link (where this slide goes)">
             <input className="a-input" value={f.link} onChange={set('link')} placeholder="/shop/coconut-oil" />
@@ -338,23 +356,20 @@ function BannerForm({ banner, onClose, onSaved }) {
   )
 }
 
-function Dropzone({ label, hint, url, onChange }) {
-  const [busy, setBusy] = useState(false)
+function Dropzone({ label, hint, url, file, onFile, onClear }) {
   const [over, setOver] = useState(false)
   const inputRef = useRef(null)
 
-  const handleFile = async (file) => {
-    if (!file || !file.type?.startsWith('image/')) return
-    setBusy(true)
-    try {
-      const res = await uploadBannerImage(file)
-      onChange(res.url)
-    } catch (e) {
-      alert(e.message || 'Upload failed')
-    } finally {
-      setBusy(false)
-    }
+  const preview = useMemo(() => (file ? URL.createObjectURL(file) : null), [file])
+  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview) }, [preview])
+
+  const take = (f) => {
+    if (!f) return
+    if (!f.type?.startsWith('image/')) { alert('Please choose an image file.'); return }
+    onFile(f)
   }
+
+  const shown = preview || url
 
   return (
     <label className="block">
@@ -364,7 +379,7 @@ function Dropzone({ label, hint, url, onChange }) {
         tabIndex={0}
         onDragOver={(e) => { e.preventDefault(); setOver(true) }}
         onDragLeave={() => setOver(false)}
-        onDrop={(e) => { e.preventDefault(); setOver(false); handleFile(e.dataTransfer.files?.[0]) }}
+        onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files?.[0]) }}
         onClick={() => inputRef.current?.click()}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') inputRef.current?.click() }}
         className="relative grid min-h-[110px] cursor-pointer place-items-center overflow-hidden rounded-lg border-2 border-dashed transition-colors"
@@ -373,20 +388,26 @@ function Dropzone({ label, hint, url, onChange }) {
           background: over ? 'var(--a-surface-2)' : 'transparent',
         }}
       >
-        {url ? (
+        {shown ? (
           <>
-            <img src={url} alt="" className="max-h-44 w-full bg-white object-contain" />
+            <img src={shown} alt="" className="max-h-44 w-full bg-white object-contain" />
+            {file && (
+              <span
+                className="absolute left-2 top-2 rounded px-1.5 py-0.5 text-[0.6rem] font-semibold"
+                style={{ background: 'var(--a-accent)', color: 'var(--a-accent-fg)' }}
+              >
+                Not uploaded yet
+              </span>
+            )}
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); onChange(null) }}
+              onClick={(e) => { e.stopPropagation(); onClear() }}
               className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded-full bg-[var(--a-danger)] text-white"
               aria-label="Remove image"
             >
               <X size={13} />
             </button>
           </>
-        ) : busy ? (
-          <Loader2 size={18} className="animate-spin a-mute" />
         ) : (
           <div className="p-4 text-center text-[0.78rem] a-mute">
             <UploadCloud size={20} className="mx-auto mb-1.5" />
@@ -397,9 +418,9 @@ function Dropzone({ label, hint, url, onChange }) {
         <input
           ref={inputRef}
           type="file"
-          accept="image/png,image/jpeg,image/webp"
+          accept="image/png,image/jpeg,image/webp,image/avif"
           hidden
-          onChange={(e) => { handleFile(e.target.files?.[0]); e.target.value = '' }}
+          onChange={(e) => { take(e.target.files?.[0]); e.target.value = '' }}
         />
       </div>
     </label>

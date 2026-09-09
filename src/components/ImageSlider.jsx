@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { fetchBanners } from '../lib/banners'
+import { fetchBanners, cachedBanners } from '../lib/banners'
 
 // Fallback used until /api/banners answers (or if it can't be reached).
 // `src`       — landscape image for >=640px, exported 8:3 (2048x768 / 2560x960)
@@ -46,11 +46,11 @@ const REDUCED_MOTION =
 
 export default function ImageSlider() {
   const [current, setCurrent] = useState(0)
-  const [remote, setRemote] = useState(null)
+  const [remote, setRemote] = useState(() => cachedBanners())
 
   useEffect(() => {
     fetchBanners()
-      .then((b) => { if (Array.isArray(b) && b.length) setRemote(b) })
+      .then((b) => { if (Array.isArray(b)) setRemote(b.length ? b : null) })
       .catch(() => {})
   }, [])
 
