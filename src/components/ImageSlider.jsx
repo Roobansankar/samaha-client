@@ -58,6 +58,19 @@ export default function ImageSlider() {
   const count = SLIDES.length
   const active = count ? current % count : 0
 
+  // A plain (poster) first slide sets the mobile frame to its own shape,
+  // so there are no side gaps or edge cropping on a phone.
+  const [heroM, setHeroM] = useState(null)
+  useEffect(() => {
+    const first = SLIDES[0]
+    if (!first?.plain) return
+    let alive = true
+    const im = new Image()
+    im.onload = () => { if (alive && im.naturalWidth) setHeroM(im.naturalWidth / im.naturalHeight) }
+    im.src = first.srcMobile || first.src
+    return () => { alive = false }
+  }, [SLIDES])
+
   const next = useCallback(() => setCurrent((c) => (c + 1) % count), [count])
   const prev = useCallback(() => setCurrent((c) => (c - 1 + count) % count), [count])
 
@@ -82,9 +95,10 @@ export default function ImageSlider() {
   }
 
   return (
-    // Fixed frame — 4:5 on mobile, 8:3 strip from 640px up.
+    // Mobile frame follows a poster's own shape (--hero-m), else 4:5. 8:3 strip from 640px up.
     <section
-      className="relative w-full overflow-hidden bg-paper aspect-[4/5] sm:aspect-[8/3]"
+      style={heroM ? { '--hero-m': String(heroM) } : undefined}
+      className="relative w-full overflow-hidden bg-olive-950 aspect-[var(--hero-m,4/5)] sm:aspect-[8/3]"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
       aria-roledescription="carousel"
@@ -113,7 +127,9 @@ export default function ImageSlider() {
                 loading={i === 0 ? 'eager' : 'lazy'}
                 fetchPriority={i === 0 ? 'high' : 'low'}
                 decoding="async"
-                className="img-shimmer absolute inset-0 h-full w-full object-cover"
+                className={`img-shimmer absolute inset-0 h-full w-full ${
+                  s.plain ? 'object-contain' : 'object-cover'
+                }`}
               />
             </picture>
 
