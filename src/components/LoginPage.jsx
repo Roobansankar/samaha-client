@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Mail, Lock, User, Eye, EyeOff, ArrowLeft, MailCheck, ArrowRight, Loader2 } from 'lucide-react'
-import { login as apiLogin, register as apiRegister, GOOGLE_LOGIN_URL } from '../lib/account'
+import { login as apiLogin, register as apiRegister, GOOGLE_LOGIN_URL, setAuthRedirect } from '../lib/account'
 
 const OAUTH_ERR = {
   google: 'Google sign-in didn’t complete. Please try again.',
@@ -41,6 +41,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(() => OAUTH_ERR[params.get('error')] || '')
+  const redirect = params.get('redirect')
 
   const isLogin = mode === 'login'
   const isRegister = mode === 'register'
@@ -75,7 +76,7 @@ export default function LoginPage() {
           password_confirmation: fd.get('password_confirmation'),
         })
       }
-      navigate('/profile')
+      navigate(redirect || '/profile')
     } catch (err) {
       setError(err.message || 'Something went wrong.')
     } finally {
@@ -156,6 +157,7 @@ export default function LoginPage() {
           <>
             <a
               href={GOOGLE_LOGIN_URL}
+              onClick={() => { if (redirect) setAuthRedirect(redirect) }}
               className="mt-9 flex w-full items-center justify-center gap-3 rounded-xl border border-olive-900/15 bg-white py-4 text-[0.92rem] font-medium text-olive-900 transition-colors hover:border-olive-900/30 hover:bg-olive-100/50"
             >
               <GoogleG />

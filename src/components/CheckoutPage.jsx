@@ -49,6 +49,7 @@ export default function CheckoutPage() {
       .catch(() => {})
   }, [account])
 
+  if (!account) return <Navigate to="/account?redirect=/checkout" replace />
   if (items.length === 0) return <Navigate to="/cart" replace />
 
   const total = subtotal

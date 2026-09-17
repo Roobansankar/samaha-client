@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
-import { completeOAuth } from '../lib/account'
+import { completeOAuth, popAuthRedirect } from '../lib/account'
 
 export default function AuthCallback() {
   const navigate = useNavigate()
@@ -20,7 +20,7 @@ export default function AuthCallback() {
     }
 
     completeOAuth(token)
-      .then(() => navigate('/profile', { replace: true }))
+      .then(() => navigate(popAuthRedirect() || '/profile', { replace: true }))
       .catch(() => setError('Could not finish signing you in. Please try again.'))
   }, [navigate])
 

@@ -5,6 +5,7 @@ import {
 } from 'lucide-react'
 import { useCart } from '../lib/cart'
 import { useProducts } from '../context/ProductsContext'
+import { useAccount } from '../lib/account'
 
 const PAD = 'px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]'
 
@@ -24,6 +25,7 @@ function Breadcrumb() {
 export default function CartPage() {
   const { getVariant } = useProducts()
   const { items, count, subtotal, savings, setQty, remove } = useCart(getVariant)
+  const account = useAccount()
 
   const shipping = 0
   const total = subtotal + shipping
@@ -176,7 +178,10 @@ export default function CartPage() {
                   <span className="font-sans text-xl font-semibold text-olive-900">{money(total)}</span>
                 </div>
 
-                <Link to="/checkout" className="btn btn-primary mt-5 w-full">
+                <Link
+                  to={account ? '/checkout' : '/account?redirect=/checkout'}
+                  className="btn btn-primary mt-5 w-full"
+                >
                   Checkout <ArrowRight size={16} strokeWidth={2} />
                 </Link>
 

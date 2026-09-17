@@ -54,6 +54,23 @@ export function isAuthed() {
   return !!getToken()
 }
 
+/* Carries the "come back here after signing in" destination across the
+   Google OAuth round-trip (full-page redirect), since a URL query string
+   would otherwise have to be threaded through the backend redirect too. */
+const REDIRECT_KEY = 'samahaAuthRedirect'
+
+export function setAuthRedirect(path) {
+  try { sessionStorage.setItem(REDIRECT_KEY, path) } catch { /* ignore */ }
+}
+
+export function popAuthRedirect() {
+  try {
+    const path = sessionStorage.getItem(REDIRECT_KEY)
+    sessionStorage.removeItem(REDIRECT_KEY)
+    return path
+  } catch { return null }
+}
+
 function emit() {
   window.dispatchEvent(new Event('samaha:auth'))
 }
