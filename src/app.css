@@ -789,8 +789,8 @@ select:-webkit-autofill {
   .nav-icon {
     display: grid;
     place-items: center;
-    width: 42px;
-    height: 42px;
+    width: 38px;
+    height: 38px;
     border-radius: 999px;
     color: var(--color-olive-800);
     transition: background-color var(--duration-1) var(--ease-default),

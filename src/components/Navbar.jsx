@@ -277,7 +277,7 @@ export default function Navbar() {
     <header className={`nav-header ${scrolled ? 'is-scrolled' : ''}`} data-open={menuOpen}>
       <div
         className={`mx-auto flex max-w-[1500px] items-center gap-3 ${
-          scrolled ? 'py-2.5' : 'py-3.5'
+          scrolled ? 'py-2' : 'py-2.5'
         } sm:gap-6`}
         style={{
           paddingInline: 'clamp(1.75rem, 5vw, 5rem)',
@@ -286,7 +286,7 @@ export default function Navbar() {
       >
         <button
           type="button"
-          className="nav-burger -ml-2 hidden h-[42px] w-[42px] place-items-center rounded-full text-olive-800 transition-colors hover:bg-olive-100 hover:text-olive-950 max-[900px]:grid"
+          className="nav-burger -ml-2 hidden h-[38px] w-[38px] place-items-center rounded-full text-olive-800 transition-colors hover:bg-olive-100 hover:text-olive-950 max-[900px]:grid"
           aria-label="Open menu"
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen(true)}
@@ -295,7 +295,7 @@ export default function Navbar() {
         </button>
 
         <div className="max-[900px]:absolute max-[900px]:left-1/2 max-[900px]:-translate-x-1/2">
-          <Wordmark />
+          <Wordmark className="h-9 sm:h-11" />
         </div>
 
         <nav className="mx-auto hidden items-center gap-x-5 min-[1180px]:gap-x-7 min-[901px]:flex" aria-label="Primary">
