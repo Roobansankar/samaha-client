@@ -14,7 +14,32 @@ const OILS = {
 const SIZES = { '500 ml': '1/2 L', '1 Litre': '1 L', '5 Litres': '5 L', '16 Litre Tin': '16 L tin' }
 const SIZE_SUFFIX = { '500 ml': '500ml', '1 Litre': '1l', '5 Litres': '5l', '16 Litre Tin': '16l' }
 
-const slugFor = (oil, sizeLong) => `${OILS[oil]?.oil_slug || 'oil'}-${SIZE_SUFFIX[sizeLong] || 'size'}`
+const slugify = (s) =>
+  String(s || 'oil')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'oil'
+
+const oilMetaFor = (oil) => {
+  if (OILS[oil]) return OILS[oil]
+  // custom oil: derive slug/tag/tint
+  const clean = String(oil || '').trim() || 'Custom Oil'
+  const tag = clean.replace(/\s+oil$/i, '').trim() || clean
+  return { oil_slug: slugify(clean), tag, tint: '#e6e1d4' }
+}
+
+const sizeShortFor = (sizeLong) => {
+  if (SIZES[sizeLong]) return SIZES[sizeLong]
+  return String(sizeLong || '').trim() || sizeLong
+}
+
+const sizeSuffixFor = (sizeLong) => {
+  if (SIZE_SUFFIX[sizeLong]) return SIZE_SUFFIX[sizeLong]
+  return slugify(sizeLong).replace(/-/g, '')
+}
+
+const slugFor = (oil, sizeLong) => `${oilMetaFor(oil).oil_slug}-${sizeSuffixFor(sizeLong) || 'size'}`
 const suggestMrp = (price) => (price ? Math.round((Number(price) * 1.34) / 5) * 5 : '')
 
 const blank = {
@@ -73,6 +98,31 @@ export default function AdminProductForm() {
   const set = (k) => (e) =>
     setF((s) => ({ ...s, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }))
 
+  const onOilChange = (e) => {
+    const oil = e.target.value
+    setF((s) => ({ ...s, oil }))
+  }
+
+  const onOilSelect = (e) => {
+    const v = e.target.value
+    if (v === '__custom') setF((s) => ({ ...s, oil: OILS[s.oil] ? '' : s.oil }))
+    else setF((s) => ({ ...s, oil: v }))
+  }
+
+  const onSizeChange = (e) => {
+    const size_long = e.target.value
+    setF((s) => ({ ...s, size_long }))
+  }
+
+  const onSizeSelect = (e) => {
+    const v = e.target.value
+    if (v === '__custom') setF((s) => ({ ...s, size_long: SIZES[s.size_long] ? '' : s.size_long }))
+    else setF((s) => ({ ...s, size_long: v }))
+  }
+
+  const oilSelectValue = OILS[f.oil] ? f.oil : '__custom'
+  const sizeSelectValue = SIZES[f.size_long] ? f.size_long : '__custom'
+
   const setImageAt = (i, url) =>
     setF((s) => {
       const images = [...s.images]
@@ -88,16 +138,19 @@ export default function AdminProductForm() {
     if (!f.price || Number(f.price) <= 0) return setErr('Enter a selling price.')
     if (f.stock === '' || Number(f.stock) < 0) return setErr('Enter the stock quantity.')
 
-    const meta = OILS[f.oil]
+    const meta = oilMetaFor(f.oil)
+    const sizeLong = String(f.size_long || '').trim()
+    if (!f.oil.trim()) return setErr('Enter oil name.')
+    if (!sizeLong) return setErr('Enter pack size.')
     const payload = {
       slug,
-      name: f.name.trim() || `Samaha Unrefined Cold-Pressed ${f.oil} (Chekku) — ${f.size_long}`,
-      short_name: f.short_name.trim() || `Cold-Pressed ${f.oil} — ${f.size_long}`,
-      oil: f.oil,
+      name: f.name.trim() || `Samaha Unrefined Cold-Pressed ${f.oil.trim()} (Chekku) — ${sizeLong}`,
+      short_name: f.short_name.trim() || `Cold-Pressed ${f.oil.trim()} — ${sizeLong}`,
+      oil: f.oil.trim(),
       oil_slug: meta.oil_slug,
       tag: meta.tag,
-      size: SIZES[f.size_long],
-      size_long: f.size_long,
+      size: sizeShortFor(sizeLong),
+      size_long: sizeLong,
       blurb: f.blurb.trim() || null,
       tagline: f.tagline.trim() || null,
       description: f.description.trim() || null,
@@ -169,14 +222,32 @@ export default function AdminProductForm() {
           <Card title="Basics">
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Oil">
-                <select className="a-select" value={f.oil} onChange={set('oil')}>
-                  {Object.keys(OILS).map((o) => <option key={o}>{o}</option>)}
+                <select className="a-select" value={oilSelectValue} onChange={onOilSelect}>
+                  {Object.keys(OILS).map((o) => <option key={o} value={o}>{o}</option>)}
+                  <option value="__custom">Custom… (type manually)</option>
                 </select>
+                {oilSelectValue === '__custom' && (
+                  <input
+                    className="a-input mt-2"
+                    value={f.oil}
+                    onChange={onOilChange}
+                    placeholder="e.g. Mustard Oil"
+                  />
+                )}
               </Field>
               <Field label="Pack size">
-                <select className="a-select" value={f.size_long} onChange={set('size_long')}>
-                  {Object.keys(SIZES).map((s) => <option key={s}>{s}</option>)}
+                <select className="a-select" value={sizeSelectValue} onChange={onSizeSelect}>
+                  {Object.keys(SIZES).map((s) => <option key={s} value={s}>{s}</option>)}
+                  <option value="__custom">Custom… (type manually)</option>
                 </select>
+                {sizeSelectValue === '__custom' && (
+                  <input
+                    className="a-input mt-2"
+                    value={f.size_long}
+                    onChange={onSizeChange}
+                    placeholder="e.g. 2 Litre"
+                  />
+                )}
               </Field>
             </div>
             <Field label="Display name" className="mt-4">
@@ -228,7 +299,7 @@ export default function AdminProductForm() {
               Active — visible on the storefront
             </label>
             <div className="mt-4 grid gap-1 text-[0.8rem]">
-              <Row k="Category" v={OILS[f.oil]?.tag} />
+              <Row k="Category" v={oilMetaFor(f.oil)?.tag} />
               <Row k="Slug" v={slug} mono />
             </div>
           </Card>
