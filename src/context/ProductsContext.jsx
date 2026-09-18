@@ -22,6 +22,7 @@ function normalize(p) {
     image,
     images: p.images?.length ? p.images : image ? [image] : [],
     description: typeof desc === 'string' ? desc.split('\n\n').filter(Boolean) : Array.isArray(desc) ? desc : [],
+    specs: Array.isArray(p.specs) ? p.specs : [],
     save: Math.max(0, (p.mrp ?? p.price) - p.price),
   }
 }
@@ -39,7 +40,7 @@ function groupByOil(products) {
         blurb: p.blurb || 'Cold Pressed | Unrefined',
         tagline: p.tagline,
         description: typeof p.description === 'string' ? p.description.split('\n\n').filter(Boolean) : Array.isArray(p.description) ? p.description : [],
-        specs: p.specs || [],
+        specs: Array.isArray(p.specs) ? p.specs : [],
         rating: p.rating,
         reviews: p.reviews,
         badge: p.badge,
@@ -63,7 +64,7 @@ function groupByOil(products) {
       blurb: v.blurb || oil.blurb,
       tagline: v.tagline || oil.tagline,
       description: typeof v.description === 'string' ? v.description.split('\n\n').filter(Boolean) : Array.isArray(v.description) ? v.description : oil.description,
-      specs: v.specs || oil.specs,
+      specs: Array.isArray(v.specs) ? v.specs : Array.isArray(oil.specs) ? oil.specs : [],
       images: v.images?.length ? v.images : oil.images || [],
       image: v.images?.[0] || oil.image || null,
       tint: v.tint || oil.tint,

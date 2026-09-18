@@ -42,8 +42,8 @@ function Placeholder({ tint, compact = false }) {
 }
 
 function Gallery({ product }) {
-  const images = product.images
-  const count = images.length
+  const images = product.images || []
+  const count = images.length || 1
   const [active, setActive] = useState(0)
   const [broken, setBroken] = useState(() => new Set())
   const [zoom, setZoom] = useState(false)
@@ -114,7 +114,7 @@ function Gallery({ product }) {
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        {broken.has(active) ? (
+        {(!images.length || !images[active] || broken.has(active)) ? (
           <Placeholder tint={product.tint} />
         ) : (
           <img
@@ -454,17 +454,18 @@ export default function ProductPage() {
                 </h2>
                 <div className="mt-4 space-y-4 leading-[1.75] text-text-soft"
                      style={{ fontSize: 'clamp(0.98rem, 0.92rem + 0.2vw, 1.05rem)' }}>
-                  {product.description.map((para) => <p key={para}>{para}</p>)}
+                  {(product.description || []).map((para) => <p key={para}>{para}</p>)}
                 </div>
               </section>
 
               {/* specifications */}
+              {(product.specs || []).length > 0 && (
               <section className="mt-8">
                 <h2 className="font-display font-medium text-olive-900" style={{ fontSize: headingSize }}>
                   Specifications
                 </h2>
                 <dl className="mt-4 overflow-hidden rounded-xl border border-line divide-y divide-line">
-                  {product.specs.map(([label, value]) => (
+                  {(product.specs || []).map(([label, value]) => (
                     <div key={label} className="flex justify-between gap-6 px-5 py-4 text-sm bg-paper-inset">
                       <dt className="text-text-mute">{label}</dt>
                       <dd className="text-right font-medium text-olive-900">{value}</dd>
@@ -472,6 +473,7 @@ export default function ProductPage() {
                   ))}
                 </dl>
               </section>
+              )}
             </div>
           </div>
 
