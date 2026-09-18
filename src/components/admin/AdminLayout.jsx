@@ -25,6 +25,9 @@ import {
 } from 'lucide-react'
 import { signOut, getUser, isAdmin, hasPermission, fetchNotifications, markAllNotificationsRead, deleteNotification } from './auth'
 import { AdminThemeContext } from './theme'
+import { loadAdminFont } from './loadAdminFont'
+
+loadAdminFont()
 
 const NOTIF_ICON = { order: ShoppingBag, product: Package, subscriber: MailCheck, message: MessageSquare }
 

@@ -916,7 +916,7 @@ select:-webkit-autofill {
     transform: translateY(-4px);
   }
 
-  /* ---- Mobile tab bar ---- */
+  /* ---- Mobile tab bar — soft "blob" icon that fills solid when active ---- */
   .tabbar {
     position: fixed;
     inset: auto 0 0 0;
@@ -931,7 +931,7 @@ select:-webkit-autofill {
     display: flex;
     max-width: 34rem;
     margin-inline: auto;
-    padding: 0.32rem 0.35rem;
+    padding: 0.26rem 0.35rem;
   }
 
   .tabbar__tab {
@@ -939,8 +939,8 @@ select:-webkit-autofill {
     flex: 1;
     flex-direction: column;
     align-items: center;
-    gap: 0.2rem;
-    padding: 0.1rem 0;
+    gap: 0.16rem;
+    padding: 0.05rem 0;
     border: 0;
     background: none;
     font-family: inherit;
@@ -957,16 +957,18 @@ select:-webkit-autofill {
   }
 
   .tabbar__icon {
-    position: relative;
     display: grid;
     place-items: center;
-    padding: 0.24rem 1.15rem;
-    border-radius: 999px;
-    transition: background-color 0.2s var(--ease-default);
+    width: 2.2rem;
+    height: 1.85rem;
+    color: inherit;
+    border-radius: 46% 54% 51% 49% / 56% 44% 56% 44%;
+    transition: background-color 0.2s var(--ease-default), color 0.2s var(--ease-default);
   }
 
   .tabbar__tab.is-active .tabbar__icon {
-    background: var(--color-gold-200);
+    background: var(--color-olive-900);
+    color: var(--color-paper);
   }
 
   .tabbar__badge {
@@ -1152,7 +1154,7 @@ select:-webkit-autofill {
   .why-col__rule, .js-anim .sr-section .why-col__rule { transform: none; }
   .why-col__icon, .why-col:hover .why-col__icon { transform: none; }
   .about-card, .about-card:hover, .about-stat, .about-stat:hover { transform: none; }
-  .tabbar__icon { transition: none; }
+  .tabbar__tab, .tabbar__icon { transition: none; }
   .cards-exit, .cards-enter, .card-enter { animation: none; opacity: 1; transform: none; }
   .shop-dropdown { animation: none; opacity: 1; transform: none; }
 }

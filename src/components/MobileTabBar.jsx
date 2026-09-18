@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Home, Store, Search, Heart, UserRound } from 'lucide-react'
+import { Home, ShoppingCart, Search, Heart, UserRound } from 'lucide-react'
 import { useAccount } from '../lib/account'
 
 const initialOf = (name) => (name || '').trim().charAt(0).toUpperCase() || 'U'
@@ -10,7 +10,7 @@ export default function MobileTabBar() {
 
   const TABS = [
     { label: 'Home', to: '/', Icon: Home, exact: true },
-    { label: 'Shop', to: '/shop', Icon: Store },
+    { label: 'Shop', to: '/shop', Icon: ShoppingCart },
     { label: 'Search', Icon: Search, action: 'search' },
     { label: 'Wishlist', to: '/wishlist', Icon: Heart },
     account
@@ -31,11 +31,12 @@ export default function MobileTabBar() {
       <div className="tabbar__bar">
         {TABS.map((t) => {
           const { Icon } = t
+          const active = isActive(t)
           const inner = (
             <>
               <span className="tabbar__icon">
                 {Icon ? (
-                  <Icon size={20} strokeWidth={2} />
+                  <Icon size={19} strokeWidth={2} />
                 ) : t.avatar ? (
                   <img src={t.avatar} alt="" referrerPolicy="no-referrer" className="h-5 w-5 rounded-full object-cover" />
                 ) : (
@@ -60,7 +61,6 @@ export default function MobileTabBar() {
             )
           }
 
-          const active = isActive(t)
           return (
             <Link
               key={t.label}

@@ -58,18 +58,25 @@ export default function ImageSlider() {
   const count = SLIDES.length
   const active = count ? current % count : 0
 
-  // A plain (poster) first slide sets the mobile frame to its own shape,
-  // so there are no side gaps or edge cropping on a phone.
-  const [heroM, setHeroM] = useState(null)
+  // A plain (poster) first slide sets the mobile frame to its own shape, so
+  // there are no side gaps or edge cropping on a phone. The API returns the
+  // image's real ratio (computed server-side), so this is derived directly
+  // during render — no waiting on a client-side image measurement, which
+  // used to shift the hero layout post-paint (bad for CLS).
+  const first = SLIDES[0]
+  const [measuredRatio, setMeasuredRatio] = useState(null)
+  const heroM = (first?.plain && (first.mobileRatio || measuredRatio)) || null
+
   useEffect(() => {
-    const first = SLIDES[0]
-    if (!first?.plain) return
+    // Only old rows saved before the server started computing ratios (or
+    // presets) land here — everything else already has `mobileRatio`.
+    if (!first?.plain || first.mobileRatio) return
     let alive = true
     const im = new Image()
-    im.onload = () => { if (alive && im.naturalWidth) setHeroM(im.naturalWidth / im.naturalHeight) }
+    im.onload = () => { if (alive && im.naturalWidth) setMeasuredRatio(im.naturalWidth / im.naturalHeight) }
     im.src = first.srcMobile || first.src
     return () => { alive = false }
-  }, [SLIDES])
+  }, [first?.plain, first?.mobileRatio, first?.srcMobile, first?.src])
 
   const next = useCallback(() => setCurrent((c) => (c + 1) % count), [count])
   const prev = useCallback(() => setCurrent((c) => (c - 1 + count) % count), [count])

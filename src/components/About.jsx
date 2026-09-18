@@ -31,7 +31,8 @@ export default function About() {
               <img
                 src="/habout.png"
                 alt="Corked bottle of cold-pressed Samaha oil on a wooden board with a bowl of nuts and fresh greenery"
-                className="h-full w-full object-cover"
+                className="h-full w-full scale-[1.15] object-cover"
+                data-gsap-parallax
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-olive-900/25 to-transparent" />
             </div>

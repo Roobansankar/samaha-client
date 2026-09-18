@@ -1,14 +1,25 @@
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { Loader2 } from 'lucide-react'
 import { ProductsProvider } from './context/ProductsContext'
 import AnnouncementBar from './components/AnnouncementBar'
 import Navbar from './components/Navbar'
 import MobileTabBar from './components/MobileTabBar'
 import ImageSlider from './components/ImageSlider'
-import Hero from './components/Hero'
 import TrustBar from './components/TrustBar'
 import About from './components/About'
+import Products from './components/Products'
+import OilRange from './components/OilRange'
+import Benefits from './components/Benefits'
+import WhySamaha from './components/WhySamaha'
+import Faq from './components/Faq'
+import Reviews from './components/Reviews'
+import LifeGallery from './components/LifeGallery'
+import Banner from './components/Banner'
+import Cta from './components/Cta'
+import Footer from './components/Footer'
+import ScrollToTop from './components/ScrollToTop'
 import AboutPage from './components/AboutPage'
 import ContactPage from './components/ContactPage'
 import ShopPage from './components/ShopPage'
@@ -23,39 +34,46 @@ import AuthCallback from './components/AuthCallback'
 import CheckoutPage from './components/CheckoutPage'
 import CheckoutSuccessPage from './components/CheckoutSuccessPage'
 import PolicyPage from './components/PolicyPage'
-import Products from './components/Products'
-import OilRange from './components/OilRange'
-import Benefits from './components/Benefits'
-import WhySamaha from './components/WhySamaha'
-import Faq from './components/Faq'
-import Reviews from './components/Reviews'
-import LifeGallery from './components/LifeGallery'
-import Banner from './components/Banner'
-import Cta from './components/Cta'
-import Footer from './components/Footer'
 import NotFound from './components/NotFound'
-import ScrollToTop from './components/ScrollToTop'
-import ScrollReveal from './components/ScrollReveal'
 import { initCart } from './lib/cart'
 
-// Admin imports
-import AdminLayout from './components/admin/AdminLayout'
-import AdminLogin from './components/admin/AdminLogin'
-import AdminDashboard from './components/admin/AdminDashboard'
-import AdminOrders from './components/admin/AdminOrders'
-import AdminOrderView from './components/admin/AdminOrderView'
-import AdminCustomers from './components/admin/AdminCustomers'
-import AdminReviews from './components/admin/AdminReviews'
-import AdminBanners from './components/admin/AdminBanners'
-import AdminProducts from './components/admin/AdminProducts'
-import AdminProductForm from './components/admin/AdminProductForm'
-import AdminProductView from './components/admin/AdminProductView'
-import AdminProductsTrash from './components/admin/AdminProductsTrash'
-import AdminSettings from './components/admin/AdminSettings'
-import AdminStaff from './components/admin/AdminStaff'
-import AdminMessages from './components/admin/AdminMessages'
-import AdminSubscribers from './components/admin/AdminSubscribers'
-import ProtectedRoute from './components/admin/ProtectedRoute'
+// Pure scroll-animation polish — doesn't gate any visible content, so it's
+// safe to pull out of the critical-path bundle.
+const GsapScroll = lazy(() => import('./components/GsapScroll'))
+
+// Only the admin backend is code-split. It's a large, distinct app that
+// almost no visitor ever loads, so it's worth the chunk. The storefront
+// pages above are small and sit right in the main nav — splitting those
+// too just added a loading-spinner flash to routine navigation for very
+// little size benefit, so they stay in the main bundle.
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'))
+const AdminLogin = lazy(() => import('./components/admin/AdminLogin'))
+const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'))
+const AdminOrders = lazy(() => import('./components/admin/AdminOrders'))
+const AdminOrderView = lazy(() => import('./components/admin/AdminOrderView'))
+const AdminCustomers = lazy(() => import('./components/admin/AdminCustomers'))
+const AdminReviews = lazy(() => import('./components/admin/AdminReviews'))
+const AdminBanners = lazy(() => import('./components/admin/AdminBanners'))
+const AdminProducts = lazy(() => import('./components/admin/AdminProducts'))
+const AdminProductForm = lazy(() => import('./components/admin/AdminProductForm'))
+const AdminProductView = lazy(() => import('./components/admin/AdminProductView'))
+const AdminProductsTrash = lazy(() => import('./components/admin/AdminProductsTrash'))
+const AdminSettings = lazy(() => import('./components/admin/AdminSettings'))
+const AdminStaff = lazy(() => import('./components/admin/AdminStaff'))
+const AdminMessages = lazy(() => import('./components/admin/AdminMessages'))
+const AdminSubscribers = lazy(() => import('./components/admin/AdminSubscribers'))
+const ProtectedRoute = lazy(() => import('./components/admin/ProtectedRoute'))
+
+// Shown only while a route's own chunk is still loading — a slow network
+// or a dev-server hiccup used to leave this blank, which made the footer
+// jump up right under the navbar and look like the page had broken.
+function RouteFallback() {
+  return (
+    <div className="grid min-h-[60vh] place-items-center bg-paper">
+      <Loader2 size={24} className="animate-spin text-olive-700/40" />
+    </div>
+  )
+}
 
 function Home() {
   return (
@@ -100,7 +118,9 @@ function AppContent() {
   return (
     <>
       <ScrollToTop />
-      <ScrollReveal />
+      <Suspense fallback={null}>
+        <GsapScroll />
+      </Suspense>
       <Toaster position="top-center" toastOptions={{ duration: 3000, style: { fontSize: '0.85rem', borderRadius: '12px', padding: '12px 16px' } }} />
       {!isAdmin && (
         <div className="site-top">
@@ -108,6 +128,7 @@ function AppContent() {
           <Navbar />
         </div>
       )}
+      <Suspense fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/shop" element={<ShopPage />} />
@@ -162,11 +183,12 @@ function AppContent() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </Suspense>
       {!isAdmin && <Footer />}
       {!isAdmin && (
         <>
           {/* keeps the tab bar from covering the last of the page */}
-          <div className="h-[62px] min-[901px]:hidden" aria-hidden="true" />
+          <div className="h-[54px] min-[901px]:hidden" aria-hidden="true" />
           <MobileTabBar />
         </>
       )}

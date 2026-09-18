@@ -11,9 +11,19 @@ const REDUCED_MOTION =
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 const HERO = {
-  'coconut-oil': '/slide1.webp',
-  'groundnut-oil': '/slide2.webp',
-  'sesame-oil': '/slide3.png',
+  'coconut-oil': '/catgorycocunt.webp',
+  'groundnut-oil': '/catgorygroundnet.webp',
+  'sesame-oil': '/catgoryseasame.webp',
+}
+
+// Most hero photos are dark/moody enough for the brand's olive wash. The
+// new coconut/groundnut/sesame photos are bright and warm (blue sky, sunlit
+// fields), so a green tint over them looked muddy — a neutral black wash
+// lets their real colours read while still keeping the left-side text legible.
+const OVERLAY = {
+  'coconut-oil': 'from-black/75 via-black/45 to-black/10',
+  'groundnut-oil': 'from-black/75 via-black/45 to-black/10',
+  'sesame-oil': 'from-black/75 via-black/45 to-black/10',
 }
 
 const SORTS = [
@@ -102,14 +112,18 @@ export default function CategoryPage() {
   return (
     <div className="bg-paper-inset">
       {/* ---------- hero ---------- */}
-      <section className="relative flex min-h-[clamp(300px,50vh,660px)] items-center overflow-hidden bg-olive-950 text-on-olive">
+      <section className="relative flex min-h-[clamp(420px,62vh,660px)] items-center overflow-hidden bg-olive-950 text-on-olive">
         <img
           src={HERO[slug] || '/banner.webp'}
           alt=""
           loading="eager"
           fetchPriority="high"
           decoding="async"
-          className="img-shimmer absolute inset-0 h-full w-full object-cover opacity-[0.55]"
+          className="img-shimmer absolute inset-0 h-full w-full object-cover opacity-55"
+        />
+        <div
+          className={`absolute inset-0 bg-gradient-to-r ${OVERLAY[slug] || 'from-olive-950/90 via-olive-950/60 to-olive-950/20'}`}
+          aria-hidden="true"
         />
         <div className="relative mx-auto w-full max-w-[1500px] px-[clamp(1.75rem,5vw,5rem)] py-[clamp(3rem,8vw,5rem)]">
           <nav className="flex items-center gap-2 text-sm text-on-olive-mute">
@@ -121,8 +135,8 @@ export default function CategoryPage() {
           </nav>
           <p className="eyebrow mt-4 text-gold-300">{group.blurb}</p>
           <h1
-            className="mt-3 font-display font-medium leading-[1.03] text-on-olive"
-            style={{ fontSize: 'clamp(2.2rem, 1.5rem + 3.4vw, 4rem)' }}
+            className="mt-3 max-w-[20ch] font-display font-medium leading-[1.03] text-on-olive"
+            style={{ fontSize: 'clamp(2.3rem, 1.5rem + 4vw, 4.6rem)' }}
           >
             {oil.name}
           </h1>

@@ -282,7 +282,7 @@ export default function AdminProductForm() {
             </Field>
           </Card>
 
-          <Card title="Images" hint="Up to 4. First image is used on cards.">
+          <Card title="Images" hint="Up to 4. First image is used on cards. Recommended: square, at least 1200×1200px, JPG/PNG/WebP, up to 20MB.">
             <div className="flex flex-wrap gap-3">
               {[0, 1, 2, 3].map((i) => (
                 <ImageSlot key={i} url={f.images[i]} onChange={(url) => setImageAt(i, url)} />

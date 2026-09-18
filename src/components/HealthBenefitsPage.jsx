@@ -42,16 +42,16 @@ export default function HealthBenefitsPage() {
           className="absolute inset-0 bg-gradient-to-r from-olive-950/90 via-olive-950/60 to-olive-950/20"
           aria-hidden="true"
         />
-        <div className={`relative w-full ${SECTION} py-[clamp(3rem,8vw,5rem)]`}>
+        <div className="relative mx-auto w-full max-w-[1500px] px-[clamp(1.75rem,5vw,5rem)] py-[clamp(3rem,8vw,5rem)]">
           <p className="eyebrow text-gold-300">Health benefits</p>
           <h1
-            className="mt-4 max-w-[16ch] font-display font-medium leading-[1.03] text-on-olive"
+            className="mt-4 max-w-[20ch] font-display font-medium leading-[1.03] text-on-olive"
             style={{ fontSize: 'clamp(2.3rem, 1.5rem + 4vw, 4.6rem)' }}
           >
             The goodness in every bottle
           </h1>
           <p
-            className="mt-6 max-w-[48ch] leading-[1.7] text-on-olive-soft"
+            className="mt-6 max-w-[46ch] leading-[1.7] text-on-olive-soft"
             style={{ fontSize: 'clamp(1rem, 0.95rem + 0.25vw, 1.15rem)' }}
           >
             Nothing here is a cure. But pressed cold and left alone, our oils keep

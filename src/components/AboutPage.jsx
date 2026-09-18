@@ -71,10 +71,10 @@ export default function AboutPage() {
           loading="eager"
           fetchPriority="high"
           decoding="async"
-          className="img-shimmer absolute inset-0 h-full w-full object-cover opacity-65"
+          className="img-shimmer absolute inset-0 h-full w-full object-cover opacity-55"
         />
         <div
-          className="absolute inset-0 bg-gradient-to-r from-olive-950/75 via-olive-950/45 to-olive-950/10"
+          className="absolute inset-0 bg-gradient-to-r from-olive-950/90 via-olive-950/60 to-olive-950/20"
           aria-hidden="true"
         />
         <div className={`relative w-full ${SECTION} py-[clamp(3rem,8vw,5rem)]`}>

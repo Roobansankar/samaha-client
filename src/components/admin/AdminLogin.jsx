@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useLocation, Navigate } from 'react-router-dom'
 import { Eye, EyeOff, Loader2, Sun, Moon, Leaf } from 'lucide-react'
 import { isAuthed, signIn } from './auth'
+import { loadAdminFont } from './loadAdminFont'
+
+loadAdminFont()
 
 export default function AdminLogin() {
   const navigate = useNavigate()
