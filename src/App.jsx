@@ -7,7 +7,6 @@ import AnnouncementBar from './components/AnnouncementBar'
 import Navbar from './components/Navbar'
 import MobileTabBar from './components/MobileTabBar'
 import ImageSlider from './components/ImageSlider'
-import TrustBar from './components/TrustBar'
 import About from './components/About'
 import Products from './components/Products'
 import OilRange from './components/OilRange'
@@ -83,7 +82,6 @@ function Home() {
         
         <Products />
         <OilRange />
-        <TrustBar />
         <About />
         <Benefits />
         <WhySamaha />
