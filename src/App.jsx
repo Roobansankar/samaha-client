@@ -19,6 +19,7 @@ import Banner from './components/Banner'
 import Cta from './components/Cta'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
+import SeoCanonical from './components/SeoCanonical'
 import AboutPage from './components/AboutPage'
 import ContactPage from './components/ContactPage'
 import ShopPage from './components/ShopPage'
@@ -116,6 +117,7 @@ function AppContent() {
   return (
     <>
       <ScrollToTop />
+      <SeoCanonical />
       <Suspense fallback={null}>
         <GsapScroll />
       </Suspense>
