@@ -916,6 +916,16 @@ select:-webkit-autofill {
     transform: translateY(-4px);
   }
 
+  /* Hides the scrollbar on horizontally-scrollable card rows (mobile
+     category carousels) while keeping the element natively scrollable. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   /* ---- Mobile tab bar — soft "blob" icon that fills solid when active ---- */
   .tabbar {
     position: fixed;
