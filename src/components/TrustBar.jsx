@@ -25,7 +25,7 @@ export default function TrustBar() {
       </picture>
       <div className="relative mx-auto w-full max-w-[1100px] py-[clamp(2.25rem,5vw,3.75rem)] px-[var(--spacing-gutter)]">
         <div className="text-center">
-          <SectionHeading as="h2" title="Why choose" accent="us" flourish={false} />
+          <SectionHeading as="h2" title="Why choose" accent="us" flourish={true} />
         </div>
 
         <ul className="mt-[clamp(1.75rem,4vw,2.75rem)] grid grid-cols-4 gap-x-4 gap-y-8 max-[640px]:grid-cols-2">
