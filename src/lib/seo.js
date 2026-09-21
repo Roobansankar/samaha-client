@@ -136,6 +136,8 @@ export function applySeo(seo) {
   setMeta('property', 'og:description', social ? seo.og_description ?? seo.description : null)
   setMeta('property', 'og:url', social ? seo.canonical : null)
   setMeta('property', 'og:image', social ? seo.og_image : null)
+  setMeta('property', 'og:image:alt', social ? seo.og_image_alt : null)
+  setMeta('property', 'og:site_name', social ? seo.og_site_name || 'Samaha' : null)
   setMeta('name', 'twitter:card', social ? 'summary_large_image' : null)
   setMeta('name', 'twitter:title', social ? seo.og_title || seo.title : null)
   setMeta('name', 'twitter:description', social ? seo.og_description ?? seo.description : null)

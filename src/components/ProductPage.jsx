@@ -4,6 +4,7 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import {
   ChevronRight, ChevronLeft, X,
   Minus, Plus, Check, Star, Truck, RotateCcw, ShieldCheck,
+  Share2, Link2, MessageCircle, ExternalLink,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { HIGHLIGHTS } from '../data/products'
@@ -285,6 +286,131 @@ function Stars({ rating }) {
   )
 }
 
+function ShareButton({ product }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  const url = typeof window !== 'undefined' ? window.location.href : ''
+  const title = `${product.name} — Samaha Cold-Pressed Oil`
+  const text = `Check out ${product.name} from Samaha — cold-pressed, chemical-free oil`
+
+  useEffect(() => {
+    if (!open) return
+    const onClick = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+    }
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('mousedown', onClick)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onClick)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  const share = (href) => {
+    window.open(href, '_blank', 'noopener,noreferrer,width=600,height=500')
+    setOpen(false)
+  }
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success('Link copied!')
+    } catch {
+      toast.error('Failed to copy')
+    }
+    setOpen(false)
+  }
+
+  const nativeShare = async () => {
+    try {
+      await navigator.share({ title, text, url })
+    } catch { /* user cancelled */ }
+    setOpen(false)
+  }
+
+  const channels = [
+    {
+      label: 'WhatsApp',
+      icon: MessageCircle,
+      color: 'text-green-600',
+      href: `https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + url)}`,
+    },
+    {
+      label: 'Facebook',
+      icon: ExternalLink,
+      color: 'text-blue-600',
+      href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+    },
+    {
+      label: 'Twitter / X',
+      icon: ExternalLink,
+      color: 'text-sky-500',
+      href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
+    },
+    {
+      label: 'Pinterest',
+      icon: ExternalLink,
+      color: 'text-red-500',
+      href: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(url)}&description=${encodeURIComponent(title)}`,
+    },
+  ]
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="inline-flex items-center gap-1.5 text-sm text-text-mute transition-colors hover:text-olive-800 cursor-pointer"
+        aria-label="Share this product"
+        aria-expanded={open}
+      >
+        <Share2 size={15} />
+        <span className="hidden sm:inline">Share</span>
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-xl border border-line bg-paper p-1.5 shadow-lg">
+          {channels.map(({ label, icon: Icon, color, href }) => (
+            <button
+              key={label}
+              type="button"
+              onClick={() => share(href)}
+              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-olive-900 transition-colors hover:bg-paper-inset cursor-pointer"
+            >
+              <Icon size={15} className={color} />
+              {label}
+            </button>
+          ))}
+
+          <div className="my-1 border-t border-line" />
+
+          <button
+            type="button"
+            onClick={copyLink}
+            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-olive-900 transition-colors hover:bg-paper-inset cursor-pointer"
+          >
+            <Link2 size={15} className="text-olive-600" />
+            Copy link
+          </button>
+
+          {typeof navigator !== 'undefined' && navigator.share && (
+            <button
+              type="button"
+              onClick={nativeShare}
+              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-olive-900 transition-colors hover:bg-paper-inset cursor-pointer"
+            >
+              <Share2 size={15} className="text-olive-600" />
+              More sharing options…
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 const DELIVERY = [
   { Icon: Truck, text: 'Free shipping over ₹5000 · dispatched in 2 working days' },
   { Icon: RotateCcw, text: '7-day replacement on sealed tins' },
@@ -402,6 +528,8 @@ export default function ProductPage() {
                   {(reviews?.count ?? product.reviews) || 0}{' '}
                   {(reviews?.count ?? product.reviews) === 1 ? 'review' : 'reviews'}
                 </a>
+                <span className="text-text-mute/40">·</span>
+                <ShareButton product={product} />
               </div>
 
               <p className="mt-5 max-w-[48ch] leading-relaxed text-text-soft"
