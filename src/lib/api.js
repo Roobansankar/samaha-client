@@ -21,3 +21,7 @@ export function fetchProducts() {
 export function fetchProduct(slug) {
   return request(`/products/${encodeURIComponent(slug)}`)
 }
+
+export function fetchCategory(slug) {
+  return request(`/categories/${encodeURIComponent(slug)}`)
+}

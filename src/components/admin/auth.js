@@ -178,10 +178,11 @@ export async function forceDeleteProduct(id) {
   return request(`${API_URL}/admin/products/${id}/force`, { method: 'DELETE' })
 }
 
-export async function uploadProductImage(file) {
+export async function uploadProductImage(file, name) {
   const token = getToken()
   const body = new FormData()
   body.append('image', file)
+  if (name) body.append('name', name) // used to build a descriptive file name
 
   const response = await fetch(`${API_URL}/admin/products/images`, {
     method: 'POST',
@@ -258,4 +259,14 @@ export async function markAllNotificationsRead() {
 
 export async function deleteNotification(id) {
   return request(`${API_URL}/admin/notifications/${id}`, { method: 'DELETE' })
+}
+
+/* ---- Categories (oil pages: SEO + page copy) ---- */
+
+export async function fetchCategories() {
+  return request(`${API_URL}/admin/categories`)
+}
+
+export async function updateCategory(id, data) {
+  return request(`${API_URL}/admin/categories/${id}`, { method: 'PUT', body: JSON.stringify(data) })
 }

@@ -5,6 +5,7 @@ import { useAccount } from '../lib/account'
 import { useCart } from '../lib/cart'
 import { useProducts } from '../context/ProductsContext'
 import { Search, UserRound, Handbag, Menu, X, ChevronRight, ChevronDown } from 'lucide-react'
+import { trackSearch } from '../lib/analytics'
 
 const initialOf = (name) => (name || '').trim().charAt(0).toUpperCase() || 'U'
 
@@ -91,6 +92,7 @@ function SearchOverlay({ open, onClose }) {
 
   const go = (value) => {
     const q = value.trim()
+    if (q) trackSearch(q)
     navigate(q ? `/shop?q=${encodeURIComponent(q)}` : '/shop')
     close()
   }

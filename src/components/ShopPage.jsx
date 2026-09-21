@@ -4,6 +4,7 @@ import { ArrowRight, Leaf, ShieldCheck, Truck, SlidersHorizontal, X, Grid2x2, Sq
 import { useProducts } from '../context/ProductsContext'
 import { useVisibleProducts } from '../lib/catalog'
 import VariantCard from './VariantCard'
+import { trackViewItemList } from '../lib/analytics'
 
 const REDUCED_MOTION =
   typeof window !== 'undefined' &&
@@ -118,6 +119,12 @@ export default function ShopPage() {
     if (activeCount > 0 && catRef.current) catRef.current.scrollIntoView({ block: 'start' })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // impressions: the products listed here (fires once the catalogue has loaded)
+  useEffect(() => {
+    if (!productsLoading) trackViewItemList('Shop', OIL_VARIANTS.flatMap((g) => g.variants.map((v) => v.slug)))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productsLoading])
 
   const controls = (scope) => (
     <FilterControls

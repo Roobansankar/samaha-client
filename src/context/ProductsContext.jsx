@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { fetchProducts } from '../lib/api'
+import { setCatalog } from '../lib/analytics'
 
 const ProductsContext = createContext(null)
 
@@ -93,6 +94,7 @@ export function ProductsProvider({ children }) {
     fetchProducts()
       .then((list) => {
         setRaw(Array.isArray(list) ? list.map(normalize) : [])
+        setCatalog(Array.isArray(list) ? list : [])
       })
       .catch((e) => {
         setRaw([])

@@ -2,9 +2,11 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ChevronRight, ArrowRight, Grid2x2, Square } from 'lucide-react'
 import { useProducts } from '../context/ProductsContext'
+import { fetchCategory } from '../lib/api'
 import { useVisibleProducts } from '../lib/catalog'
 import VariantCard from './VariantCard'
 import NotFound from './NotFound'
+import { trackViewItemList } from '../lib/analytics'
 
 const REDUCED_MOTION =
   typeof window !== 'undefined' &&
@@ -74,6 +76,21 @@ export default function CategoryPage() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+
+  // page copy written in the admin (Categories) — unique text for this oil
+  const [content, setContent] = useState(null)
+  useEffect(() => {
+    let alive = true
+    fetchCategory(slug)
+      .then((c) => alive && setContent(c))
+      .catch(() => {})
+    return () => { alive = false }
+  }, [slug])
+
+  useEffect(() => {
+    if (group) trackViewItemList(group.name, group.variants.map((v) => v.slug))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [group?.slug])
 
   if (productsLoading) {
     return (
@@ -242,6 +259,28 @@ export default function CategoryPage() {
               </div>
             ))}
           </div>
+
+          {content?.slug === slug && content.seo_content && (
+            <div className="mt-[clamp(3rem,6vw,4.5rem)] border-t border-line pt-10">
+              <h2 className="font-display font-medium text-olive-900" style={{ fontSize: 'clamp(1.4rem, 1.1rem + 1.2vw, 1.9rem)' }}>
+                About {oil.name}
+              </h2>
+              <div className="mt-4 max-w-[68ch] space-y-4 leading-[1.75] text-text-soft" style={{ fontSize: 'clamp(0.98rem, 0.92rem + 0.2vw, 1.05rem)' }}>
+                {content.seo_content.split(/\n{2,}/).map((para) => (
+                  <p key={para}>{para}</p>
+                ))}
+              </div>
+              <p className="mt-6 text-sm text-text-mute">
+                Also from Samaha:{' '}
+                {oilGroups.filter((g) => g.slug !== slug).map((g, i) => (
+                  <span key={g.slug}>
+                    {i > 0 && ', '}
+                    <Link to={`/shop/${g.slug}`} className="font-medium text-olive-800 underline-offset-2 hover:underline">{g.name}</Link>
+                  </span>
+                ))}
+              </p>
+            </div>
+          )}
 
           <div className="mt-[clamp(3rem,6vw,4.5rem)] border-t border-line pt-10 text-center">
             <Link to="/shop" className="btn btn-ghost">

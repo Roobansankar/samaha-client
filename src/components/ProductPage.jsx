@@ -10,10 +10,12 @@ import { HIGHLIGHTS } from '../data/products'
 import { useProducts } from '../context/ProductsContext'
 import { useVisibleProducts } from '../lib/catalog'
 import { fetchReviews } from '../lib/reviews'
+import { fetchProduct } from '../lib/api'
 import { addToCart } from '../lib/cart'
 import NotFound from './NotFound'
 import VariantCard from './VariantCard'
 import ProductReviews from './ProductReviews'
+import { trackViewItem } from '../lib/analytics'
 
 const rupees = (n) => `₹${n.toLocaleString('en-IN')}`
 
@@ -297,6 +299,8 @@ export default function ProductPage() {
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
   const [reviews, setReviews] = useState(null)
+  // extra copy written in the admin (SEO content). Kept with its slug so a slug change never shows the previous product's text.
+  const [seoContent, setSeoContent] = useState({ slug: null, text: '' })
   const isVisible = useVisibleProducts()
 
   const loadReviews = () =>
@@ -310,8 +314,16 @@ export default function ProductPage() {
     setAdded(false)
     setReviews(null)
     loadReviews()
+    fetchProduct(slug)
+      .then((p) => setSeoContent({ slug, text: p.seo_content || '' }))
+      .catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug])
+
+  useEffect(() => {
+    if (base) trackViewItem(base.slug)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [base?.slug])
 
   if (!base) {
     if (productsLoading) {
@@ -364,7 +376,9 @@ export default function ProductPage() {
             <ChevronRight size={14} className="text-text-mute/60" />
             <Link to="/shop" className="transition-colors hover:text-olive-800">Shop</Link>
             <ChevronRight size={14} className="text-text-mute/60" />
-            <span className="font-medium text-olive-900">{product.oil} — {product.sizeLong}</span>
+            <Link to={`/shop/${product.oilSlug}`} className="transition-colors hover:text-olive-800">{product.oil}</Link>
+            <ChevronRight size={14} className="text-text-mute/60" />
+            <span className="font-medium text-olive-900">{product.sizeLong}</span>
           </nav>
 
           {/* main */}
@@ -455,6 +469,7 @@ export default function ProductPage() {
                 <div className="mt-4 space-y-4 leading-[1.75] text-text-soft"
                      style={{ fontSize: 'clamp(0.98rem, 0.92rem + 0.2vw, 1.05rem)' }}>
                   {(product.description || []).map((para) => <p key={para}>{para}</p>)}
+                  {seoContent.slug === slug && seoContent.text.split(/\n{2,}/).filter(Boolean).map((para) => <p key={para}>{para}</p>)}
                 </div>
               </section>
 
@@ -521,6 +536,18 @@ export default function ProductPage() {
                 ))}
               </div>
             </div>
+          )}
+
+          {oilGroups.length > 1 && (
+            <p className="mt-8 text-sm text-text-mute">
+              Also from Samaha:{' '}
+              {oilGroups.filter((g) => g.slug !== product.oilSlug).map((g, i) => (
+                <span key={g.slug}>
+                  {i > 0 && ', '}
+                  <Link to={`/shop/${g.slug}`} className="font-medium text-olive-800 underline-offset-2 hover:underline">{g.name}</Link>
+                </span>
+              ))}
+            </p>
           )}
 
         </div>

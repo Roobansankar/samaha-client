@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { ChevronRight, Loader2, ShieldCheck, Lock } from 'lucide-react'
 import { useCart, clearCart } from '../lib/cart'
 import { useProducts } from '../context/ProductsContext'
 import { useAccount, fetchAddresses } from '../lib/account'
 import { loadRazorpay, createOrder, verifyPayment } from '../lib/checkout'
+import { trackBeginCheckout, trackAddPaymentInfo, trackPurchase } from '../lib/analytics'
 
 const PAD = 'px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]'
 const money = (n) =>
@@ -30,6 +31,14 @@ export default function CheckoutPage() {
   })
   const [paying, setPaying] = useState(false)
   const [error, setError] = useState('')
+
+  // funnel: the signed-in visitor reached checkout with items (fires once)
+  const startedRef = useRef(false)
+  useEffect(() => {
+    if (startedRef.current || !account || items.length === 0) return
+    startedRef.current = true
+    trackBeginCheckout(items)
+  }, [account, items])
 
   useEffect(() => {
     if (!account) return
@@ -88,6 +97,8 @@ export default function CheckoutPage() {
               razorpay_payment_id: resp.razorpay_payment_id,
               razorpay_signature: resp.razorpay_signature,
             })
+            // real, confirmed order data only — ids, quantities and the verified total
+            trackPurchase({ orderId: order.order_id, value: order.amount / 100, cartRows: items })
             clearCart()
             navigate(`/checkout/success?order=${order.order_id}`, { replace: true })
           } catch (err) {
@@ -101,6 +112,7 @@ export default function CheckoutPage() {
         setError(r?.error?.description || 'The payment failed. Please try again.')
         setPaying(false)
       })
+      trackAddPaymentInfo(items)
       rzp.open()
     } catch (err) {
       setError(err.message || 'Something went wrong.')

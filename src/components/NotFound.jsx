@@ -1,8 +1,14 @@
 import { Link } from 'react-router-dom'
+import Seo from './Seo'
 
 export default function NotFound() {
   return (
     <section className="bg-paper">
+      <Seo
+        title="Page not found | Samaha"
+        description="The page you're looking for doesn't exist or has been moved."
+        robots="noindex,follow"
+      />
       <div className="container-site flex flex-col items-center justify-center py-[clamp(4rem,10vw,8rem)] text-center">
         <p className="font-display text-[clamp(4rem,8vw,7rem)] font-medium text-olive-200 leading-none">404</p>
         <h1 className="mt-4 font-display font-medium text-olive-900" style={{ fontSize: 'clamp(1.6rem, 1.1rem + 2vw, 2.4rem)' }}>

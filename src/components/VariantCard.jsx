@@ -28,6 +28,8 @@ export default function VariantCard({ v, tint, blurb }) {
           <img
             src={v.image}
             alt={v.title || v.name || `${v.oil} ${v.sizeLong}`}
+            width="800"
+            height="600"
             loading="lazy"
             decoding="async"
             onError={() => setBroken(true)}

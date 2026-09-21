@@ -36,6 +36,7 @@ const NAV = [
   { to: '/admin/orders', label: 'Orders', icon: ShoppingBag, page: 'orders' },
   { to: '/admin/products', end: true, label: 'Products', icon: Package, page: 'products' },
   { to: '/admin/products/trash', label: 'Deleted products', icon: Trash2, page: 'products' },
+  { to: '/admin/categories', label: 'Categories & SEO', icon: Search, page: 'categories', adminOnly: true },
   { to: '/admin/customers', label: 'Customers', icon: Users, page: 'customers' },
   { to: '/admin/banners', label: 'Home banners', icon: Images, page: 'banners', adminOnly: true },
   { to: '/admin/reviews', label: 'Reviews', icon: Star, page: 'reviews', adminOnly: true },

@@ -1,12 +1,24 @@
 User-agent: *
 Allow: /
 
-# Keep private / transactional pages out of search results
-Disallow: /admin/
-Disallow: /auth/
+# Private and transactional areas. (They are also marked noindex in the page and in
+# the X-Robots-Tag header.)
+Disallow: /admin
 Disallow: /account
 Disallow: /profile
+Disallow: /auth/
 Disallow: /cart
-Disallow: /checkout/
+Disallow: /checkout
+Disallow: /wishlist
+Disallow: /login
+Disallow: /register
 
+# /api/ is deliberately NOT blocked: the storefront is a JavaScript app that loads its
+# products from /api/products, and Google must be able to fetch that to render and
+# index the product and category pages. API responses carry "X-Robots-Tag: noindex"
+# instead, so they never appear in search results.
+#
+# /uploads/ (product and banner images) must stay crawlable for image search.
+
+# Generated from the database (active products, categories, indexable pages).
 Sitemap: https://samahanaturals.com/sitemap.xml

@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Loader2, Plus, Trash2, X } from 'lucide-react'
+import { ArrowLeft, Loader2, Plus, Sparkles, Trash2, X } from 'lucide-react'
 import {
   fetchProduct, createProduct, updateProduct, deleteProduct, uploadProductImage,
 } from './auth'
+import SeoFields from './SeoFields'
+import { seoFromApi, seoToApi } from './seoForm'
+import { TEMPLATE_KEYS, buildTemplate, displayNameFor, shortNameFor, suggestMrp } from './productTemplates'
 
 const OILS = {
   'Coconut Oil': { oil_slug: 'coconut-oil', tag: 'Coconut', tint: '#e6e1d4' },
@@ -40,7 +43,6 @@ const sizeSuffixFor = (sizeLong) => {
 }
 
 const slugFor = (oil, sizeLong) => `${oilMetaFor(oil).oil_slug}-${sizeSuffixFor(sizeLong) || 'size'}`
-const suggestMrp = (price) => (price ? Math.round((Number(price) * 1.34) / 5) * 5 : '')
 
 const blank = {
   oil: 'Coconut Oil',
@@ -56,6 +58,10 @@ const blank = {
   badge: '',
   is_active: true,
   images: [],
+  ...seoFromApi(),
+  sku: '',
+  gtin: '',
+  mpn: '',
 }
 
 export default function AdminProductForm() {
@@ -67,6 +73,8 @@ export default function AdminProductForm() {
   const [loading, setLoading] = useState(!isNew)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
+  const [note, setNote] = useState(null) // { text, oil, size } — shown only while that oil + size is still selected
+  const [fedFor, setFedFor] = useState(null) // { oil, size, values } the template last loaded, and exactly what it typed
 
   useEffect(() => {
     if (isNew) return
@@ -88,6 +96,10 @@ export default function AdminProductForm() {
           badge: p.badge || '',
           is_active: p.is_active ?? true,
           images: p.images || [],
+          ...seoFromApi(p),
+          sku: p.sku || '',
+          gtin: p.gtin || '',
+          mpn: p.mpn || '',
         })
       })
       .catch((e) => alive && setErr(e.message || 'Could not load this product.'))
@@ -128,10 +140,64 @@ export default function AdminProductForm() {
       const images = [...s.images]
       if (url) images[i] = url
       else images.splice(i, 1)
-      return { ...s, images: images.filter(Boolean) }
+      const next = images.filter(Boolean)
+
+      // a share image that is empty, or just mirrors the first photo (or the template's standard photo),
+      // follows the first photo; one the admin set to something else is left alone
+      const mirrors = !s.og_image || s.og_image === (s.images[0] ?? fedFor?.values.og_image)
+      return { ...s, images: next, ...(mirrors && next[0] !== s.images[0] ? { og_image: next[0] ?? '' } : {}) }
     })
 
   const slug = slugFor(f.oil, f.size_long)
+
+  /* "Auto feed template": fill every field the template can (names, copy, price, stock, SKU, search + share text) for the chosen oil + size. */
+  const feedTemplate = () => {
+    const oil = f.oil.trim()
+    const sizeLong = String(f.size_long || '').trim()
+    if (!oil || !sizeLong) {
+      setNote(null)
+      return setErr('Choose the oil and pack size first, then load the template.')
+    }
+
+    const { values, known } = buildTemplate({ oil, sizeLong, slug, firstImage: f.images[0] || '' })
+    const fed = fedFor?.values ?? {} // what this button typed last time
+
+    // only ask when it would overwrite something the admin typed (not our own earlier fill)
+    const overwritesTyped = TEMPLATE_KEYS.some((k) => {
+      if (values[k] === null) return false
+      const raw = String(f[k] ?? '')
+      return raw.trim() !== '' && raw !== String(values[k]) && raw !== fed[k]
+    })
+    if (overwritesTyped && !window.confirm('Replace what you have typed with the template?')) return
+
+    setErr('')
+    setF((s) => {
+      const next = { ...s }
+      for (const k of TEMPLATE_KEYS) {
+        if (values[k] !== null) next[k] = String(values[k])
+        else if (String(s[k] ?? '') === fed[k]) next[k] = '' // an earlier auto-fill that no longer applies
+      }
+      return next
+    })
+    setFedFor({
+      oil,
+      size: sizeLong,
+      values: Object.fromEntries(TEMPLATE_KEYS.filter((k) => values[k] !== null).map((k) => [k, String(values[k])])),
+    })
+
+    let text = `Template loaded for ${oil} — ${sizeLong}.`
+    if (!known) text += ` There is no ready-made blurb, tagline or description for "${oil}" — write those and the price yourself; the name, SKU and search text are filled.`
+    else if (values.price === null) text += ` "${sizeLong}" is not in the standard price list — enter the price yourself (an MRP suggestion follows it).`
+    else text += ` Price ₹${values.price}, MRP ₹${values.mrp}.`
+    text += ` Stock is a placeholder (${values.stock}) — set your real count. Still to do: add product photos; GTIN and MPN stay empty unless you have real barcodes.`
+    setNote({ oil, size: sizeLong, text })
+  }
+
+  // what is selected now vs. what the template was loaded for
+  const oilNow = f.oil.trim()
+  const sizeNow = String(f.size_long || '').trim()
+  const templateStale = Boolean(fedFor) && (fedFor.oil !== oilNow || fedFor.size !== sizeNow)
+  const noteText = note && note.oil === oilNow && note.size === sizeNow ? note.text : ''
 
   const save = async () => {
     setErr('')
@@ -144,8 +210,8 @@ export default function AdminProductForm() {
     if (!sizeLong) return setErr('Enter pack size.')
     const payload = {
       slug,
-      name: f.name.trim() || `Samaha Unrefined Cold-Pressed ${f.oil.trim()} (Chekku) — ${sizeLong}`,
-      short_name: f.short_name.trim() || `Cold-Pressed ${f.oil.trim()} — ${sizeLong}`,
+      name: f.name.trim() || displayNameFor(f.oil.trim(), sizeLong),
+      short_name: f.short_name.trim() || shortNameFor(f.oil.trim(), sizeLong),
       oil: f.oil.trim(),
       oil_slug: meta.oil_slug,
       tag: meta.tag,
@@ -161,6 +227,12 @@ export default function AdminProductForm() {
       badge: f.badge.trim() || null,
       tint: meta.tint,
       is_active: f.is_active,
+      ...seoToApi(f),
+      // the template's canonical is the page's own address: keep it right if the size was changed afterwards
+      ...(fedFor && f.canonical_url.trim() === fedFor.values.canonical_url ? { canonical_url: `/shop/${slug}` } : {}),
+      sku: f.sku.trim() || null,
+      gtin: f.gtin.trim() || null,
+      mpn: f.mpn.trim() || null,
     }
 
     setBusy(true)
@@ -216,10 +288,40 @@ export default function AdminProductForm() {
 
       {err && <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{err}</p>}
 
+      {templateStale ? (
+        <p
+          role="status"
+          className="mb-4 rounded-lg border px-3 py-2 text-sm"
+          style={{ borderColor: 'var(--a-warn)', color: 'var(--a-warn)' }}
+        >
+          The oil or pack size changed after the template was loaded — click “Auto feed template” again to refresh the auto-filled fields.
+        </p>
+      ) : (
+        noteText && (
+          <p
+            role="status"
+            className="mb-4 rounded-lg border px-3 py-2 text-sm"
+            style={{ borderColor: 'var(--a-border-strong)', background: 'var(--a-accent-soft)', color: 'var(--a-text-dim)' }}
+          >
+            {noteText}
+          </p>
+        )
+      )}
+
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
         {/* main column */}
         <div className="space-y-5">
-          <Card title="Basics">
+          <Card
+            title="Basics"
+            hint={isNew ? 'Choose the oil and pack size, then click Auto feed template to fill in the names, description, price, stock and search text.' : undefined}
+            action={
+              isNew ? (
+                <button type="button" className="a-btn a-btn-sm" onClick={feedTemplate}>
+                  <Sparkles size={14} /> Auto feed template
+                </button>
+              ) : null
+            }
+          >
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Oil">
                 <select className="a-select" value={oilSelectValue} onChange={onOilSelect}>
@@ -255,7 +357,7 @@ export default function AdminProductForm() {
                 className="a-input"
                 value={f.name}
                 onChange={set('name')}
-                placeholder={`Samaha Unrefined Cold-Pressed ${f.oil} (Chekku) — ${f.size_long}`}
+                placeholder={displayNameFor(f.oil, f.size_long)}
               />
             </Field>
             <Field label="Short name" className="mt-4">
@@ -263,7 +365,7 @@ export default function AdminProductForm() {
                 className="a-input"
                 value={f.short_name}
                 onChange={set('short_name')}
-                placeholder={`Cold-Pressed ${f.oil} — ${f.size_long}`}
+                placeholder={shortNameFor(f.oil, f.size_long)}
               />
             </Field>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -285,9 +387,21 @@ export default function AdminProductForm() {
           <Card title="Images" hint="Up to 4. First image is used on cards. Recommended: square, at least 1200×1200px, JPG/PNG/WebP, up to 20MB.">
             <div className="flex flex-wrap gap-3">
               {[0, 1, 2, 3].map((i) => (
-                <ImageSlot key={i} url={f.images[i]} onChange={(url) => setImageAt(i, url)} />
+                <ImageSlot key={i} url={f.images[i]} name={f.name.trim() || `${f.oil} ${f.size_long}`} onChange={(url) => setImageAt(i, url)} />
               ))}
             </div>
+          </Card>
+
+          <Card title="Search & sharing (SEO)" hint="How this product looks in Google and when a link is shared. Everything is optional — empty fields use automatic text.">
+            <SeoFields
+              values={f}
+              onChange={(k, v) => setF((s) => ({ ...s, [k]: v }))}
+              fallback={{
+                title: `${f.short_name.trim() || shortNameFor(f.oil, f.size_long)} | Samaha`,
+                description: `Buy ${f.short_name.trim() || shortNameFor(f.oil, f.size_long)} online from Samaha. ${f.tagline.trim()}`.trim(),
+                path: `/shop/${slug}`,
+              }}
+            />
           </Card>
         </div>
 
@@ -326,6 +440,18 @@ export default function AdminProductForm() {
             </Field>
           </Card>
 
+          <Card title="Product identifiers" hint="Optional. Only enter real codes — they are used for Google search and Shopping.">
+            <Field label="SKU">
+              <input className="a-input" value={f.sku} onChange={set('sku')} placeholder={slug} />
+            </Field>
+            <Field label="GTIN / barcode" className="mt-4">
+              <input className="a-input" inputMode="numeric" value={f.gtin} onChange={set('gtin')} placeholder="8, 12, 13 or 14 digits" />
+            </Field>
+            <Field label="MPN" className="mt-4">
+              <input className="a-input" value={f.mpn} onChange={set('mpn')} />
+            </Field>
+          </Card>
+
           {!isNew && (
             <button className="a-btn a-btn-sm w-full text-[var(--a-danger)]" onClick={remove} disabled={busy}>
               <Trash2 size={14} /> Delete product
@@ -339,12 +465,15 @@ export default function AdminProductForm() {
 
 /* ------------------------------------------------------------------ */
 
-function Card({ title, hint, children }) {
+function Card({ title, hint, action, children }) {
   return (
     <div className="a-card" style={{ borderRadius: 'var(--a-radius-lg)' }}>
-      <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--a-border)' }}>
-        <h2 className="text-[0.95rem] font-semibold">{title}</h2>
-        {hint && <p className="a-mute mt-0.5 text-[0.75rem]">{hint}</p>}
+      <div className="flex flex-wrap items-start justify-between gap-3 px-5 py-4" style={{ borderBottom: '1px solid var(--a-border)' }}>
+        <div className="min-w-0 flex-1 basis-64">
+          <h2 className="text-[0.95rem] font-semibold">{title}</h2>
+          {hint && <p className="a-mute mt-0.5 text-[0.75rem]">{hint}</p>}
+        </div>
+        {action}
       </div>
       <div className="p-5">{children}</div>
     </div>
@@ -360,7 +489,7 @@ function Row({ k, v, mono }) {
   )
 }
 
-function ImageSlot({ url, onChange }) {
+function ImageSlot({ url, name, onChange }) {
   const [busy, setBusy] = useState(false)
   const inputRef = useRef(null)
 
@@ -370,7 +499,7 @@ function ImageSlot({ url, onChange }) {
     if (!file) return
     setBusy(true)
     try {
-      const res = await uploadProductImage(file)
+      const res = await uploadProductImage(file, name)
       onChange(res.url)
     } catch (err) {
       alert(err.message || 'Upload failed')

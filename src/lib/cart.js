@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import { getToken, getUser } from './account'
+import { trackAddToCart, trackRemoveFromCart } from './analytics'
 
 const GUEST_KEY = 'samahaCart'
 const MAX = 99
@@ -115,21 +116,27 @@ export function addToCart(slug, qty = 1) {
     : [...raw, { slug, qty }]
   emit()
   sync(() => api('/cart', 'POST', { product_slug: slug, qty }))
+  trackAddToCart(slug, qty)
 }
 
 export function setCartQty(slug, qty) {
   qty = Math.max(0, Math.min(MAX, qty))
+  const prev = raw.find((i) => i.slug === slug)?.qty ?? 0
   raw = qty === 0
     ? raw.filter((i) => i.slug !== slug)
     : raw.map((i) => (i.slug === slug ? { ...i, qty } : i))
   emit()
   sync(() => api(`/cart/${slug}`, 'PUT', { qty }))
+  if (qty > prev) trackAddToCart(slug, qty - prev)
+  else if (qty < prev) trackRemoveFromCart(slug, prev - qty)
 }
 
 export function removeFromCart(slug) {
+  const prev = raw.find((i) => i.slug === slug)?.qty ?? 1
   raw = raw.filter((i) => i.slug !== slug)
   emit()
   sync(() => api(`/cart/${slug}`, 'DELETE'))
+  trackRemoveFromCart(slug, prev)
 }
 
 export function clearCart() {

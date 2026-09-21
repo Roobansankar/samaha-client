@@ -19,7 +19,7 @@ import Banner from './components/Banner'
 import Cta from './components/Cta'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
-import SeoCanonical from './components/SeoCanonical'
+import RouteSeo from './components/RouteSeo'
 import AboutPage from './components/AboutPage'
 import ContactPage from './components/ContactPage'
 import ShopPage from './components/ShopPage'
@@ -36,6 +36,7 @@ import CheckoutSuccessPage from './components/CheckoutSuccessPage'
 import PolicyPage from './components/PolicyPage'
 import NotFound from './components/NotFound'
 import { initCart } from './lib/cart'
+import { initAnalytics } from './lib/analytics'
 
 // Pure scroll-animation polish — doesn't gate any visible content, so it's
 // safe to pull out of the critical-path bundle.
@@ -54,6 +55,7 @@ const AdminOrderView = lazy(() => import('./components/admin/AdminOrderView'))
 const AdminCustomers = lazy(() => import('./components/admin/AdminCustomers'))
 const AdminReviews = lazy(() => import('./components/admin/AdminReviews'))
 const AdminBanners = lazy(() => import('./components/admin/AdminBanners'))
+const AdminCategories = lazy(() => import('./components/admin/AdminCategories'))
 const AdminProducts = lazy(() => import('./components/admin/AdminProducts'))
 const AdminProductForm = lazy(() => import('./components/admin/AdminProductForm'))
 const AdminProductView = lazy(() => import('./components/admin/AdminProductView'))
@@ -112,12 +114,13 @@ function AppContent() {
 
   useEffect(() => {
     initCart()
+    initAnalytics()
   }, [])
 
   return (
     <>
       <ScrollToTop />
-      <SeoCanonical />
+      <RouteSeo />
       <Suspense fallback={null}>
         <GsapScroll />
       </Suspense>
@@ -170,6 +173,7 @@ function AppContent() {
           <Route path="customers" element={<AdminCustomers />} />
           <Route path="reviews" element={<AdminReviews />} />
           <Route path="banners" element={<AdminBanners />} />
+          <Route path="categories" element={<AdminCategories />} />
           <Route path="products" element={<AdminProducts />} />
           <Route path="products/new" element={<AdminProductForm />} />
           <Route path="products/trash" element={<AdminProductsTrash />} />

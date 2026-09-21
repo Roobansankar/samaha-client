@@ -1,17 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      Title, description, robots, canonical, Open Graph and JSON-LD are NOT set here:
+      Laravel writes the correct ones for each URL into the HTML it serves
+      (server/app/Support/Seo), and <RouteSeo> keeps them right on in-app navigation.
+      The two tags below are only a fallback for when that server layer isn't in front.
+    -->
     <meta
       name="description"
-      content="Samaha — cold-pressed coconut oil. Pure, sulphur-free, and bottled by hand in small lots."
+      content="Samaha presses coconut, groundnut and sesame oil in small, dated lots in Coimbatore and bottles it by hand."
     />
     <meta name="theme-color" content="#2f5028" />
-    <link rel="canonical" href="https://samahanaturals.com/" />
-    <meta property="og:url" content="https://samahanaturals.com/" />
-    <meta property="og:type" content="website" />
 
     <!-- Preload the first hero image so it paints fast -->
     <link rel="preload" as="image" href="/slidem1.webp" media="(max-width: 639px)" fetchpriority="high" />
@@ -23,7 +26,7 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&display=swap"
       rel="stylesheet"
     />
-    <title>Samaha — Cold-Pressed Coconut Oil</title>
+    <title>Samaha | Cold-Pressed Coconut, Groundnut &amp; Sesame Oils</title>
   </head>
   <body>
     <div id="root"></div>
