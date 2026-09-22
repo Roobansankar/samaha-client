@@ -126,6 +126,10 @@ export async function fetchCustomers(q = '') {
   return request(`${API_URL}/admin/customers${qs}`)
 }
 
+export async function deleteCustomer(id) {
+  return request(`${API_URL}/admin/customers/${id}`, { method: 'DELETE' })
+}
+
 export async function fetchOrders(params = {}) {
   const qs = new URLSearchParams(
     Object.entries(params).filter(([, v]) => v && v !== 'all'),
@@ -135,6 +139,10 @@ export async function fetchOrders(params = {}) {
 
 export async function fetchOrder(id) {
   return request(`${API_URL}/admin/orders/${id}`)
+}
+
+export async function markOrderPaid(id) {
+  return request(`${API_URL}/admin/orders/${id}/mark-paid`, { method: 'PATCH' })
 }
 
 /* ---- Products ---- */

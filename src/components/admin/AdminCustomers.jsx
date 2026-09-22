@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Search, RefreshCw, ListFilter, Loader2 } from 'lucide-react'
+import { Search, RefreshCw, ListFilter, Loader2, Trash2 } from 'lucide-react'
 import { Panel, StatusBadge, EmptyRow, ResultCount, Pager } from './ui'
-import { fetchCustomers } from './auth'
+import { fetchCustomers, deleteCustomer } from './auth'
 
 const PER_PAGE = 10
 
@@ -26,6 +26,7 @@ export default function AdminCustomers() {
   const [error, setError] = useState('')
   const [q, setQ] = useState('')
   const [page, setPage] = useState(1)
+  const [busyId, setBusyId] = useState(null)
 
   const load = async () => {
     setLoading(true)
@@ -52,6 +53,19 @@ export default function AdminCustomers() {
   const pageCount = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
   const safePage = Math.min(page, pageCount)
   const pageRows = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
+
+  const remove = async (c) => {
+    if (!window.confirm(`Delete "${c.name}" (${c.email})? Their addresses and cart are removed too. This cannot be undone.`)) return
+    setBusyId(c.id)
+    try {
+      await deleteCustomer(c.id)
+      setRows((r) => r.filter((x) => x.id !== c.id))
+    } catch (e) {
+      setError(e.message || 'Could not delete this customer.')
+    } finally {
+      setBusyId(null)
+    }
+  }
 
   return (
     <Panel
@@ -89,6 +103,7 @@ export default function AdminCustomers() {
       <table className="a-table">
         <thead>
           <tr>
+            <th style={{ width: 56 }}>S.No</th>
             <th>Customer</th>
             <th>Sign-up</th>
             <th>Phone</th>
@@ -96,12 +111,13 @@ export default function AdminCustomers() {
             <th>Joined</th>
             <th>Last active</th>
             <th>Status</th>
+            <th className="text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
           {loading && (
             <tr>
-              <td colSpan={7} className="py-12 text-center a-mute">
+              <td colSpan={9} className="py-12 text-center a-mute">
                 <Loader2 size={16} className="mx-auto animate-spin" />
               </td>
             </tr>
@@ -109,19 +125,20 @@ export default function AdminCustomers() {
 
           {!loading && error && (
             <tr>
-              <td colSpan={7} className="py-8 text-center text-red-600">{error}</td>
+              <td colSpan={9} className="py-8 text-center text-red-600">{error}</td>
             </tr>
           )}
 
           {!loading && !error && pageRows.length === 0 && (
             <EmptyRow
-              colSpan={7}
+              colSpan={9}
               label={q ? 'No customers match your search' : 'No customers have registered yet'}
             />
           )}
 
-          {!loading && !error && pageRows.map((c) => (
+          {!loading && !error && pageRows.map((c, idx) => (
             <tr key={c.id}>
+              <td className="a-mono a-dim">{(safePage - 1) * PER_PAGE + idx + 1}</td>
               <td>
                 <div className="flex items-center gap-3">
                   {c.avatar ? (
@@ -160,6 +177,17 @@ export default function AdminCustomers() {
               <td className="a-dim">{fmtDate(c.joined)}</td>
               <td className="a-dim">{fmtWhen(c.last_login_at)}</td>
               <td><StatusBadge status="Active" /></td>
+              <td className="text-right">
+                <button
+                  className="a-iconbtn"
+                  title="Delete customer"
+                  aria-label={`Delete ${c.name}`}
+                  disabled={busyId === c.id}
+                  onClick={() => remove(c)}
+                >
+                  {busyId === c.id ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

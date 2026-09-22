@@ -13,8 +13,17 @@ const fmtDate = (d) =>
       })
     : '-'
 
-const STATUS_LABEL = { created: 'Payment pending', paid: 'Paid', failed: 'Payment failed' }
-const STATUS_RGB = { paid: [26, 127, 71], failed: [192, 57, 43], created: [167, 106, 18] }
+const STATUS_LABEL = { created: 'Payment pending', paid: 'Paid', confirmed: 'Cash on Delivery', cancelled: 'Payment cancelled', failed: 'Payment failed' }
+const STATUS_RGB = { paid: [26, 127, 71], failed: [192, 57, 43], cancelled: [192, 57, 43], created: [167, 106, 18], confirmed: [47, 111, 235] }
+
+/**
+ * Short admin-badge text for an order. `status` is created | paid | confirmed | cancelled |
+ * failed; `paymentMethod` (online | cod) only changes the label when it's actually paid, so a
+ * COD order that's been collected reads "Paid (COD)" rather than plain "Paid".
+ */
+const BADGE_LABEL = { created: 'Pending', paid: 'Paid', confirmed: 'Cash on Delivery', cancelled: 'Cancelled', failed: 'Failed' }
+export const orderStatusLabel = (status, paymentMethod) =>
+  status === 'paid' && paymentMethod === 'cod' ? 'Paid (COD)' : BADGE_LABEL[status] || 'Pending'
 
 const OLIVE = [36, 61, 30]
 const INK = [26, 46, 20]
@@ -85,7 +94,8 @@ export async function downloadOrderInvoice(order, getVariant) {
   const total = order.total ?? subtotal + shipping
   const units = order.item_count ?? items.reduce((s, i) => s + i.qty, 0)
   const placed = fmtDate(order.placed_at)
-  const statusLabel = STATUS_LABEL[order.status] || order.status || 'Order'
+  const isCod = order.payment_method === 'cod'
+  const statusLabel = order.status === 'paid' && isCod ? 'Paid (Cash on Delivery)' : STATUS_LABEL[order.status] || order.status || 'Order'
 
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const W = doc.internal.pageSize.getWidth()
@@ -110,7 +120,7 @@ export async function downloadOrderInvoice(order, getVariant) {
   doc.text('INVOICE', W - M, 13, { align: 'right' })
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
-  doc.text(`Order #${order.id}`, W - M, 19, { align: 'right' })
+  doc.text(`Order ${order.order_number ?? '#' + order.id}`, W - M, 19, { align: 'right' })
   doc.text(placed, W - M, 24, { align: 'right' })
 
   let y = 42
@@ -149,8 +159,12 @@ export async function downloadOrderInvoice(order, getVariant) {
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
   doc.setTextColor(...INK)
-  doc.text(`Razorpay order:  ${order.razorpay_order_id || '-'}`, M, y)
-  doc.text(`Payment ID:  ${order.payment_id || '-'}`, M, y + 4.6)
+  if (isCod) {
+    doc.text('Method:  Cash on Delivery', M, y)
+  } else {
+    doc.text(`Razorpay order:  ${order.razorpay_order_id || '-'}`, M, y)
+    doc.text(`Payment ID:  ${order.payment_id || '-'}`, M, y + 4.6)
+  }
   doc.text(`${items.length} product${items.length === 1 ? '' : 's'}  -  ${units} unit${units === 1 ? '' : 's'}`, half, y)
   doc.text(`Placed ${placed}`, half, y + 4.6)
   y += 12
@@ -238,5 +252,5 @@ export async function downloadOrderInvoice(order, getVariant) {
   doc.text('Samaha Natural Oils  -  thank you for your order.', M, y)
   doc.text('This is a computer-generated invoice. For any query, reply to your order confirmation email.', M, y + 4)
 
-  doc.save(`Samaha-Invoice-${order.id}.pdf`)
+  doc.save(`Samaha-Invoice-${order.order_number ?? order.id}.pdf`)
 }

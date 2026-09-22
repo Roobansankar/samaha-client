@@ -463,7 +463,7 @@ function OrderCard({ order, compact }) {
     <div className="overflow-hidden rounded-xl border border-olive-900/10">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 bg-[#faf8f3] px-4 py-3">
         <div>
-          <p className="text-sm font-semibold text-olive-900">Order #{order.id}</p>
+          <p className="text-sm font-semibold text-olive-900">Order {order.order_number ?? `#${order.id}`}</p>
           <p className="text-xs text-olive-700/60">
             {fmtDate(order.placed_at)} · {units} {units === 1 ? 'item' : 'items'}
           </p>

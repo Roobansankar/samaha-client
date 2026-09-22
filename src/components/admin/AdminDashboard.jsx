@@ -3,11 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Users, ShoppingBag, CircleDollarSign, MessageSquare, ArrowUpRight, RefreshCw } from 'lucide-react'
 import { PageHeader, StatCard, StatusBadge, Loader } from './ui'
 import { fetchDashboard } from './auth'
+import { orderStatusLabel } from '../../lib/orderInvoice'
 
 const inr = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`
 const fmtDate = (d) =>
   d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: '2-digit' }) : '—'
-const badgeFor = (s) => (s === 'created' ? 'Pending' : s === 'paid' ? 'Paid' : 'Failed')
 const initials = (n) => (n || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase()
 
 /* ---------- charts ---------- */
@@ -245,7 +245,7 @@ export default function AdminDashboard() {
                 )}
                 {data.recent_orders.map((o) => (
                   <tr key={o.id} className="cursor-pointer" onClick={() => navigate(`/admin/orders/${o.id}`)}>
-                    <td className="font-semibold a-mono">#{o.id}</td>
+                    <td className="font-semibold a-mono">{o.order_number != null ? o.order_number : <span className="a-mute">—</span>}</td>
                     <td>
                       <span className="flex items-center gap-2.5">
                         <span
@@ -258,7 +258,7 @@ export default function AdminDashboard() {
                       </span>
                     </td>
                     <td className="a-dim">{fmtDate(o.placed_at)}</td>
-                    <td><StatusBadge status={badgeFor(o.status)} /></td>
+                    <td><StatusBadge status={orderStatusLabel(o.status, o.payment_method)} /></td>
                     <td className="text-right font-semibold a-mono">{inr(o.total)}</td>
                   </tr>
                 ))}

@@ -58,8 +58,8 @@ export function Toolbar({ children }) {
 
 const TONE = {
   paid: 'green', captured: 'green', completed: 'green', active: 'green',
-  delivered: 'green', 'in stock': 'green', fulfilled: 'green',
-  processing: 'blue', shipped: 'blue',
+  delivered: 'green', 'in stock': 'green', fulfilled: 'green', 'paid (cod)': 'green',
+  processing: 'blue', shipped: 'blue', 'cash on delivery': 'blue',
   authorized: 'orange', pending: 'orange', 'low stock': 'orange',
   unfulfilled: 'orange', 'not fulfilled': 'orange', refunded: 'orange',
   cancelled: 'red', canceled: 'red', failed: 'red', 'out of stock': 'red',

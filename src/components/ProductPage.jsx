@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useLayoutEffect, useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import {
   ChevronRight, ChevronLeft, X,
   Minus, Plus, Check, Star, Truck, RotateCcw, ShieldCheck,
@@ -13,6 +13,7 @@ import { useVisibleProducts } from '../lib/catalog'
 import { fetchReviews } from '../lib/reviews'
 import { fetchProduct } from '../lib/api'
 import { addToCart } from '../lib/cart'
+import { useAccount } from '../lib/account'
 import NotFound from './NotFound'
 import VariantCard from './VariantCard'
 import ProductReviews from './ProductReviews'
@@ -288,7 +289,9 @@ function Stars({ rating }) {
 
 function ShareButton({ product }) {
   const [open, setOpen] = useState(false)
+  const [openUp, setOpenUp] = useState(false)
   const ref = useRef(null)
+  const menuRef = useRef(null)
 
   const url = typeof window !== 'undefined' ? window.location.href : ''
   const title = `${product.name} — Samaha Cold-Pressed Oil`
@@ -306,6 +309,21 @@ function ShareButton({ product }) {
       document.removeEventListener('mousedown', onClick)
       document.removeEventListener('keydown', onKey)
     }
+  }, [open])
+
+  // Opening downward can push the menu under the fixed mobile tab bar, or off the
+  // bottom of the screen entirely (the button sits low on the page, right under the
+  // gallery). Flip it to open upward whenever there isn't room for it below.
+  useLayoutEffect(() => {
+    if (!open) return
+    const el = menuRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    // .tabbar is hidden (display:none) above 900px wide, which makes its rect all zeros —
+    // only trust its position when it actually has a size, i.e. is on screen.
+    const tabbarRect = document.querySelector('.tabbar')?.getBoundingClientRect()
+    const floor = tabbarRect && tabbarRect.height > 0 ? tabbarRect.top : window.innerHeight
+    setOpenUp(rect.bottom > floor)
   }, [open])
 
   const share = (href) => {
@@ -371,7 +389,12 @@ function ShareButton({ product }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-xl border border-line bg-paper p-1.5 shadow-lg">
+        <div
+          ref={menuRef}
+          className={`absolute right-0 z-[calc(var(--z-nav)+10)] w-48 rounded-xl border border-line bg-paper p-1.5 shadow-lg ${
+            openUp ? 'bottom-full mb-2' : 'top-full mt-2'
+          }`}
+        >
           {channels.map(({ label, icon: Icon, color, href }) => (
             <button
               key={label}
@@ -419,6 +442,8 @@ const DELIVERY = [
 
 export default function ProductPage() {
   const { slug } = useParams()
+  const navigate = useNavigate()
+  const account = useAccount()
   const { getVariant, getProduct, firstVariantSlug, oilGroups, loading: productsLoading } = useProducts()
   const base = getVariant(slug)
 
@@ -491,6 +516,12 @@ export default function ProductPage() {
   )
   const headingSize = 'clamp(1.35rem, 1.1rem + 1vw, 1.7rem)'
 
+  const buyNow = () => {
+    addToCart(product.slug, qty)
+    // same login gate as Cart → Checkout: send a guest to sign in first, then straight on to checkout
+    navigate(account ? '/checkout' : '/account?redirect=/checkout')
+  }
+
   return (
     <div className="bg-paper">
       <div className="px-[var(--spacing-gutter)] py-[clamp(1.75rem,4vw,3rem)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
@@ -550,9 +581,9 @@ export default function ProductPage() {
                 Pack size: <span className="font-medium text-olive-900">{product.sizeLong}</span>
               </p>
 
-              {/* qty + add */}
+              {/* quantity */}
               <div className="mt-7 flex flex-wrap items-center gap-3">
-                <div className="flex items-center rounded-pill border border-line bg-paper">
+                <div className="flex w-fit items-center rounded-pill border border-line bg-paper">
                   <button
                     type="button"
                     onClick={() => setQty((q) => Math.max(1, q - 1))}
@@ -573,7 +604,15 @@ export default function ProductPage() {
                     <Plus size={16} />
                   </button>
                 </div>
+                {qty > 1 && (
+                  <span className="text-sm text-text-mute">
+                    Total: <span className="font-semibold text-olive-900">{rupees(total)}</span>
+                  </span>
+                )}
+              </div>
 
+              {/* add to cart + buy now */}
+              <div className="mt-3 flex gap-3">
                 <button
                   type="button"
                   disabled={soldOut}
@@ -583,9 +622,18 @@ export default function ProductPage() {
                     setAdded(true)
                     setTimeout(() => setAdded(false), 1600)
                   }}
-                  className="btn btn-primary min-w-[14rem] flex-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="btn btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {soldOut ? 'Out of stock' : added ? <>Added to cart <Check size={16} strokeWidth={2.5} /></> : <>Add to cart — {rupees(total)}</>}
+                  {soldOut ? 'Out of stock' : added ? <>Added <Check size={16} strokeWidth={2.5} /></> : <>Add to cart</>}
+                </button>
+
+                <button
+                  type="button"
+                  disabled={soldOut}
+                  onClick={buyNow}
+                  className="btn btn-ghost flex-1 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Buy now
                 </button>
               </div>
 

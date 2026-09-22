@@ -42,6 +42,11 @@ async function post(path, body) {
 
 export const createOrder = (payload) => post('/checkout/order', payload)
 export const verifyPayment = (payload) => post('/checkout/verify', payload)
+/** Best-effort: tell the server a checkout ended without paying, so admin can tell it apart
+ *  from an order still in progress. Never blocks the UI — call sites should ignore failures. */
+export const abandonOrder = (payload) => post('/checkout/abandon', payload)
+/** Cash on Delivery: places the order directly — no gateway round-trip, real the moment it returns. */
+export const placeCodOrder = (payload) => post('/checkout/cod', payload)
 
 export async function fetchOrders() {
   const res = await fetch('/api/account/orders', {

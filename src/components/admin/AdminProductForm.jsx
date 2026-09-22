@@ -44,6 +44,10 @@ const sizeSuffixFor = (sizeLong) => {
 
 const slugFor = (oil, sizeLong) => `${oilMetaFor(oil).oil_slug}-${sizeSuffixFor(sizeLong) || 'size'}`
 
+/* Spec rows with a blank label or value (e.g. a freshly added, not-yet-filled row) don't count as "content". */
+const nonEmptySpecs = (rows) => (rows || []).filter(([l, v]) => String(l ?? '').trim() && String(v ?? '').trim())
+const specsEqual = (a, b) => JSON.stringify(nonEmptySpecs(a)) === JSON.stringify(nonEmptySpecs(b))
+
 const blank = {
   oil: 'Coconut Oil',
   size_long: '1 Litre',
@@ -58,6 +62,7 @@ const blank = {
   badge: '',
   is_active: true,
   images: [],
+  specs: [],
   ...seoFromApi(),
   sku: '',
   gtin: '',
@@ -96,6 +101,7 @@ export default function AdminProductForm() {
           badge: p.badge || '',
           is_active: p.is_active ?? true,
           images: p.images || [],
+          specs: p.specs || [],
           ...seoFromApi(p),
           sku: p.sku || '',
           gtin: p.gtin || '',
@@ -161,13 +167,19 @@ export default function AdminProductForm() {
 
     const { values, known } = buildTemplate({ oil, sizeLong, slug, firstImage: f.images[0] || '' })
     const fed = fedFor?.values ?? {} // what this button typed last time
+    const fedSpecs = fedFor?.specs ?? null
 
     // only ask when it would overwrite something the admin typed (not our own earlier fill)
-    const overwritesTyped = TEMPLATE_KEYS.some((k) => {
-      if (values[k] === null) return false
-      const raw = String(f[k] ?? '')
-      return raw.trim() !== '' && raw !== String(values[k]) && raw !== fed[k]
-    })
+    const overwritesTyped =
+      TEMPLATE_KEYS.some((k) => {
+        if (values[k] === null) return false
+        const raw = String(f[k] ?? '')
+        return raw.trim() !== '' && raw !== String(values[k]) && raw !== fed[k]
+      }) ||
+      (values.specs !== null &&
+        nonEmptySpecs(f.specs).length > 0 &&
+        !specsEqual(f.specs, values.specs) &&
+        !(fedSpecs && specsEqual(f.specs, fedSpecs)))
     if (overwritesTyped && !window.confirm('Replace what you have typed with the template?')) return
 
     setErr('')
@@ -177,16 +189,19 @@ export default function AdminProductForm() {
         if (values[k] !== null) next[k] = String(values[k])
         else if (String(s[k] ?? '') === fed[k]) next[k] = '' // an earlier auto-fill that no longer applies
       }
+      if (values.specs !== null) next.specs = values.specs
+      else if (fedSpecs && specsEqual(s.specs, fedSpecs)) next.specs = [] // an earlier auto-fill that no longer applies
       return next
     })
     setFedFor({
       oil,
       size: sizeLong,
       values: Object.fromEntries(TEMPLATE_KEYS.filter((k) => values[k] !== null).map((k) => [k, String(values[k])])),
+      specs: values.specs,
     })
 
     let text = `Template loaded for ${oil} — ${sizeLong}.`
-    if (!known) text += ` There is no ready-made blurb, tagline or description for "${oil}" — write those and the price yourself; the name, SKU and search text are filled.`
+    if (!known) text += ` There is no ready-made blurb, tagline, description or specifications for "${oil}" — write those and the price yourself; the name, SKU and search text are filled.`
     else if (values.price === null) text += ` "${sizeLong}" is not in the standard price list — enter the price yourself (an MRP suggestion follows it).`
     else text += ` Price ₹${values.price}, MRP ₹${values.mrp}.`
     text += ` Stock is a placeholder (${values.stock}) — set your real count. Still to do: add product photos; GTIN and MPN stay empty unless you have real barcodes.`
@@ -224,6 +239,7 @@ export default function AdminProductForm() {
       mrp: f.mrp ? Number(f.mrp) : null,
       stock: Number(f.stock),
       images: f.images.slice(0, 4),
+      specs: nonEmptySpecs(f.specs).map(([l, v]) => [l.trim(), v.trim()]),
       badge: f.badge.trim() || null,
       tint: meta.tint,
       is_active: f.is_active,
@@ -384,6 +400,10 @@ export default function AdminProductForm() {
             </Field>
           </Card>
 
+          <Card title="Specifications" hint="Shown as a table on the product page. Add real facts only — a row with an empty label or value is left out.">
+            <SpecsEditor specs={f.specs} onChange={(specs) => setF((s) => ({ ...s, specs }))} />
+          </Card>
+
           <Card title="Images" hint="Up to 4. First image is used on cards. Recommended: square, at least 1200×1200px, JPG/PNG/WebP, up to 20MB.">
             <div className="flex flex-wrap gap-3">
               {[0, 1, 2, 3].map((i) => (
@@ -476,6 +496,41 @@ function Card({ title, hint, action, children }) {
         {action}
       </div>
       <div className="p-5">{children}</div>
+    </div>
+  )
+}
+
+function SpecsEditor({ specs, onChange }) {
+  const setCell = (i, col, value) =>
+    onChange(specs.map((row, idx) => (idx !== i ? row : col === 0 ? [value, row[1]] : [row[0], value])))
+  const removeRow = (i) => onChange(specs.filter((_, idx) => idx !== i))
+  const addRow = () => onChange([...specs, ['', '']])
+
+  return (
+    <div className="space-y-2.5">
+      {specs.map((row, i) => (
+        <div key={i} className="flex items-center gap-2">
+          <input
+            className="a-input"
+            style={{ flex: '0 0 38%' }}
+            value={row[0]}
+            onChange={(e) => setCell(i, 0, e.target.value)}
+            placeholder="Label, e.g. Extraction"
+          />
+          <input
+            className="a-input flex-1"
+            value={row[1]}
+            onChange={(e) => setCell(i, 1, e.target.value)}
+            placeholder="Value, e.g. Chekku cold-pressed"
+          />
+          <button type="button" onClick={() => removeRow(i)} className="a-iconbtn shrink-0" aria-label="Remove row">
+            <X size={14} />
+          </button>
+        </div>
+      ))}
+      <button type="button" onClick={addRow} className="a-btn a-btn-sm">
+        <Plus size={14} /> Add row
+      </button>
     </div>
   )
 }

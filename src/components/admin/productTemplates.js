@@ -16,6 +16,9 @@
  * address (/shop/{slug}) and its first photo. They are relative on purpose: the server turns
  * them into full URLs for whichever domain it runs on. The form and ProductController keep
  * them in step when the slug or the first photo changes.
+ *
+ * `specs` is not in TEMPLATE_KEYS (it's an array of [label, value] pairs, not text) — the form
+ * handles it separately. It's the same list already stored for the 12 launch products.
  */
 
 /* Same patterns the form falls back to when the name fields are left empty. */
@@ -41,6 +44,14 @@ const OIL_COPY = {
     seo: 'Unrefined oil from Velliangiri Hills coconuts, filled by hand in Coimbatore.',
     process:
       'It is unrefined, unfiltered and unbleached, with no solvents and no deodorising. Every bottle is filled by hand and stamped with its pressing date.',
+    specs: [
+      ['Extraction', 'Chekku cold-pressed'],
+      ['Pressed at', 'Below 27°C'],
+      ['Filtering', 'Unfiltered, naturally settled'],
+      ['Smoke point', '~177°C'],
+      ['Best for', 'Everyday cooking, baking, skin & hair'],
+      ['Shelf life', '12 months from pressing'],
+    ],
   },
   'Groundnut Oil': {
     image: '/products/groundnut-oil.webp',
@@ -52,6 +63,14 @@ const OIL_COPY = {
     seo: 'Unrefined oil from sun-dried groundnuts, wood-pressed in small batches in Coimbatore.',
     process:
       'It is unrefined and unfiltered, pressed in small batches in a wooden chekku and bottled by hand in short runs that carry the pressing date.',
+    specs: [
+      ['Extraction', 'Wood-pressed (chekku)'],
+      ['Pressed at', 'Below 40°C'],
+      ['Filtering', 'Lightly settled, unrefined'],
+      ['Smoke point', '~230°C'],
+      ['Best for', 'Deep frying, sautéing, tempering'],
+      ['Shelf life', '9 months from pressing'],
+    ],
   },
   'Sesame Oil': {
     image: '/products/sesame-oil.webp',
@@ -62,6 +81,14 @@ const OIL_COPY = {
       'Stone-ground from whole, unhulled sesame seeds and cold-pressed to preserve the deep, roasted aroma that makes sesame oil irreplaceable in Asian and Indian kitchens.\n\nA little goes a long way — drizzle over finished dishes, use in marinades, or add depth to stir-fries and dressings.',
     seo: 'Unrefined oil from stone-ground whole sesame seeds, pressed in small lots in Coimbatore.',
     process: 'It is unrefined, pressed in small, dated lots and bottled by hand.',
+    specs: [
+      ['Extraction', 'Stone-ground, cold-pressed'],
+      ['Pressed at', 'Below 30°C'],
+      ['Filtering', 'Unrefined, naturally settled'],
+      ['Smoke point', '~210°C'],
+      ['Best for', 'Finishing, marinades, stir-fries, dressings'],
+      ['Shelf life', '12 months from pressing'],
+    ],
   },
 }
 
@@ -116,6 +143,7 @@ export function buildTemplate({ oil, sizeLong, slug, firstImage = '' }) {
       og_description: copy?.tagline ?? null,
       og_image: firstImage || copy?.image || null,
       seo_content: copy ? [size?.line, copy.process].filter(Boolean).join('\n\n') : null,
+      specs: copy ? [['Pack size', sizeLong], ...copy.specs] : null,
     },
   }
 }
