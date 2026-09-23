@@ -12,7 +12,7 @@ import { useProducts } from '../context/ProductsContext'
 import { useVisibleProducts } from '../lib/catalog'
 import { fetchReviews } from '../lib/reviews'
 import { fetchProduct } from '../lib/api'
-import { addToCart } from '../lib/cart'
+import { addToCart, setCartQty } from '../lib/cart'
 import { useAccount } from '../lib/account'
 import NotFound from './NotFound'
 import VariantCard from './VariantCard'
@@ -517,7 +517,9 @@ export default function ProductPage() {
   const headingSize = 'clamp(1.35rem, 1.1rem + 1vw, 1.7rem)'
 
   const buyNow = () => {
-    addToCart(product.slug, qty)
+    // Set the exact qty — don't stack on top of what's already in the cart,
+    // otherwise checkout shows double (e.g. 1 old + 1 now = 2)
+    setCartQty(product.slug, qty)
     // same login gate as Cart → Checkout: send a guest to sign in first, then straight on to checkout
     navigate(account ? '/checkout' : '/account?redirect=/checkout')
   }

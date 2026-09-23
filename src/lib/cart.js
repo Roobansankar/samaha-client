@@ -122,9 +122,14 @@ export function addToCart(slug, qty = 1) {
 export function setCartQty(slug, qty) {
   qty = Math.max(0, Math.min(MAX, qty))
   const prev = raw.find((i) => i.slug === slug)?.qty ?? 0
-  raw = qty === 0
-    ? raw.filter((i) => i.slug !== slug)
-    : raw.map((i) => (i.slug === slug ? { ...i, qty } : i))
+  if (qty === 0) {
+    raw = raw.filter((i) => i.slug !== slug)
+  } else if (prev === 0) {
+    // row missing (e.g. Buy Now on a fresh page) — insert instead of no-op
+    raw = [...raw, { slug, qty }]
+  } else {
+    raw = raw.map((i) => (i.slug === slug ? { ...i, qty } : i))
+  }
   emit()
   sync(() => api(`/cart/${slug}`, 'PUT', { qty }))
   if (qty > prev) trackAddToCart(slug, qty - prev)
