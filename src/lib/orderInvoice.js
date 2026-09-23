@@ -162,8 +162,7 @@ export async function downloadOrderInvoice(order, getVariant) {
   if (isCod) {
     doc.text('Method:  Cash on Delivery', M, y)
   } else {
-    doc.text(`Razorpay order:  ${order.razorpay_order_id || '-'}`, M, y)
-    doc.text(`Payment ID:  ${order.payment_id || '-'}`, M, y + 4.6)
+    doc.text('Method:  Online', M, y)
   }
   doc.text(`${items.length} product${items.length === 1 ? '' : 's'}  -  ${units} unit${units === 1 ? '' : 's'}`, half, y)
   doc.text(`Placed ${placed}`, half, y + 4.6)

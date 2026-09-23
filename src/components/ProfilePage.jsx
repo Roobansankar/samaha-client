@@ -118,7 +118,6 @@ function Dashboard({ user }) {
         <dl className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2">
           <Row label="Name" value={user.name} />
           <Row label="Email" value={user.email} />
-          <Row label="Phone" value={user.phone || 'Not added'} />
           <Row label="Member since" value={fmtDate(user.created_at)} />
         </dl>
       </div>

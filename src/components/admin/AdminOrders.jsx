@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, RefreshCw, Eye, X, FileDown, CalendarDays, Loader2 } from 'lucide-react'
+import { Search, RefreshCw, Eye, X, FileDown, CalendarDays, Loader2, Wallet } from 'lucide-react'
 import { Panel, StatusBadge, EmptyRow, ResultCount, Pager } from './ui'
 import { fetchOrders } from './auth'
 import { enrichItems, downloadOrderInvoice, orderStatusLabel } from '../../lib/orderInvoice'
 import { useProducts } from '../../context/ProductsContext'
 
 const PER_PAGE = 10
-const inr = (n) => `₹ ${Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+const inr = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`
 const fmtDate = (d) =>
   d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : '—'
 
@@ -102,6 +102,8 @@ export default function AdminOrders() {
   const pageCount = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
   const safePage = Math.min(page, pageCount)
   const rows = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
+  // Money actually collected = paid orders only (confirmed COD is cash due on delivery, not yet received)
+  const amountReceived = filtered.reduce((s, o) => s + (o.status === 'paid' ? Number(o.total || 0) : 0), 0)
   const reset = (fn) => (v) => { fn(v); setPage(1) }
   const open = (id) => navigate(`/admin/orders/${id}`)
   const activeTab = TABS.find((t) => t.key === tab)
@@ -113,9 +115,16 @@ export default function AdminOrders() {
       title="Orders"
       description={activeTab.hint}
       actions={
-        <button className="a-btn a-btn-sm" onClick={load}>
-          <RefreshCw size={14} /> Refresh
-        </button>
+        <>
+          {tab === 'paid' && (
+            <span className="a-badge a-badge--no-dot" style={{ background: 'var(--a-accent-soft)' }} title={`Received from ${filtered.filter((o) => o.status === 'paid').length} paid order(s) in view`}>
+              <Wallet size={13} /> Amount received {inr(amountReceived)}
+            </span>
+          )}
+          <button className="a-btn a-btn-sm" onClick={load}>
+            <RefreshCw size={14} /> Refresh
+          </button>
+        </>
       }
       toolbar={
         <div className="flex w-full flex-col gap-2">

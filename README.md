@@ -137,10 +137,6 @@ export default function Products() {
 
 
 
-
-ALTER TABLE `banners`
-  ADD COLUMN `image_ratio` FLOAT NULL DEFAULT NULL AFTER `image_mobile`,
-  ADD COLUMN `image_mobile_ratio` FLOAT NULL DEFAULT NULL AFTER `image_ratio`;
 http://localhost:8000/api/auth/google/callback
 
 

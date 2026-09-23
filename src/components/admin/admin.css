@@ -291,6 +291,8 @@
 .a-badge--red   { background: rgba(214, 69, 69, 0.13); color: #d64545; }
 .a-badge--gray  { background: var(--a-surface-3); color: var(--a-text-dim); }
 .a-badge--active { background: var(--a-accent); color: var(--a-accent-fg); cursor: pointer; }
+.a-badge--no-dot::before { display: none; }
+.a-badge--no-dot { padding-left: 0.55rem; }
 .a-badge:not(.a-badge--active):hover { opacity: 0.8; cursor: pointer; }
 .admin.theme-dark .a-badge--green { background: rgba(74, 222, 128, 0.14); color: #6ee7a0; }
 .admin.theme-dark .a-badge--amber { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }

@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Phone, Mail, MapPin, Clock, Send, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { SOCIALS } from './SocialIcons'
 
 const CONTACT_INFO = [
   { Icon: Phone, label: 'Phone', value: '+91 99430 97030', href: 'tel:+919943097030' },
-  { Icon: Mail, label: 'Email', value: 'hello@samaha.in', href: 'mailto:hello@samaha.in' },
+  { Icon: Mail, label: 'Email', value: 'manoj@samahanaturals.com', href: 'mailto:manoj@samahanaturals.com' },
   { Icon: MapPin, label: 'Address', value: 'Sulur, Coimbatore, Tamil Nadu', href: '#' },
   { Icon: Clock, label: 'Hours', value: 'Mon – Sat, 9 AM – 6 PM', href: '#' },
 ]
@@ -75,7 +76,7 @@ export default function ContactPage() {
       </div>
 
       <div className="py-[clamp(3rem,7vw,5rem)] px-[var(--spacing-gutter)] min-[901px]:px-[calc(var(--spacing-gutter)+1.5rem)]">
-        <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr]">
+        <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:items-start">
 
           {/* Contact info */}
           <div className="flex flex-col gap-8">
@@ -103,6 +104,26 @@ export default function ContactPage() {
               ))}
             </div>
 
+            {/* Follow us */}
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-text-mute">Follow us</p>
+              <div className="mt-3 flex gap-2.5">
+                {SOCIALS.map(({ label, href, Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target={href.startsWith('http') ? '_blank' : undefined}
+                    rel={href.startsWith('http') ? 'noreferrer' : undefined}
+                    aria-label={`Samaha on ${label}`}
+                    title={label}
+                    className="grid h-10 w-10 place-items-center rounded-full bg-olive-100 text-olive-800 transition-colors duration-200 hover:bg-olive-900 hover:text-paper"
+                  >
+                    <Icon size={18} />
+                  </a>
+                ))}
+              </div>
+            </div>
+
             {/* Map */}
             <div className="mt-2 h-[240px] rounded-2xl bg-paper-2 border border-line overflow-hidden">
               <iframe
@@ -118,7 +139,7 @@ export default function ContactPage() {
           </div>
 
           {/* Form */}
-          <div className="rounded-2xl border border-line bg-white p-[clamp(1.5rem,4vw,3rem)] shadow-sm">
+          <div className="rounded-2xl border border-line bg-white px-[clamp(1.5rem,4vw,3rem)] pt-[clamp(1.5rem,4vw,2.75rem)] pb-[clamp(1.25rem,2.5vw,1.75rem)] shadow-sm">
             <h2 className="font-display font-medium text-olive-900"
                 style={{ fontSize: 'clamp(1.3rem, 1rem + 1.2vw, 1.8rem)' }}>
               Send us a message
@@ -163,7 +184,7 @@ export default function ContactPage() {
                   <p className="rounded-lg px-4 py-2.5 text-sm bg-red-50 text-red-700 border border-red-200">{error}</p>
                 )}
 
-                <button type="submit" disabled={loading} className="btn btn-primary self-start mt-2">
+                <button type="submit" disabled={loading} className="btn btn-primary self-start">
                   {loading ? <Loader2 size={15} className="animate-spin" /> : <>Send message <Send size={15} strokeWidth={2} /></>}
                 </button>
               </form>

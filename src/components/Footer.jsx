@@ -1,5 +1,6 @@
-import { Leaf, AtSign, Globe } from 'lucide-react'
+import { Leaf, Mail, Phone } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { SOCIALS } from './SocialIcons'
 
 const COLS = [
   {
@@ -54,15 +55,27 @@ export default function Footer() {
               Single-origin oils, cold-pressed within hours of harvest and bottled
               by hand in small, dated lots.
             </p>
+            <div className="mt-5 flex flex-col gap-2 text-sm text-on-olive-soft">
+              <a href="mailto:manoj@samahanaturals.com" className="inline-flex items-center gap-2 transition-colors duration-200 hover:text-on-olive">
+                <Mail size={15} strokeWidth={1.8} aria-hidden="true" />
+                manoj@samahanaturals.com
+              </a>
+              <a href="tel:+919943097030" className="inline-flex items-center gap-2 transition-colors duration-200 hover:text-on-olive">
+                <Phone size={15} strokeWidth={1.8} aria-hidden="true" />
+                99430 97030
+              </a>
+            </div>
             <div className="mt-5 flex gap-2">
-              {[AtSign, Globe].map((Icon, i) => (
+              {SOCIALS.map(({ label, href, Icon }) => (
                 <a
-                  key={i}
-                  href="#"
-                  aria-label="Social link"
+                  key={label}
+                  href={href}
+                  target={href.startsWith('http') ? '_blank' : undefined}
+                  rel={href.startsWith('http') ? 'noreferrer' : undefined}
+                  aria-label={`Samaha on ${label}`}
                   className="grid h-9 w-9 place-items-center rounded-full border border-line-on-olive text-on-olive-soft transition-colors duration-200 hover:border-gold-300 hover:text-gold-300"
                 >
-                  <Icon size={16} strokeWidth={1.8} aria-hidden="true" />
+                  <Icon size={16} />
                 </a>
               ))}
             </div>
