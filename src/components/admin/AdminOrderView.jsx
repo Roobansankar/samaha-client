@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, FileDown, Loader2, BadgeCheck } from 'lucide-react'
+import { ArrowLeft, FileDown, Loader2, BadgeCheck, X, Banknote } from 'lucide-react'
 import { StatusBadge } from './ui'
 import { fetchOrder, markOrderPaid } from './auth'
 import { enrichItems, downloadOrderInvoice, orderStatusLabel } from '../../lib/orderInvoice'
@@ -17,6 +17,7 @@ export default function AdminOrderView() {
   const [err, setErr] = useState('')
   const [marking, setMarking] = useState(false)
   const [markError, setMarkError] = useState('')
+  const [showPaidModal, setShowPaidModal] = useState(false)
 
   useEffect(() => {
     let alive = true
@@ -26,12 +27,21 @@ export default function AdminOrderView() {
     return () => { alive = false }
   }, [id])
 
+  // Escape closes the confirm popup
+  useEffect(() => {
+    if (!showPaidModal) return
+    const onKey = (e) => { if (e.key === 'Escape') setShowPaidModal(false) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [showPaidModal])
+
   const markPaid = async () => {
-    if (!window.confirm('Mark this Cash on Delivery order as paid? Do this once the cash has actually been collected.')) return
     setMarking(true)
     setMarkError('')
     try {
-      setOrder(await markOrderPaid(id))
+      const updated = await markOrderPaid(id)
+      setOrder(updated)
+      setShowPaidModal(false)
     } catch (e) {
       setMarkError(e.message || 'Could not mark this order as paid.')
     } finally {
@@ -71,8 +81,8 @@ export default function AdminOrderView() {
         </div>
         <StatusBadge status={orderStatusLabel(order.status, order.payment_method)} />
         {order.payment_method === 'cod' && order.status === 'confirmed' && (
-          <button className="a-btn a-btn-sm a-btn-primary" onClick={markPaid} disabled={marking}>
-            {marking ? <Loader2 size={14} className="animate-spin" /> : <BadgeCheck size={14} />} Mark as paid
+          <button className="a-btn a-btn-sm a-btn-primary" onClick={() => { setMarkError(''); setShowPaidModal(true) }}>
+            <BadgeCheck size={14} /> Mark as paid
           </button>
         )}
         {order.status === 'paid' && (
@@ -152,6 +162,58 @@ export default function AdminOrderView() {
           </Card>
         </div>
       </div>
+
+      {/* Custom confirm popup */}
+      {showPaidModal && (
+        <div
+          className="fixed inset-0 z-[60] grid place-items-center bg-black/40 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mark order as paid"
+          onClick={() => !marking && setShowPaidModal(false)}
+        >
+          <div
+            className="a-card w-full max-w-md p-6"
+            style={{ borderRadius: 'var(--a-radius-lg)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <span
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full"
+                style={{ background: 'var(--a-accent-soft)', color: 'var(--a-text)' }}
+              >
+                <Banknote size={18} />
+              </span>
+              <button className="a-iconbtn" aria-label="Close" onClick={() => !marking && setShowPaidModal(false)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <h2 className="mt-3 text-[1.05rem] font-semibold tracking-tight">
+              Mark {order.order_number != null ? `Order ${order.order_number}` : 'this order'} as paid?
+            </h2>
+            <p className="a-dim mt-1.5 text-[0.85rem] leading-relaxed">
+              Confirm cash of <span className="font-semibold a-mono" style={{ color: 'var(--a-text)' }}>{inr(total)}</span>
+              {order.customer ? <> from <span className="font-medium" style={{ color: 'var(--a-text)' }}>{order.customer}</span></> : null} has
+              actually been collected. This will count toward revenue.
+            </p>
+
+            {markError && (
+              <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-[0.82rem] text-red-700">{markError}</p>
+            )}
+
+            <div className="mt-5 flex items-center justify-end gap-2">
+              <button className="a-btn a-btn-sm" disabled={marking} onClick={() => setShowPaidModal(false)}>
+                Cancel
+              </button>
+              <button className="a-btn a-btn-sm a-btn-primary" disabled={marking} onClick={markPaid}>
+                {marking ? <Loader2 size={14} className="animate-spin" /> : <BadgeCheck size={14} />}
+                {marking ? 'Marking…' : 'Yes, cash collected'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -6,6 +6,7 @@ import { fetchStaff, createStaff, updateStaff, deleteStaff } from './auth'
 const PAGE_OPTIONS = [
   { value: 'dashboard', label: 'Dashboard' },
   { value: 'orders', label: 'Orders' },
+  { value: 'expenses', label: 'Expenses' },
   { value: 'products', label: 'Products' },
   { value: 'customers', label: 'Customers' },
   { value: 'settings', label: 'Settings' },

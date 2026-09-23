@@ -11,6 +11,8 @@ import {
   MailCheck,
   Star,
   Images,
+  Wallet,
+  TrendingUp,
   Menu,
   LogOut,
   Trash2,
@@ -34,6 +36,8 @@ const NOTIF_ICON = { order: ShoppingBag, product: Package, subscriber: MailCheck
 const NAV = [
   { to: '/admin', end: true, label: 'Dashboard', icon: LayoutDashboard, page: 'dashboard' },
   { to: '/admin/orders', label: 'Orders', icon: ShoppingBag, page: 'orders' },
+  { to: '/admin/expenses', label: 'Expenses', icon: Wallet, page: 'expenses' },
+  { to: '/admin/revenue', label: 'Revenue Report', icon: TrendingUp, page: 'dashboard' },
   { to: '/admin/products', end: true, label: 'Products', icon: Package, page: 'products' },
   { to: '/admin/products/trash', label: 'Deleted products', icon: Trash2, page: 'products' },
   { to: '/admin/categories', label: 'Categories & SEO', icon: Search, page: 'categories', adminOnly: true },

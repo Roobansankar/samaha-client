@@ -1,4 +1,5 @@
 import { TrendingUp, TrendingDown } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 /* ---------- Page shell ---------- */
 
@@ -84,34 +85,45 @@ export function Delta({ value }) {
   )
 }
 
-export function StatCard({ label, value, delta, extra, icon: Icon }) {
-  return (
-    <div className="a-card a-card-pad">
-      <div className="flex items-center justify-between">
-        <p className="text-[0.82rem] font-medium a-dim">{label}</p>
+export function StatCard({ label, value, delta, extra, sub, icon: Icon, to, accent = 'default' }) {
+  const body = (
+    <>
+      <div className="a-stat-top">
         {Icon && (
-          <span
-            className="grid h-8 w-8 place-items-center rounded-[8px]"
-            style={{ background: 'var(--a-accent-soft)', color: 'var(--a-text)' }}
-          >
-            <Icon size={16} />
+          <span className="a-stat-ico">
+            <Icon size={15} />
           </span>
         )}
-      </div>
-      <div className="mt-2 flex items-center gap-2.5">
-        <p className="text-[1.5rem] font-semibold tracking-tight a-mono">{value}</p>
         <Delta value={delta} />
       </div>
-      {extra && (
-        <p className="mt-3 border-t pt-3 text-[0.78rem] a-dim" style={{ borderColor: 'var(--a-border)' }}>
-          You gained an extra{' '}
-          <span className="font-semibold" style={{ color: 'var(--a-teal)' }}>
-            {extra}
-          </span>{' '}
-          this month
-        </p>
+      <p className="a-stat-label">{label}</p>
+      <p className="a-stat-value a-mono">{value}</p>
+      {sub && <p className="a-stat-sub">{sub}</p>}
+      {(extra || to) && (
+        <div className="a-stat-foot">
+          {extra && (
+            <span className="a-stat-extra">
+              <span className="a-stat-extra-v">{extra}</span> this month
+            </span>
+          )}
+          {to && <span className="a-stat-link">View →</span>}
+        </div>
       )}
-    </div>
+    </>
+  )
+
+  if (!to) {
+    return <div className={`a-card a-stat a-stat--${accent}`}>{body}</div>
+  }
+
+  return (
+    <Link
+      to={to}
+      className={`a-card a-stat a-stat--${accent} a-stat--click`}
+      title={`Go to ${label}`}
+    >
+      {body}
+    </Link>
   )
 }
 

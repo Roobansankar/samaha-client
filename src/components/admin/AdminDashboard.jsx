@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Users, ShoppingBag, CircleDollarSign, MessageSquare, ArrowUpRight, RefreshCw } from 'lucide-react'
+import { Users, ShoppingBag, CircleDollarSign, MessageSquare, ArrowUpRight, RefreshCw, Wallet } from 'lucide-react'
 import { PageHeader, StatCard, StatusBadge, Loader } from './ui'
 import { fetchDashboard } from './auth'
 import { orderStatusLabel } from '../../lib/orderInvoice'
@@ -133,20 +133,54 @@ export default function AdminDashboard() {
   if (!data) return <Loader text="Loading dashboard…" />
 
   const k = data.kpis
-  const kpis = [
+  const codPending = k.cod_pending || { orders: 0, revenue: 0 }
+  const expenses = k.expenses || { value: 0, this_month: 0, delta: 0 }
+  const profit = k.profit || { value: k.revenue.value, this_month: k.revenue.this_month, delta: k.revenue.delta }
+
+  /* Row 1 — money flow: what came in, what went out, what stayed */
+  const moneyStats = [
     {
-      label: 'Revenue',
+      label: 'Total Collection',
       value: inr(k.revenue.value),
       delta: k.revenue.delta,
+      sub: `Online ${inr(k.revenue.online ?? k.revenue.value)} · COD ${inr(k.revenue.cod ?? 0)}`,
       extra: k.revenue.this_month ? inr(k.revenue.this_month) : null,
       icon: CircleDollarSign,
+      to: '/admin/orders',
+      accent: 'green',
     },
+    {
+      label: 'Total Expenses',
+      value: inr(expenses.value),
+      delta: expenses.delta,
+      sub: expenses.this_month ? `${inr(expenses.this_month)} this month` : 'No expenses this month',
+      icon: Wallet,
+      to: '/admin/expenses',
+      accent: 'red',
+    },
+    {
+      label: 'Net Revenue',
+      value: inr(profit.value),
+      delta: profit.delta,
+      sub: `${inr(k.revenue.value)} − ${inr(expenses.value)}`,
+      extra: profit.this_month ? inr(profit.this_month) : null,
+      icon: CircleDollarSign,
+      to: '/admin/revenue',
+      accent: 'dark',
+    },
+  ]
+
+  /* Row 2 — store activity */
+  const storeStats = [
     {
       label: 'Paid orders',
       value: k.orders.value.toLocaleString('en-IN'),
       delta: k.orders.delta,
+      sub: `Online ${k.orders.online ?? 0} · COD ${k.orders.cod ?? 0}${codPending.orders ? ` · ${codPending.orders} COD due` : ''}`,
       extra: k.orders.this_month ? `${k.orders.this_month} orders` : null,
       icon: ShoppingBag,
+      to: '/admin/orders',
+      accent: 'blue',
     },
     {
       label: 'Customers',
@@ -154,12 +188,16 @@ export default function AdminDashboard() {
       delta: k.customers.delta,
       extra: k.customers.this_month ? `${k.customers.this_month} sign-ups` : null,
       icon: Users,
+      to: '/admin/customers',
+      accent: 'violet',
     },
     {
       label: 'Messages',
       value: (k.messages?.value ?? 0).toLocaleString('en-IN'),
       extra: k.messages?.unread ? `${k.messages.unread} unread` : null,
       icon: MessageSquare,
+      to: '/admin/messages',
+      accent: 'amber',
     },
   ]
 
@@ -180,8 +218,14 @@ export default function AdminDashboard() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {kpis.map((kpi) => <StatCard key={kpi.label} {...kpi} />)}
+      {/* Row 1 — money */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {moneyStats.map((kpi) => <StatCard key={kpi.label} {...kpi} />)}
+      </div>
+
+      {/* Row 2 — store activity */}
+      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {storeStats.map((kpi) => <StatCard key={kpi.label} {...kpi} />)}
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[1.65fr_1fr]">
@@ -189,8 +233,8 @@ export default function AdminDashboard() {
         <div className="a-card">
           <div className="flex flex-wrap items-center justify-between gap-3 px-5 pt-4">
             <div>
-              <h2 className="text-[0.95rem] font-semibold">Revenue</h2>
-              <p className="a-sub">From paid orders</p>
+              <h2 className="text-[0.95rem] font-semibold">Revenue trend</h2>
+              <p className="a-sub">Collected {inr(k.revenue.value)} · Expenses {inr(expenses.value)} · Net {inr(profit.value)}</p>
             </div>
             <div className="a-seg">
               {['Month', 'Week'].map((r) => (

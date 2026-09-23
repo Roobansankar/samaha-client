@@ -64,7 +64,7 @@ function OrderPlacedModal({ orderId, codDue, onClose }) {
         <p className="mt-0.5 font-mono text-lg font-semibold text-olive-900">{orderId}</p>
 
         <p className="mt-4 text-sm leading-relaxed text-text-soft">
-          Thank you for your order. We’ll press, pack and dispatch it within two working days.
+          Thank you for your order. We’ll press, pack and dispatch it soon.
         </p>
 
         {codDue > 0 && (
@@ -93,7 +93,11 @@ export default function CheckoutPage() {
     name: account?.name || '',
     email: account?.email || '',
     phone: account?.phone || '',
-    address: '',
+    line1: '',
+    line2: '',
+    city: '',
+    state: '',
+    pincode: '',
   })
   const [paymentMethod, setPaymentMethod] = useState('online') // 'online' | 'cod'
   const [paying, setPaying] = useState(false)
@@ -117,7 +121,11 @@ export default function CheckoutPage() {
         if (d) {
           setForm((f) => ({
             ...f,
-            address: f.address || fmtAddress(d),
+            line1: f.line1 || d.line1 || '',
+            line2: f.line2 || d.line2 || '',
+            city: f.city || d.city || '',
+            state: f.state || d.state || '',
+            pincode: f.pincode || d.pincode || '',
             phone: f.phone || d.phone || '',
             name: f.name || d.name || '',
           }))
@@ -141,11 +149,17 @@ export default function CheckoutPage() {
   if (items.length === 0 && !orderPlaced) return <Navigate to="/cart" replace />
 
   const total = subtotal
-  const ready = form.name.trim() && /\S+@\S+/.test(form.email) && form.address.trim().length > 8
+  const ready =
+    form.name.trim() &&
+    /\S+@\S+/.test(form.email) &&
+    form.line1.trim() &&
+    form.city.trim() &&
+    form.pincode.trim()
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
 
-  const placeOrder = { name: form.name, email: form.email, phone: form.phone, address: form.address }
+  // the server still stores one shipping_address string — same format already used for saved addresses
+  const placeOrder = { name: form.name, email: form.email, phone: form.phone, address: fmtAddress(form) }
 
   const payCod = async () => {
     setError('')
@@ -274,23 +288,35 @@ export default function CheckoutPage() {
 
               {addresses.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {addresses.map((a) => (
-                    <button
-                      key={a.id}
-                      type="button"
-                      onClick={() => setForm((f) => ({ ...f, address: fmtAddress(a), phone: a.phone || f.phone, name: a.name || f.name }))}
-                      className={`rounded-lg border px-3 py-2 text-left text-xs transition-colors ${
-                        form.address === fmtAddress(a)
-                          ? 'border-olive-800 bg-olive-900 text-paper'
-                          : 'border-line bg-white text-olive-800 hover:border-olive-300'
-                      }`}
-                    >
-                      <span className="font-semibold">{a.label || a.name}</span>
-                      <span className={`mt-0.5 block ${form.address === fmtAddress(a) ? 'text-paper/70' : 'text-text-mute'}`}>
-                        {fmtAddress(a).slice(0, 40)}…
-                      </span>
-                    </button>
-                  ))}
+                  {addresses.map((a) => {
+                    const selected = fmtAddress(form) === fmtAddress(a)
+                    return (
+                      <button
+                        key={a.id}
+                        type="button"
+                        onClick={() => setForm((f) => ({
+                          ...f,
+                          line1: a.line1 || '',
+                          line2: a.line2 || '',
+                          city: a.city || '',
+                          state: a.state || '',
+                          pincode: a.pincode || '',
+                          phone: a.phone || f.phone,
+                          name: a.name || f.name,
+                        }))}
+                        className={`rounded-lg border px-3 py-2 text-left text-xs transition-colors ${
+                          selected
+                            ? 'border-olive-800 bg-olive-900 text-paper'
+                            : 'border-line bg-white text-olive-800 hover:border-olive-300'
+                        }`}
+                      >
+                        <span className="font-semibold">{a.label || a.name}</span>
+                        <span className={`mt-0.5 block ${selected ? 'text-paper/70' : 'text-text-mute'}`}>
+                          {fmtAddress(a).slice(0, 40)}…
+                        </span>
+                      </button>
+                    )
+                  })}
                 </div>
               )}
 
@@ -308,9 +334,27 @@ export default function CheckoutPage() {
                   <input className={inp} value={form.phone} onChange={set('phone')} placeholder="+91 …" />
                 </label>
                 <label className="block sm:col-span-2">
-                  <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-olive-700/60">Delivery address</span>
-                  <textarea rows={3} className={`${inp} resize-none`} value={form.address} onChange={set('address')} required />
+                  <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-olive-700/60">Address line 1</span>
+                  <input className={inp} value={form.line1} onChange={set('line1')} required />
                 </label>
+                <label className="block sm:col-span-2">
+                  <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-olive-700/60">Address line 2 (optional)</span>
+                  <input className={inp} value={form.line2} onChange={set('line2')} />
+                </label>
+                <div className="grid gap-4 grid-cols-2 sm:col-span-2 sm:grid-cols-3">
+                  <label className="block">
+                    <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-olive-700/60">City</span>
+                    <input className={inp} value={form.city} onChange={set('city')} required />
+                  </label>
+                  <label className="block">
+                    <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-olive-700/60">State</span>
+                    <input className={inp} value={form.state} onChange={set('state')} />
+                  </label>
+                  <label className="block col-span-2 sm:col-span-1">
+                    <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-olive-700/60">PIN code</span>
+                    <input className={inp} value={form.pincode} onChange={set('pincode')} required />
+                  </label>
+                </div>
               </div>
             </div>
 

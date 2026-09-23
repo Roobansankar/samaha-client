@@ -62,6 +62,8 @@ const AdminProductView = lazy(() => import('./components/admin/AdminProductView'
 const AdminProductsTrash = lazy(() => import('./components/admin/AdminProductsTrash'))
 const AdminSettings = lazy(() => import('./components/admin/AdminSettings'))
 const AdminStaff = lazy(() => import('./components/admin/AdminStaff'))
+const AdminExpenses = lazy(() => import('./components/admin/AdminExpenses'))
+const AdminRevenueReport = lazy(() => import('./components/admin/AdminRevenueReport'))
 const AdminMessages = lazy(() => import('./components/admin/AdminMessages'))
 const AdminSubscribers = lazy(() => import('./components/admin/AdminSubscribers'))
 const ProtectedRoute = lazy(() => import('./components/admin/ProtectedRoute'))
@@ -181,6 +183,8 @@ function AppContent() {
           <Route path="products/:id/edit" element={<AdminProductForm />} />
           <Route path="settings" element={<AdminSettings />} />
           <Route path="staff" element={<AdminStaff />} />
+          <Route path="expenses" element={<AdminExpenses />} />
+          <Route path="revenue" element={<AdminRevenueReport />} />
           <Route path="messages" element={<AdminMessages />} />
           <Route path="subscribers" element={<AdminSubscribers />} />
         </Route>

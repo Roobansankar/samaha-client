@@ -225,6 +225,7 @@ function Addresses() {
       {editing !== null && (
         <AddressForm
           initial={editing === 'new' ? null : editing}
+          isFirst={list.length === 0}
           busy={busy}
           onCancel={() => setEditing(null)}
           onSave={save}
@@ -276,7 +277,7 @@ function Addresses() {
   )
 }
 
-function AddressForm({ initial, busy, onCancel, onSave }) {
+function AddressForm({ initial, isFirst, busy, onCancel, onSave }) {
   const [f, setF] = useState({
     label: initial?.label || '',
     name: initial?.name || '',
@@ -286,7 +287,10 @@ function AddressForm({ initial, busy, onCancel, onSave }) {
     city: initial?.city || '',
     state: initial?.state || '',
     pincode: initial?.pincode || '',
-    is_default: initial?.is_default || false,
+    // editing an existing address always shows its real default status; a brand-new
+    // address starts ticked only when it's the very first one, so what's shown here
+    // matches what actually happens on save — the customer can still untick it
+    is_default: initial ? initial.is_default || false : Boolean(isFirst),
   })
 
   const set = (k) => (e) =>
@@ -336,7 +340,7 @@ function AddressForm({ initial, busy, onCancel, onSave }) {
 /* ---------------- Account details ---------------- */
 
 function AccountDetails({ user }) {
-  const [f, setF] = useState({ name: user.name || '', phone: user.phone || '', city: user.city || '' })
+  const [f, setF] = useState({ name: user.name || '' })
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
@@ -366,10 +370,6 @@ function AccountDetails({ user }) {
       <form onSubmit={save} className="mt-5 space-y-4">
         <L label="Full name"><input className={inp} required value={f.name} onChange={set('name')} /></L>
         <L label="Email"><input className={`${inp} cursor-not-allowed opacity-60`} value={user.email} disabled /></L>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <L label="Phone"><input className={inp} value={f.phone} onChange={set('phone')} /></L>
-          <L label="City"><input className={inp} value={f.city} onChange={set('city')} /></L>
-        </div>
 
         {error && <p className="text-sm text-red-700">{error}</p>}
 

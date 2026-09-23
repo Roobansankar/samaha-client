@@ -65,6 +65,24 @@ export async function fetchDashboard() {
   return request(`${API_URL}/admin/dashboard`)
 }
 
+/* ---- Expenses ---- */
+
+export async function fetchExpenses() {
+  return request(`${API_URL}/admin/expenses`)
+}
+
+export async function createExpense(data) {
+  return request(`${API_URL}/admin/expenses`, { method: 'POST', body: JSON.stringify(data) })
+}
+
+export async function updateExpense(id, data) {
+  return request(`${API_URL}/admin/expenses/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+}
+
+export async function deleteExpense(id) {
+  return request(`${API_URL}/admin/expenses/${id}`, { method: 'DELETE' })
+}
+
 /* ---- Home banners ---- */
 
 export async function fetchAdminBanners() {
