@@ -43,7 +43,7 @@ export default function ProfilePage({ view = 'dashboard' }) {
       <div className="mx-auto max-w-[1040px]">
 
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-700">My account</p>
             <h1
               className="mt-2 font-display font-medium text-olive-900"
@@ -51,7 +51,7 @@ export default function ProfilePage({ view = 'dashboard' }) {
             >
               Hello, {firstName}
             </h1>
-            <p className="mt-1 text-sm text-olive-700/60">{user.email}</p>
+            <p className="mt-1 text-sm text-olive-700/60 break-all">{user.email}</p>
           </div>
           <button
             type="button"
@@ -78,7 +78,7 @@ export default function ProfilePage({ view = 'dashboard' }) {
             ))}
           </nav>
 
-          <div>
+          <div className="min-w-0">
             {view === 'dashboard' && <Dashboard user={user} />}
             {view === 'orders' && (
               <div className={card}>
@@ -389,9 +389,9 @@ function AccountDetails({ user }) {
 
 function Row({ label, value }) {
   return (
-    <div>
+    <div className="min-w-0">
       <dt className="text-[0.68rem] font-medium uppercase tracking-wide text-olive-700/50">{label}</dt>
-      <dd className="mt-0.5 text-sm text-olive-900">{value}</dd>
+      <dd className="mt-0.5 text-sm text-olive-900 break-all">{value}</dd>
     </div>
   )
 }
@@ -513,7 +513,7 @@ function OrderCard({ order, compact }) {
 
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-olive-900/10 pt-2.5">
           {!compact && order.payment_id ? (
-            <p className="text-[0.7rem] text-olive-700/45">
+            <p className="text-[0.7rem] text-olive-700/45 break-all">
               Payment ID: <span className="font-mono">{order.payment_id}</span>
             </p>
           ) : <span />}

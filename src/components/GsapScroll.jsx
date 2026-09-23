@@ -23,7 +23,19 @@ export default function GsapScroll() {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
     if (pathname.startsWith('/admin')) return
 
-    const ctx = gsap.context(() => {
+    // Trigger start positions go stale when async content (products, reviews,
+    // images, webfonts) changes the page height after setup — reveals then
+    // fire while their section is still off-screen and the user never sees
+    // them. So we build once immediately, then rebuild as the page settles
+    // (DOM mutations, image loads, fonts, window load), capped so it stops
+    // once everything is stable.
+    let ctx = null
+    let rebuilds = 0
+    const MAX_REBUILDS = 6
+    let settled = false
+
+    const build = () => {
+      ctx = gsap.context(() => {
       // Same section targeting as ScrollReveal: top-level sections only,
       // outside header/footer/nav, minus nested sections and opt-outs.
       const sections = Array.from(document.querySelectorAll('section')).filter(
@@ -120,15 +132,60 @@ export default function GsapScroll() {
       })
 
       ScrollTrigger.refresh()
+      })
+    }
+
+    const rebuild = () => {
+      if (settled || rebuilds >= MAX_REBUILDS) return
+      rebuilds += 1
+      ctx?.revert()
+      build()
+    }
+
+    build()
+
+    // Rebuild (debounced) while async content swaps in — skeletons replaced
+    // by products/reviews, shimmer classes removed, etc. Stops after the
+    // page goes quiet or the rebuild cap is hit.
+    let t = null
+    const queueRebuild = () => {
+      clearTimeout(t)
+      t = setTimeout(rebuild, 450)
+    }
+    const main = document.querySelector('main')
+    const mo = main
+      ? new MutationObserver(queueRebuild)
+      : null
+    mo?.observe(main, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class', 'src'],
     })
 
+    // Images changing height without DOM mutations still move sections —
+    // keep unfired triggers honest for the whole session (cheap).
+    const onImgLoad = (e) => {
+      if (e.target?.tagName === 'IMG') ScrollTrigger.refresh()
+    }
+    document.addEventListener('load', onImgLoad, true)
+
     const refresh = () => ScrollTrigger.refresh()
-    window.addEventListener('load', refresh)
-    document.fonts?.ready?.then(refresh).catch(() => {})
+    const onSettled = () => { rebuild(); refresh() }
+    window.addEventListener('load', onSettled)
+    document.fonts?.ready?.then(onSettled).catch(() => {})
+    // Safety net: one last rebuild shortly after mount for content that
+    // resolves without observable mutations.
+    const safety = setTimeout(onSettled, 2500)
 
     return () => {
-      window.removeEventListener('load', refresh)
-      ctx.revert()
+      settled = true
+      clearTimeout(t)
+      clearTimeout(safety)
+      mo?.disconnect()
+      document.removeEventListener('load', onImgLoad, true)
+      window.removeEventListener('load', onSettled)
+      ctx?.revert()
     }
   }, [pathname])
 
