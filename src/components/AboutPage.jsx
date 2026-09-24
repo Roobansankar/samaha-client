@@ -12,7 +12,7 @@ const TIMELINE = [
   {
     year: '1985',
     title: 'MRS Oil Mills opens',
-    text: 'N. Rangasamy starts a coconut and coconut-oil business in Coimbatore, selling oil under the MRS name.',
+    text: 'Late Thiru N. Rangasamy starts a small oil mill in Coimbatore, selling coconut oil under the MRS name.',
   },
   {
     year: 'Until 2016',
@@ -32,7 +32,7 @@ const TIMELINE = [
   {
     year: 'Today',
     title: 'Farm to bottle, all in-house',
-    text: 'Coconuts come straight from farmers in the Velliangiri Hills to our Sulur unit, pressed cold and bottled by hand in dated lots.',
+    text: 'Coconuts come straight from farmers in the foothills of Velliangiri, near the Siruvani catchment, to our Coimbatore mill — pressed cold and bottled by hand in dated lots.',
   },
 ]
 
@@ -132,16 +132,25 @@ export default function AboutPage() {
               style={{ fontSize: 'clamp(1rem, 0.94rem + 0.25vw, 1.12rem)' }}
             >
               <p>
-                N. Rangasamy started the mill in Coimbatore, and for three decades it
-                sold coconut oil under the MRS name to homes across the Nilgiris. In
-                2016 we brought in traditional wooden-chekku cold pressing and launched
-                three cooking oils — groundnut, coconut and gingelly — as Samaha.
+                It began with late Thiru N. Rangasamy, who started a small oil
+                mill in Coimbatore in 1985 and spent three decades bringing
+                coconut oil to homes across Coimbatore &amp; the Nilgiris under
+                the brand name &ldquo;MRS.&rdquo;
               </p>
               <p>
-                We buy coconuts straight from farmers in the Velliangiri Hills, make
-                our own copra without sulphur, and cold-press every batch in-house.
-                From farm to bottle nothing leaves our hands, so every bottle stays
-                fully traceable.
+                In 2016, we revived a tradition — the wooden chekku, cold-pressed
+                the way it always should be — and launched the brand
+                &ldquo;SAMAHA&rdquo; with three oils: Groundnut, Coconut, and
+                Gingelly.
+              </p>
+              <p>
+                We source our coconuts directly from farmers in the foothills of
+                Velliangiri, catchment area of Siruvani dam which is the second
+                sweetest among the waters in the Asian continent, make our own
+                copra without sulphur, and cold-press every batch in-house at
+                our Coimbatore mill. Nothing leaves our hands until it reaches
+                you — which means every bottle of SAMAHA is fully traceable,
+                from farm to bottle.
               </p>
             </div>
 
