@@ -296,3 +296,115 @@ export async function fetchCategories() {
 export async function updateCategory(id, data) {
   return request(`${API_URL}/admin/categories/${id}`, { method: 'PUT', body: JSON.stringify(data) })
 }
+
+/* ---- Gallery ---- */
+
+export async function fetchAdminGallery() {
+  return request(`${API_URL}/admin/gallery`)
+}
+
+export async function createGallery(data) {
+  return request(`${API_URL}/admin/gallery`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function saveGallery(id, data) {
+  return request(`${API_URL}/admin/gallery/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function deleteGallery(id) {
+  return request(`${API_URL}/admin/gallery/${id}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function uploadGalleryImage(file, name) {
+  const token = getToken()
+  const body = new FormData()
+
+  body.append('image', file)
+  if (name) body.append('name', name)
+
+  const response = await fetch(`${API_URL}/admin/gallery/images`, {
+    method: 'POST',
+    headers: token
+      ? {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        }
+      : {
+          Accept: 'application/json',
+        },
+    body,
+  })
+
+  const text = await response.text()
+  let data = {}
+
+  if (text) {
+    try {
+      data = JSON.parse(text)
+    } catch {
+      throw new Error('Upload failed — bad server response.')
+    }
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      data.message ||
+        data.errors?.image?.[0] ||
+        'Image upload failed',
+    )
+  }
+
+  return data
+}
+
+
+export async function uploadGalleryVideo(file, name) {
+  const token = getToken()
+  const body = new FormData()
+
+  body.append('video', file)
+  if (name) body.append('name', name)
+
+  const response = await fetch(`${API_URL}/admin/gallery/videos`, {
+    method: 'POST',
+    headers: token
+      ? {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        }
+      : {
+          Accept: 'application/json',
+        },
+    body,
+  })
+
+  const text = await response.text()
+  let data = {}
+
+  if (text) {
+    try {
+      data = JSON.parse(text)
+    } catch {
+      throw new Error('Video upload failed — bad server response.')
+    }
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      data.message ||
+        data.errors?.video?.[0] ||
+        'Video upload failed',
+    )
+  }
+
+  return data
+}
+

@@ -3,23 +3,15 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useScrolled } from '../hooks/useScrolled'
 import { useAccount } from '../lib/account'
 import { useCart } from '../lib/cart'
-import { useProducts } from '../context/ProductsContext'
-import { Search, UserRound, Handbag, Menu, X, ChevronRight, ChevronDown } from 'lucide-react'
+import { Search, UserRound, Handbag, Menu, X, ChevronRight } from 'lucide-react'
 import { trackSearch } from '../lib/analytics'
 
 const initialOf = (name) => (name || '').trim().charAt(0).toUpperCase() || 'U'
 
-const CATEGORIES = [
-  { label: 'Coconut Oil', href: '/shop/coconut-oil', note: 'Mild & versatile', img: '/products/coconut-oil.webp' },
-  { label: 'Groundnut Oil', href: '/shop/groundnut-oil', note: 'Deep & nutty', img: '/products/groundnut-oil.webp' },
-  { label: 'Sesame Oil', href: '/shop/sesame-oil', note: 'Rich & aromatic', img: '/products/sesame-oil.webp' },
-]
-
 const LINKS = [
   { label: 'Home', href: '/', exact: true },
   { label: 'Shop', href: '/shop', exact: true },
-  { label: 'Shop by Category', href: '/shop', menu: CATEGORIES },
-  { label: 'Health Benefits', href: '/health-benefits' },
+    { label: 'Gallery', href: '/gallery', exact: true },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ]
@@ -35,30 +27,43 @@ function useTypewriter(words, active) {
   const reduced =
     typeof window !== 'undefined' &&
     window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
   const [text, setText] = useState(reduced ? words[0] : '')
   const state = useRef({ i: 0, deleting: false })
 
   useEffect(() => {
     if (reduced || !active) return
+
     let timer
+
     const tick = () => {
       const { i, deleting } = state.current
       const word = words[i % words.length]
+
       if (!deleting && text === word) {
         state.current.deleting = true
         timer = setTimeout(tick, 1500)
         return
       }
+
       if (deleting && text === '') {
         state.current.deleting = false
         state.current.i = i + 1
         timer = setTimeout(tick, 260)
         return
       }
-      setText(deleting ? word.slice(0, text.length - 1) : word.slice(0, text.length + 1))
+
+      setText(
+        deleting
+          ? word.slice(0, text.length - 1)
+          : word.slice(0, text.length + 1),
+      )
+
       timer = setTimeout(tick, deleting ? 34 : 66)
     }
+
     timer = setTimeout(tick, 400)
+
     return () => clearTimeout(timer)
   }, [text, words, reduced, active])
 
@@ -78,21 +83,29 @@ function SearchOverlay({ open, onClose }) {
 
   useEffect(() => {
     if (!open) return
+
     const t = setTimeout(() => inputRef.current?.focus(), 80)
+
     document.body.classList.add('no-scroll')
+
     const onKey = (e) => e.key === 'Escape' && close()
+
     window.addEventListener('keydown', onKey)
+
     return () => {
       clearTimeout(t)
       document.body.classList.remove('no-scroll')
       window.removeEventListener('keydown', onKey)
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
   const go = (value) => {
     const q = value.trim()
+
     if (q) trackSearch(q)
+
     navigate(q ? `/shop?q=${encodeURIComponent(q)}` : '/shop')
     close()
   }
@@ -106,7 +119,10 @@ function SearchOverlay({ open, onClose }) {
     >
       <div className="search-full__inner mx-auto w-full max-w-[1180px] px-[var(--spacing-gutter)]">
         <form
-          onSubmit={(e) => { e.preventDefault(); go(query) }}
+          onSubmit={(e) => {
+            e.preventDefault()
+            go(query)
+          }}
           role="search"
           className="flex items-center gap-4 pt-[clamp(2.5rem,11vh,6rem)]"
         >
@@ -118,6 +134,7 @@ function SearchOverlay({ open, onClose }) {
               aria-label="Search products"
               className="search-full__input w-full bg-transparent outline-none"
             />
+
             {!query && (
               <span className="search-full__ghost" aria-hidden="true">
                 {typed || 'Search for products'}
@@ -125,6 +142,7 @@ function SearchOverlay({ open, onClose }) {
               </span>
             )}
           </div>
+
           <button
             type="button"
             onClick={close}
@@ -181,102 +199,54 @@ function Wordmark({ className = 'h-11 sm:h-[52px]' }) {
   )
 }
 
-/* Desktop nav item with a "shop by category" flyout. */
-function NavCategory({ link, active }) {
-  const [open, setOpen] = useState(false)
-  const closeTimer = useRef(null)
-
-  const show = () => {
-    clearTimeout(closeTimer.current)
-    setOpen(true)
-  }
-  const scheduleHide = () => {
-    closeTimer.current = setTimeout(() => setOpen(false), 110)
-  }
-
-  useEffect(() => () => clearTimeout(closeTimer.current), [])
-
-  return (
-    <div
-      className="nav-cat"
-      onMouseEnter={show}
-      onMouseLeave={scheduleHide}
-      onFocus={show}
-      onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget)) setOpen(false)
-      }}
-    >
-      <Link
-        to={link.href}
-        className={`nav-link inline-flex items-center gap-1 font-semibold tracking-wide text-olive-800 hover:text-olive-950 ${
-          active ? 'is-active text-olive-950' : ''
-        }`}
-        style={{ fontSize: 'clamp(0.9rem, 0.86rem + 0.2vw, 1rem)' }}
-        aria-haspopup="true"
-        aria-expanded={open}
-        onClick={() => setOpen(false)}
-      >
-        {link.label}
-        <ChevronDown
-          size={14}
-          strokeWidth={2.4}
-          className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-        />
-      </Link>
-
-      <div className={`nav-menu ${open ? 'is-open' : ''}`}>
-        <div className="nav-menu__inner">
-          {link.menu.map((c) => (
-            <Link key={c.href} to={c.href} className="nav-menu__card" onClick={() => setOpen(false)}>
-              <span className="nav-menu__thumb">
-                <img src={c.img} alt="" loading="lazy" />
-              </span>
-              <span className="nav-menu__text">
-                <b>{c.label}</b>
-                <span>{c.note}</span>
-              </span>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function Navbar() {
   const scrolled = useScrolled(8)
   const [menuOpen, setMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
-  const [shopOpen, setShopOpen] = useState(false)
+
   const location = useLocation()
   const account = useAccount()
-  const { count: cartCount, uniqueCount } = useCart(null)
+  const { uniqueCount } = useCart(null)
 
   useEffect(() => {
     document.body.classList.toggle('no-scroll', menuOpen)
-    if (!menuOpen) setShopOpen(false)
+
     return () => document.body.classList.remove('no-scroll')
   }, [menuOpen])
 
   useEffect(() => {
     if (!menuOpen) return
-    const onKey = (e) => e.key === 'Escape' && setMenuOpen(false)
+
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setMenuOpen(false)
+      }
+    }
+
     window.addEventListener('keydown', onKey)
+
     return () => window.removeEventListener('keydown', onKey)
   }, [menuOpen])
 
-  // The mobile tab bar's search button opens the full-page overlay via this event.
+  /* The mobile tab bar's search button opens the full-page overlay via this event. */
   useEffect(() => {
     const open = () => setSearchOpen(true)
+
     window.addEventListener('samaha:search', open)
+
     return () => window.removeEventListener('samaha:search', open)
   }, [])
 
   const isActive = (link) =>
-    link.exact ? location.pathname === link.href : location.pathname.startsWith(link.href)
+    link.exact
+      ? location.pathname === link.href
+      : location.pathname.startsWith(link.href)
 
   return (
-    <header className={`nav-header ${scrolled ? 'is-scrolled' : ''}`} data-open={menuOpen}>
+    <header
+      className={`nav-header ${scrolled ? 'is-scrolled' : ''}`}
+      data-open={menuOpen}
+    >
       <div
         className={`mx-auto flex max-w-[1500px] items-center gap-3 ${
           scrolled ? 'py-2' : 'py-2.5'
@@ -300,27 +270,24 @@ export default function Navbar() {
           <Wordmark className="h-9 sm:h-11" />
         </div>
 
-        <nav className="mx-auto hidden items-center gap-x-5 min-[1180px]:gap-x-7 min-[901px]:flex" aria-label="Primary">
-          {LINKS.map((link) =>
-            link.menu ? (
-              <NavCategory
-                key={link.label}
-                link={link}
-                active={location.pathname.startsWith('/shop/')}
-              />
-            ) : (
-              <Link
-                key={link.label}
-                to={link.href}
-                className={`nav-link font-semibold tracking-wide text-olive-800 hover:text-olive-950 ${
-                  isActive(link) ? 'is-active text-olive-950' : ''
-                }`}
-                style={{ fontSize: 'clamp(0.9rem, 0.86rem + 0.2vw, 1rem)' }}
-              >
-                {link.label}
-              </Link>
-            )
-          )}
+        <nav
+          className="mx-auto hidden items-center gap-x-5 min-[1180px]:gap-x-7 min-[901px]:flex"
+          aria-label="Primary"
+        >
+          {LINKS.map((link) => (
+            <Link
+              key={link.label}
+              to={link.href}
+              className={`nav-link font-semibold tracking-wide text-olive-800 hover:text-olive-950 ${
+                isActive(link) ? 'is-active text-olive-950' : ''
+              }`}
+              style={{
+                fontSize: 'clamp(0.9rem, 0.86rem + 0.2vw, 1rem)',
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
         <div className="-mr-2 ml-auto flex items-center gap-0.5 min-[901px]:ml-0">
@@ -332,6 +299,7 @@ export default function Navbar() {
           >
             <Search size={20} strokeWidth={1.8} />
           </button>
+
           <Link
             to={account ? '/profile' : '/account'}
             className="nav-icon max-[900px]:hidden"
@@ -352,20 +320,43 @@ export default function Navbar() {
               </span>
             )}
           </Link>
-          <Link to="/cart" className="nav-icon relative" aria-label={`Cart, ${uniqueCount} ${uniqueCount === 1 ? 'item' : 'items'}`}>
+
+          <Link
+            to="/cart"
+            className="nav-icon relative"
+            aria-label={`Cart, ${uniqueCount} ${
+              uniqueCount === 1 ? 'item' : 'items'
+            }`}
+          >
             <Handbag size={20} strokeWidth={1.8} />
-            {uniqueCount > 0 && <span className="nav-badge">{uniqueCount > 99 ? '99+' : uniqueCount}</span>}
+
+            {uniqueCount > 0 && (
+              <span className="nav-badge">
+                {uniqueCount > 99 ? '99+' : uniqueCount}
+              </span>
+            )}
           </Link>
         </div>
       </div>
 
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <SearchOverlay
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+      />
 
       {/* Mobile drawer */}
-      <div className="nav-scrim" onClick={() => setMenuOpen(false)} />
-      <aside className="nav-drawer" aria-hidden={!menuOpen}>
+      <div
+        className="nav-scrim"
+        onClick={() => setMenuOpen(false)}
+      />
+
+      <aside
+        className="nav-drawer"
+        aria-hidden={!menuOpen}
+      >
         <div className="flex items-center justify-between border-b border-olive-200 px-6 py-5">
           <Wordmark />
+
           <button
             type="button"
             className="grid h-10 w-10 place-items-center rounded-full bg-olive-100 text-olive-800 transition-colors hover:bg-olive-200"
@@ -376,83 +367,66 @@ export default function Navbar() {
           </button>
         </div>
 
-        <nav className="flex flex-grow flex-col px-6 py-6" aria-label="Mobile">
-          {LINKS.map((link, i) =>
-            link.menu ? (
-              <div key={link.label} className="border-b border-olive-100">
-                <button
-                  type="button"
-                  className="nav-drawer-link flex w-full items-center justify-between py-4 text-left text-olive-900"
-                  style={{ animationDelay: `${0.12 + i * 0.06}s` }}
-                  aria-expanded={shopOpen}
-                  onClick={() => setShopOpen((v) => !v)}
-                >
-                  <span className="font-sans text-lg font-semibold tracking-tight">{link.label}</span>
-                  <ChevronDown
-                    size={18}
-                    strokeWidth={2}
-                    className={`text-olive-400 transition-transform duration-200 ${shopOpen ? 'rotate-180' : ''}`}
-                  />
-                </button>
-                {shopOpen && (
-                  <div className="shop-dropdown flex flex-col gap-1 pb-4 pl-1">
-                    {link.menu.map((c) => (
-                      <Link
-                        key={c.href}
-                        to={c.href}
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-lg py-2 pr-2 text-olive-800 transition-colors hover:bg-olive-100"
-                      >
-                        <img
-                          src={c.img}
-                          alt=""
-                          loading="lazy"
-                          className="h-9 w-9 shrink-0 rounded-md bg-paper-inset object-contain p-0.5"
-                        />
-                        <span className="flex flex-col">
-                          <span className="text-sm font-semibold">{c.label}</span>
-                          <span className="text-xs text-text-mute">{c.note}</span>
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <Link
-                key={link.label}
-                to={link.href}
-                className="nav-drawer-link flex items-center justify-between border-b border-olive-100 py-4 text-olive-900 transition-colors hover:text-olive-700"
-                style={{ animationDelay: `${0.12 + i * 0.06}s` }}
-                onClick={() => setMenuOpen(false)}
-              >
-                <span className="font-sans text-lg font-semibold tracking-tight">{link.label}</span>
-                <ChevronRight size={18} strokeWidth={2} className="text-olive-400" />
-              </Link>
-            )
-          )}
+        <nav
+          className="flex flex-grow flex-col px-6 py-6"
+          aria-label="Mobile"
+        >
+          {LINKS.map((link, i) => (
+            <Link
+              key={link.label}
+              to={link.href}
+              className="nav-drawer-link flex items-center justify-between border-b border-olive-100 py-4 text-olive-900 transition-colors hover:text-olive-700"
+              style={{
+                animationDelay: `${0.12 + i * 0.06}s`,
+              }}
+              onClick={() => setMenuOpen(false)}
+            >
+              <span className="font-sans text-lg font-semibold tracking-tight">
+                {link.label}
+              </span>
+
+              <ChevronRight
+                size={18}
+                strokeWidth={2}
+                className="text-olive-400"
+              />
+            </Link>
+          ))}
 
           <Link
             to={account ? '/profile' : '/account'}
             onClick={() => setMenuOpen(false)}
             className="nav-drawer-link mt-6 flex items-center justify-between gap-3 rounded-xl bg-olive-900 px-4 py-3.5 text-on-olive transition-colors hover:bg-olive-800"
-            style={{ animationDelay: `${0.12 + LINKS.length * 0.06}s` }}
+            style={{
+              animationDelay: `${0.12 + LINKS.length * 0.06}s`,
+            }}
           >
             <span className="flex items-center gap-2.5">
               {!account ? (
                 <UserRound size={18} strokeWidth={2} />
               ) : account.avatar ? (
-                <img src={account.avatar} alt="" referrerPolicy="no-referrer" className="h-6 w-6 rounded-full object-cover" />
+                <img
+                  src={account.avatar}
+                  alt=""
+                  referrerPolicy="no-referrer"
+                  className="h-6 w-6 rounded-full object-cover"
+                />
               ) : (
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-on-olive/15 text-[0.7rem] font-semibold">
                   {initialOf(account.name)}
                 </span>
               )}
+
               <span className="font-sans text-base font-semibold tracking-tight">
                 {account ? 'My account' : 'Login / Register'}
               </span>
             </span>
-            <ChevronRight size={16} strokeWidth={2} className="text-on-olive-soft" />
+
+            <ChevronRight
+              size={16}
+              strokeWidth={2}
+              className="text-on-olive-soft"
+            />
           </Link>
         </nav>
       </aside>

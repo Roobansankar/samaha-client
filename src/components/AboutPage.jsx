@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Leaf, Droplet, Heart, Award, MapPin } from 'lucide-react'
+import FromTheSource from './FromTheSource'
 
 const STATS = [
   { number: '1985', label: 'Making oil since' },
@@ -157,6 +158,9 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* ---------- From the source ---------- */}
+      <FromTheSource />
 
       {/* ---------- Timeline ---------- */}
       <section className="bg-paper-inset">

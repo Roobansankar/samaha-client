@@ -5,7 +5,7 @@ export default function NotFound() {
   return (
     <section className="bg-paper">
       <Seo
-        title="Page not found | Samaha"
+        title="Samaha"
         description="The page you're looking for doesn't exist or has been moved."
         robots="noindex,follow"
       />
