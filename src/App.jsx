@@ -10,11 +10,13 @@ import ImageSlider from './components/ImageSlider'
 import About from './components/About'
 import Products from './components/Products'
 import OilRange from './components/OilRange'
+import WhyItMatters from './components/WhyItMatters'
+import GalleryPage from './components/GalleryPage'
 import Benefits from './components/Benefits'
 import WhySamaha from './components/WhySamaha'
 import Faq from './components/Faq'
 import Reviews from './components/Reviews'
-import LifeGallery from './components/LifeGallery'
+// import LifeGallery from './components/LifeGallery'
 import Banner from './components/Banner'
 import Cta from './components/Cta'
 import Footer from './components/Footer'
@@ -24,7 +26,7 @@ import AboutPage from './components/AboutPage'
 import ContactPage from './components/ContactPage'
 import ShopPage from './components/ShopPage'
 import ShopSlug from './components/ShopSlug'
-import HealthBenefitsPage from './components/HealthBenefitsPage'
+// import HealthBenefitsPage from './components/HealthBenefitsPage'
 import CartPage from './components/CartPage'
 import WhyUsPage from './components/WhyUsPage'
 import BlogPage from './components/BlogPage'
@@ -55,6 +57,7 @@ const AdminOrderView = lazy(() => import('./components/admin/AdminOrderView'))
 const AdminCustomers = lazy(() => import('./components/admin/AdminCustomers'))
 const AdminReviews = lazy(() => import('./components/admin/AdminReviews'))
 const AdminBanners = lazy(() => import('./components/admin/AdminBanners'))
+const AdminGallery = lazy(() => import('./components/admin/AdminGallery'))
 const AdminCategories = lazy(() => import('./components/admin/AdminCategories'))
 const AdminProducts = lazy(() => import('./components/admin/AdminProducts'))
 const AdminProductForm = lazy(() => import('./components/admin/AdminProductForm'))
@@ -86,6 +89,7 @@ function Home() {
       <main>
         
         <Products />
+        <WhyItMatters />
         <OilRange />
         <About />
         <Benefits />
@@ -93,7 +97,7 @@ function Home() {
         <Banner />
         <Faq />
         <Reviews />
-        <LifeGallery />
+        {/* <LifeGallery /> */}
         <Cta />
       </main>
     </>
@@ -136,9 +140,10 @@ function AppContent() {
       <Suspense fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<Home />} />
+      <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/shop/:slug" element={<ShopSlug />} />
-        <Route path="/health-benefits" element={<HealthBenefitsPage />} />
+        {/* <Route path="/health-benefits" element={<HealthBenefitsPage />} /> */}
         <Route path="/whyus" element={<WhyUsPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/account" element={<AccountPage />} />
@@ -175,6 +180,7 @@ function AppContent() {
           <Route path="customers" element={<AdminCustomers />} />
           <Route path="reviews" element={<AdminReviews />} />
           <Route path="banners" element={<AdminBanners />} />
+          <Route path="gallery" element={<AdminGallery />} />
           <Route path="categories" element={<AdminCategories />} />
           <Route path="products" element={<AdminProducts />} />
           <Route path="products/new" element={<AdminProductForm />} />
