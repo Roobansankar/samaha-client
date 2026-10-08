@@ -511,12 +511,7 @@ function OrderCard({ order, compact }) {
           <span>{money2(total)}</span>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-olive-900/10 pt-2.5">
-          {!compact && order.payment_id ? (
-            <p className="text-[0.7rem] text-olive-700/45 break-all">
-              Payment ID: <span className="font-mono">{order.payment_id}</span>
-            </p>
-          ) : <span />}
+        <div className="flex flex-wrap items-center justify-end gap-2 border-t border-olive-900/10 pt-2.5">
           <DownloadBillButton order={order} />
         </div>
       </div>
