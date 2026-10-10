@@ -1,6 +1,7 @@
 import { Leaf, Mail, Phone } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { SOCIALS } from './SocialIcons'
+import PaymentIcons from './PaymentIcons'
 
 const COLS = [
   {
@@ -99,7 +100,14 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-[clamp(2.5rem,6vw,4rem)] flex flex-col gap-3 border-t border-line-on-olive pt-6 text-xs text-on-olive-mute sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-[clamp(2.5rem,6vw,4rem)] flex flex-col gap-3 border-t border-line-on-olive pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-on-olive-mute">
+            Secure payments
+          </p>
+          <PaymentIcons />
+        </div>
+
+        <div className="mt-6 flex flex-col gap-3 border-t border-line-on-olive pt-6 text-xs text-on-olive-mute sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 Samaha. All rights reserved.</p>
           <div className="flex flex-wrap gap-x-5 gap-y-2">
             <Link to="/privacy-policy" className="transition-colors duration-200 hover:text-on-olive-soft">Privacy</Link>

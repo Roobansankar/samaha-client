@@ -1,9 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, FileDown, Loader2, BadgeCheck, X, Banknote } from 'lucide-react'
+import { ArrowLeft, FileDown, Loader2, X, Truck, PackageCheck } from 'lucide-react'
+import toast from 'react-hot-toast'
 import { StatusBadge } from './ui'
-import { fetchOrder, markOrderPaid } from './auth'
-import { enrichItems, downloadOrderInvoice, orderStatusLabel } from '../../lib/orderInvoice'
+import { fetchOrder, updateOrderDeliveryStatus } from './auth'
+import {
+  enrichItems,
+  downloadOrderInvoice,
+  orderInvoiceBlob,
+  asDelivered,
+  invoiceFilename,
+  orderStatusLabel,
+  deliveryStatusLabel,
+  isDeliverableOrder,
+  nextDeliveryStep,
+} from '../../lib/orderInvoice'
 import { useProducts } from '../../context/ProductsContext'
 
 const inr = (n) => `₹ ${Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
@@ -15,9 +26,8 @@ export default function AdminOrderView() {
   const { getVariant } = useProducts()
   const [order, setOrder] = useState(null)
   const [err, setErr] = useState('')
-  const [marking, setMarking] = useState(false)
-  const [markError, setMarkError] = useState('')
-  const [showPaidModal, setShowPaidModal] = useState(false)
+  const [deliveryStep, setDeliveryStep] = useState(null) // the step awaiting confirmation
+  const [updatingDelivery, setUpdatingDelivery] = useState(false)
 
   useEffect(() => {
     let alive = true
@@ -27,25 +37,34 @@ export default function AdminOrderView() {
     return () => { alive = false }
   }, [id])
 
-  // Escape closes the confirm popup
-  useEffect(() => {
-    if (!showPaidModal) return
-    const onKey = (e) => { if (e.key === 'Escape') setShowPaidModal(false) }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [showPaidModal])
-
-  const markPaid = async () => {
-    setMarking(true)
-    setMarkError('')
+  // The backend is the source of truth: the badge only changes from its response. On failure,
+  // re-fetch so the page reflects whatever the order's real delivery status is now.
+  const advanceDelivery = async () => {
+    setUpdatingDelivery(true)
+    // "Delivered" sends the customer this order's invoice on WhatsApp — the same PDF as the
+    // Download PDF button, drawn as the order will be once delivered (a COD order shows as
+    // paid). If it can't be built, stop here: nothing has been changed yet.
+    let invoice = null
+    if (deliveryStep.status === 'delivered') {
+      try {
+        invoice = await orderInvoiceBlob(asDelivered(order), getVariant)
+      } catch {
+        toast.error('Could not generate the invoice, so the order was not updated. Please try again.')
+        setUpdatingDelivery(false)
+        return
+      }
+    }
     try {
-      const updated = await markOrderPaid(id)
+      const updated = await updateOrderDeliveryStatus(id, deliveryStep.status, invoice, invoiceFilename(order))
       setOrder(updated)
-      setShowPaidModal(false)
+      setDeliveryStep(null)
+      toast.success(`Order marked as ${deliveryStatusLabel(updated.delivery_status).toLowerCase()}`)
     } catch (e) {
-      setMarkError(e.message || 'Could not mark this order as paid.')
+      toast.error(e.message || 'Could not update the delivery status.')
+      setDeliveryStep(null)
+      fetchOrder(id).then(setOrder).catch(() => {})
     } finally {
-      setMarking(false)
+      setUpdatingDelivery(false)
     }
   }
 
@@ -65,6 +84,9 @@ export default function AdminOrderView() {
   const subtotal = order.subtotal ?? items.reduce((s, i) => s + i.price * i.qty, 0)
   const shipping = order.shipping ?? 0
   const total = order.total ?? subtotal + shipping
+  const deliverable = isDeliverableOrder(order)
+  const nextStep = deliverable ? nextDeliveryStep(order.delivery_status) : null
+  const orderName = order.order_number != null ? `Order ${order.order_number}` : 'this order'
 
   return (
     <div>
@@ -80,9 +102,15 @@ export default function AdminOrderView() {
           <p className="a-mute text-[0.78rem]">{fmtDateTime(order.placed_at)}</p>
         </div>
         <StatusBadge status={orderStatusLabel(order.status, order.payment_method)} />
-        {order.payment_method === 'cod' && order.status === 'confirmed' && (
-          <button className="a-btn a-btn-sm a-btn-primary" onClick={() => { setMarkError(''); setShowPaidModal(true) }}>
-            <BadgeCheck size={14} /> Mark as paid
+        {deliverable && (
+          <span className="flex items-center gap-1.5" title="Delivery status">
+            <span className="a-mute text-[0.75rem]">Delivery</span>
+            <StatusBadge status={deliveryStatusLabel(order.delivery_status)} />
+          </span>
+        )}
+        {nextStep && (
+          <button className="a-btn a-btn-sm" disabled={updatingDelivery} onClick={() => setDeliveryStep(nextStep)}>
+            {nextStep.status === 'delivered' ? <PackageCheck size={14} /> : <Truck size={14} />} {nextStep.label}
           </button>
         )}
         {order.status === 'paid' && (
@@ -92,14 +120,10 @@ export default function AdminOrderView() {
         )}
       </div>
 
-      {markError && (
-        <p className="mb-5 rounded-lg bg-red-50 px-3.5 py-2.5 text-sm text-red-700">{markError}</p>
-      )}
-
       {order.status !== 'paid' && (
         <p className="mb-5 rounded-lg border px-3.5 py-2.5 text-sm" style={{ borderColor: 'var(--a-border-strong)', background: 'var(--a-surface-2)', color: 'var(--a-text-dim)' }}>
           {order.status === 'confirmed'
-            ? 'Cash on Delivery — the customer pays when the order arrives. No payment has been collected yet; use "Mark as paid" once it has.'
+            ? 'Cash on Delivery — the customer pays when the order arrives. No payment has been collected yet; it\'s registered as paid when the order is marked delivered.'
             : order.status === 'cancelled'
               ? 'The customer closed the payment window before paying. No payment was collected.'
               : order.status === 'failed'
@@ -164,61 +188,90 @@ export default function AdminOrderView() {
       </div>
 
       {/* Custom confirm popup */}
-      {showPaidModal && (
-        <div
-          className="fixed inset-0 z-[60] grid place-items-center bg-black/40 px-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Mark order as paid"
-          onClick={() => !marking && setShowPaidModal(false)}
+      {deliveryStep && (
+        <ConfirmDialog
+          label={deliveryStep.label}
+          icon={deliveryStep.status === 'delivered' ? <PackageCheck size={18} /> : <Truck size={18} />}
+          title={`Mark ${orderName} as ${deliveryStatusLabel(deliveryStep.status).toLowerCase()}?`}
+          busy={updatingDelivery}
+          confirmIcon={deliveryStep.status === 'delivered' ? <PackageCheck size={14} /> : <Truck size={14} />}
+          confirmLabel={`Yes, ${deliveryStatusLabel(deliveryStep.status).toLowerCase()}`}
+          busyLabel="Updating…"
+          onCancel={() => setDeliveryStep(null)}
+          onConfirm={advanceDelivery}
         >
-          <div
-            className="a-card w-full max-w-md p-6"
-            style={{ borderRadius: 'var(--a-radius-lg)' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <span
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-full"
-                style={{ background: 'var(--a-accent-soft)', color: 'var(--a-text)' }}
-              >
-                <Banknote size={18} />
-              </span>
-              <button className="a-iconbtn" aria-label="Close" onClick={() => !marking && setShowPaidModal(false)}>
-                <X size={16} />
-              </button>
-            </div>
-
-            <h2 className="mt-3 text-[1.05rem] font-semibold tracking-tight">
-              Mark {order.order_number != null ? `Order ${order.order_number}` : 'this order'} as paid?
-            </h2>
-            <p className="a-dim mt-1.5 text-[0.85rem] leading-relaxed">
-              Confirm cash of <span className="font-semibold a-mono" style={{ color: 'var(--a-text)' }}>{inr(total)}</span>
-              {order.customer ? <> from <span className="font-medium" style={{ color: 'var(--a-text)' }}>{order.customer}</span></> : null} has
-              actually been collected. This will count toward revenue.
-            </p>
-
-            {markError && (
-              <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-[0.82rem] text-red-700">{markError}</p>
-            )}
-
-            <div className="mt-5 flex items-center justify-end gap-2">
-              <button className="a-btn a-btn-sm" disabled={marking} onClick={() => setShowPaidModal(false)}>
-                Cancel
-              </button>
-              <button className="a-btn a-btn-sm a-btn-primary" disabled={marking} onClick={markPaid}>
-                {marking ? <Loader2 size={14} className="animate-spin" /> : <BadgeCheck size={14} />}
-                {marking ? 'Marking…' : 'Yes, cash collected'}
-              </button>
-            </div>
-          </div>
-        </div>
+          {deliveryStep.status === 'dispatched' && 'Confirm the parcel has left with the courier. '}
+          {deliveryStep.status === 'out_for_delivery' && 'Confirm the parcel is out with the courier for delivery today. '}
+          {deliveryStep.status === 'delivered' && 'Confirm the parcel has reached the customer. '}
+          {deliveryStep.status === 'delivered' && order.payment_method === 'cod' && order.status === 'confirmed' && (
+            <>This also registers the Cash on Delivery payment of <span className="font-semibold a-mono" style={{ color: 'var(--a-text)' }}>{inr(total)}</span> as
+            collected, and it will count toward revenue. </>
+          )}
+          {order.phone
+            ? <>{order.customer || 'The customer'} will get a WhatsApp update{deliveryStep.status === 'delivered' ? ' with their invoice' : ''} on <span className="a-mono" style={{ color: 'var(--a-text)' }}>{order.phone}</span>. </>
+            : 'There’s no phone number on this order, so no WhatsApp update will be sent. '}
+          This can’t be undone.
+        </ConfirmDialog>
       )}
     </div>
   )
 }
 
 /* ------------------------------------------------------------------ */
+
+function ConfirmDialog({ label, icon, title, children, error, busy, confirmIcon, confirmLabel, busyLabel, onCancel, onConfirm }) {
+  // Escape closes the popup (not mid-request)
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape' && !busy) onCancel() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [busy, onCancel])
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] grid place-items-center bg-black/40 px-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={label}
+      onClick={() => !busy && onCancel()}
+    >
+      <div
+        className="a-card w-full max-w-md p-6"
+        style={{ borderRadius: 'var(--a-radius-lg)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <span
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full"
+            style={{ background: 'var(--a-accent-soft)', color: 'var(--a-text)' }}
+          >
+            {icon}
+          </span>
+          <button className="a-iconbtn" aria-label="Close" onClick={() => !busy && onCancel()}>
+            <X size={16} />
+          </button>
+        </div>
+
+        <h2 className="mt-3 text-[1.05rem] font-semibold tracking-tight">{title}</h2>
+        <p className="a-dim mt-1.5 text-[0.85rem] leading-relaxed">{children}</p>
+
+        {error && (
+          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-[0.82rem] text-red-700">{error}</p>
+        )}
+
+        <div className="mt-5 flex items-center justify-end gap-2">
+          <button className="a-btn a-btn-sm" disabled={busy} onClick={onCancel}>
+            Cancel
+          </button>
+          <button className="a-btn a-btn-sm a-btn-primary" disabled={busy} onClick={onConfirm}>
+            {busy ? <Loader2 size={14} className="animate-spin" /> : confirmIcon}
+            {busy ? busyLabel : confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function Card({ title, children }) {
   return (

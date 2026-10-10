@@ -25,6 +25,32 @@ const BADGE_LABEL = { created: 'Pending', paid: 'Paid', confirmed: 'Cash on Deli
 export const orderStatusLabel = (status, paymentMethod) =>
   status === 'paid' && paymentMethod === 'cod' ? 'Paid (COD)' : BADGE_LABEL[status] || 'Pending'
 
+/**
+ * Delivery progress, separate from the payment `status` above. `deliveryStatus` is null
+ * (pending, not yet dispatched) | dispatched | out_for_delivery | delivered — set by the
+ * backend only, one step at a time.
+ */
+const DELIVERY_LABEL = { dispatched: 'Dispatched', out_for_delivery: 'Out for delivery', delivered: 'Delivered' }
+export const deliveryStatusLabel = (deliveryStatus) => DELIVERY_LABEL[deliveryStatus] || 'Pending'
+
+/** Only paid orders and confirmed COD orders are real orders that can be shipped. */
+export const isDeliverableOrder = (o) => o?.status === 'paid' || o?.status === 'confirmed'
+
+/**
+ * The order as it will be once delivered — what its invoice should show. Mirrors the backend:
+ * delivering a confirmed COD order registers its cash as paid; anything else is unchanged.
+ */
+export const asDelivered = (o) =>
+  o.payment_method === 'cod' && o.status === 'confirmed' ? { ...o, status: 'paid', delivery_status: 'delivered' } : { ...o, delivery_status: 'delivered' }
+
+/** The one next step an admin can take from the current delivery status (null once delivered). */
+const NEXT_DELIVERY = {
+  pending: { status: 'dispatched', label: 'Mark as dispatched' },
+  dispatched: { status: 'out_for_delivery', label: 'Mark as out for delivery' },
+  out_for_delivery: { status: 'delivered', label: 'Mark as delivered' },
+}
+export const nextDeliveryStep = (deliveryStatus) => NEXT_DELIVERY[deliveryStatus || 'pending'] || null
+
 const OLIVE = [36, 61, 30]
 const INK = [26, 46, 20]
 const MUTE = [107, 120, 100]
@@ -72,13 +98,26 @@ function loadThumb(src) {
   })
 }
 
+export const invoiceFilename = (order) => `Samaha-Invoice-${order.order_number ?? order.id}.pdf`
+
 /**
- * Build a branded PDF invoice for one order and download it straight away
- * (no print dialog). Works for both the admin order shape and the
- * customer /profile/orders shape.
+ * Download the invoice straight away (no print dialog). Works for both the admin order shape
+ * and the customer /profile/orders shape.
  */
 export async function downloadOrderInvoice(order, getVariant) {
   if (!order) return
+  const doc = await buildOrderInvoicePdf(order, getVariant)
+  doc.save(invoiceFilename(order))
+}
+
+/** The same invoice as a PDF Blob — what "Mark as delivered" sends for the WhatsApp message. */
+export async function orderInvoiceBlob(order, getVariant) {
+  const doc = await buildOrderInvoicePdf(order, getVariant)
+  return doc.output('blob')
+}
+
+/** Build the branded PDF invoice for one order and return the jsPDF document. */
+async function buildOrderInvoicePdf(order, getVariant) {
 
   const [{ jsPDF }, autoTableMod] = await Promise.all([
     import('jspdf'),
@@ -251,5 +290,5 @@ export async function downloadOrderInvoice(order, getVariant) {
   doc.text('Samaha Natural Oils  -  thank you for your order.', M, y)
   doc.text('This is a computer-generated invoice. For any query, reply to your order confirmation email.', M, y + 4)
 
-  doc.save(`Samaha-Invoice-${order.order_number ?? order.id}.pdf`)
+  return doc
 }

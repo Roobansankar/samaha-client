@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Search, RefreshCw, Eye, X, FileDown, CalendarDays, Loader2, Wallet } from 'lucide-react'
 import { Panel, StatusBadge, EmptyRow, ResultCount, Pager } from './ui'
 import { fetchOrders } from './auth'
-import { enrichItems, downloadOrderInvoice, orderStatusLabel } from '../../lib/orderInvoice'
+import { enrichItems, downloadOrderInvoice, orderStatusLabel, deliveryStatusLabel } from '../../lib/orderInvoice'
 import { useProducts } from '../../context/ProductsContext'
 
 const PER_PAGE = 10
@@ -108,7 +108,7 @@ export default function AdminOrders() {
   const open = (id) => navigate(`/admin/orders/${id}`)
   const activeTab = TABS.find((t) => t.key === tab)
   const showOrderCol = tab === 'paid' // incomplete payments never have an order number to show
-  const colCount = showOrderCol ? 8 : 7
+  const colCount = showOrderCol ? 9 : 7
 
   return (
     <Panel
@@ -212,6 +212,7 @@ export default function AdminOrders() {
             <th>Customer</th>
             <th>Items</th>
             <th>Payment</th>
+            {showOrderCol && <th>Delivery</th>}
             <th>Total</th>
             <th className="text-right">Actions</th>
           </tr>
@@ -274,6 +275,11 @@ export default function AdminOrders() {
                 <td>
                   <StatusBadge status={orderStatusLabel(o.status, o.payment_method)} />
                 </td>
+                {showOrderCol && (
+                  <td>
+                    <StatusBadge status={deliveryStatusLabel(o.delivery_status)} />
+                  </td>
+                )}
                 <td className="a-mono a-dim whitespace-nowrap">{inr(o.total)}</td>
                 <td className="text-right" onClick={(e) => e.stopPropagation()}>
                   <div className="flex items-center justify-end gap-1">

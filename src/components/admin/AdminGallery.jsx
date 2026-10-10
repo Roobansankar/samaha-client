@@ -22,6 +22,7 @@ import {
   uploadGalleryImage,
   uploadGalleryVideo,
 } from './auth'
+import { compressImage } from './compressImage'
 
 const CATEGORIES = [
   'Products',
@@ -602,6 +603,7 @@ function GalleryForm({ item, onClose, onSaved }) {
   const [mediaFile, setMediaFile] = useState(null)
   const [posterFile, setPosterFile] = useState(null)
   const [busy, setBusy] = useState(false)
+  const [stage, setStage] = useState('')
   const [error, setError] = useState('')
 
   const isVideo = form.media_type === 'video'
@@ -667,6 +669,8 @@ function GalleryForm({ item, onClose, onSaved }) {
 
       if (mediaFile) {
         if (isVideo) {
+          setStage('Uploading & compressing video…')
+
           const uploaded = await uploadGalleryVideo(
             mediaFile,
             form.title.trim(),
@@ -675,8 +679,12 @@ function GalleryForm({ item, onClose, onSaved }) {
           videoUrl = uploaded.url
           imageUrl = null
         } else {
+          setStage('Compressing image…')
+          const compressed = await compressImage(mediaFile)
+
+          setStage('Uploading image…')
           const uploaded = await uploadGalleryImage(
-            mediaFile,
+            compressed,
             form.title.trim(),
           )
 
@@ -687,8 +695,10 @@ function GalleryForm({ item, onClose, onSaved }) {
       }
 
       if (posterFile && isVideo) {
+        setStage('Uploading poster…')
+
         const uploadedPoster = await uploadGalleryImage(
-          posterFile,
+          await compressImage(posterFile),
           `${form.title.trim()} poster`,
         )
 
@@ -733,6 +743,7 @@ function GalleryForm({ item, onClose, onSaved }) {
           }.`,
       )
       setBusy(false)
+      setStage('')
     }
   }
 
@@ -823,7 +834,7 @@ function GalleryForm({ item, onClose, onSaved }) {
             <>
               <MediaDropzone
                 label="Gallery video *"
-                hint="MP4, WebM or MOV — maximum 100 MB"
+                hint="MP4, WebM or MOV — maximum 100 MB, compressed automatically"
                 type="video"
                 url={form.video}
                 file={mediaFile}
@@ -839,7 +850,7 @@ function GalleryForm({ item, onClose, onSaved }) {
 
               <MediaDropzone
                 label="Video poster"
-                hint="Optional JPG, PNG, WebP or AVIF image — maximum 20 MB"
+                hint="Optional JPG, PNG, WebP or AVIF image — compressed automatically"
                 type="image"
                 url={form.poster}
                 file={posterFile}
@@ -856,7 +867,7 @@ function GalleryForm({ item, onClose, onSaved }) {
           ) : (
             <MediaDropzone
               label="Gallery image *"
-              hint="JPG, PNG, WebP or AVIF — maximum 20 MB"
+              hint="JPG, PNG, WebP or AVIF — compressed automatically"
               type="image"
               url={form.image}
               file={mediaFile}
@@ -980,7 +991,9 @@ function GalleryForm({ item, onClose, onSaved }) {
               />
             )}
 
-            {isNew
+            {busy && stage
+              ? stage
+              : isNew
               ? `Create ${
                   isVideo ? 'video' : 'image'
                 }`
@@ -1025,9 +1038,9 @@ function MediaDropzone({
         return
       }
 
-      if (next.size > 20 * 1024 * 1024) {
+      if (next.size > 50 * 1024 * 1024) {
         window.alert(
-          'That image is over 20 MB — please compress it first.',
+          'That image is over 50 MB — please use a smaller image.',
         )
         return
       }

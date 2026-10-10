@@ -2,7 +2,8 @@ const API_URL = '/api'
 
 async function request(url, options = {}) {
   const token = getToken()
-  const headers = { 'Content-Type': 'application/json', Accept: 'application/json' }
+  // FormData sets its own multipart Content-Type (with boundary).
+  const headers = options.body instanceof FormData ? { Accept: 'application/json' } : { 'Content-Type': 'application/json', Accept: 'application/json' }
   if (token) headers['Authorization'] = `Bearer ${token}`
 
   const response = await fetch(url, { headers: { ...headers, ...options.headers }, ...options })
@@ -159,8 +160,22 @@ export async function fetchOrder(id) {
   return request(`${API_URL}/admin/orders/${id}`)
 }
 
-export async function markOrderPaid(id) {
-  return request(`${API_URL}/admin/orders/${id}/mark-paid`, { method: 'PATCH' })
+/**
+ * `invoice` (a PDF Blob) goes with "delivered" only. A file needs multipart, which PHP only
+ * parses on POST, so that request is a POST spoofed to PATCH via `_method`.
+ */
+export async function updateOrderDeliveryStatus(id, deliveryStatus, invoice = null, invoiceName = 'invoice.pdf') {
+  if (invoice) {
+    const form = new FormData()
+    form.append('_method', 'PATCH')
+    form.append('delivery_status', deliveryStatus)
+    form.append('invoice', invoice, invoiceName)
+    return request(`${API_URL}/admin/orders/${id}/delivery-status`, { method: 'POST', body: form })
+  }
+  return request(`${API_URL}/admin/orders/${id}/delivery-status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ delivery_status: deliveryStatus }),
+  })
 }
 
 /* ---- Products ---- */
