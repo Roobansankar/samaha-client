@@ -63,12 +63,13 @@ export default function ProfilePage({ view = 'dashboard' }) {
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[210px_1fr] lg:items-start">
-          <nav className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
+          <nav aria-label="Account navigation" className="grid grid-cols-2 gap-2 rounded-2xl border border-olive-900/10 bg-white/60 p-2 lg:grid-cols-1">
             {NAV.map(({ key, label, to, Icon }) => (
               <Link
                 key={key}
                 to={to}
-                className={`flex shrink-0 items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
+                aria-current={key === view ? 'page' : undefined}
+                className={`flex items-center gap-2.5 rounded-xl px-3 py-3 text-sm font-medium transition-colors ${
                   key === view ? 'bg-olive-900 text-paper' : 'text-olive-800 hover:bg-white'
                 }`}
               >
