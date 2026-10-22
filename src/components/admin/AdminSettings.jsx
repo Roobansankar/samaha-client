@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Check } from 'lucide-react'
 import { PageHeader } from './ui'
+import { fetchNotificationPreferences, updateNotificationPreferences } from './auth'
 
-function Switch({ checked, onChange }) {
+function Switch({ checked, onChange, disabled, label }) {
   return (
     <button
       type="button"
@@ -10,6 +11,8 @@ function Switch({ checked, onChange }) {
       data-on={checked}
       onClick={() => onChange(!checked)}
       aria-pressed={checked}
+      aria-label={label}
+      disabled={disabled}
     />
   )
 }
@@ -37,16 +40,38 @@ function SettingsCard({ title, description, children, onSave }) {
 }
 
 const NOTIFS = [
-  { key: 'new-order', label: 'New order placed', desc: 'Email the team whenever an order comes in.' },
-  { key: 'low-stock', label: 'Low stock alert', desc: 'Notify when a SKU drops below its reorder point.' },
-  { key: 'refund', label: 'Refund requested', desc: 'Flag refund and return requests for review.' },
-  { key: 'review', label: 'New product review', desc: 'Get a digest of new customer reviews.' },
+  { key: 'order', label: 'New order placed', desc: 'Show order alerts. Open an alert to view the order.' },
+  { key: 'low-stock', label: 'Low stock alert', desc: 'Alert when a product has fewer than 15 units, including out of stock.' },
+  { key: 'review', label: 'New product review', desc: 'Show new review alerts linking to the product detail page.' },
 ]
 
 export default function AdminSettings() {
   const [saved, setSaved] = useState(false)
-  const [notifs, setNotifs] = useState({ 'new-order': true, 'low-stock': true, refund: true, review: false })
-  const [freeShip, setFreeShip] = useState(true)
+  const [notifs, setNotifs] = useState(null)
+  const [notifBusy, setNotifBusy] = useState(false)
+  const [notifError, setNotifError] = useState('')
+
+  useEffect(() => {
+    let active = true
+    fetchNotificationPreferences()
+      .then((data) => { if (active) setNotifs(data) })
+      .catch((error) => { if (active) setNotifError(error.message) })
+    return () => { active = false }
+  }, [])
+
+  const toggleNotification = async (key, enabled) => {
+    setNotifBusy(true)
+    setNotifError('')
+    try {
+      const preferences = await updateNotificationPreferences({ ...notifs, [key]: enabled })
+      setNotifs(preferences)
+      window.dispatchEvent(new CustomEvent('samaha:notification-preferences'))
+    } catch (error) {
+      setNotifError(error.message)
+    } finally {
+      setNotifBusy(false)
+    }
+  }
 
   const save = () => {
     setSaved(true)
@@ -57,7 +82,7 @@ export default function AdminSettings() {
     <div>
       <PageHeader
         title="Settings"
-        subtitle="Store profile, shipping, payments and alerts."
+        subtitle="Store profile and notification preferences."
         actions={
           saved ? (
             <span className="a-badge a-badge--green">
@@ -81,81 +106,18 @@ export default function AdminSettings() {
             <label className="a-label">Support email</label>
             <input className="a-input" type="email" defaultValue="hello@samaha.com" />
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="a-field">
-              <label className="a-label">Currency</label>
-              <select className="a-select" defaultValue="USD">
-                <option>USD</option>
-                <option>INR</option>
-                <option>EUR</option>
-                <option>GBP</option>
-              </select>
-            </div>
-            <div className="a-field">
-              <label className="a-label">Timezone</label>
-              <select className="a-select" defaultValue="Asia/Kolkata">
-                <option>Asia/Kolkata</option>
-                <option>Europe/London</option>
-                <option>America/New_York</option>
-              </select>
-            </div>
-          </div>
           <div className="a-field">
             <label className="a-label">Business address</label>
             <textarea className="a-textarea" defaultValue={'14 Grove Road\nCoimbatore 641004\nTamil Nadu, India'} />
           </div>
         </SettingsCard>
 
-        <div className="space-y-4">
-          <SettingsCard
-            title="Shipping"
-            description="Rates applied at checkout."
-            onSave={save}
-          >
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-[0.86rem] font-medium">Free shipping threshold</p>
-                <p className="a-sub">Waive shipping above a cart value.</p>
-              </div>
-              <Switch checked={freeShip} onChange={setFreeShip} />
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="a-field">
-                <label className="a-label">Threshold</label>
-                <input className="a-input" defaultValue="$60.00" disabled={!freeShip} />
-              </div>
-              <div className="a-field">
-                <label className="a-label">Flat rate</label>
-                <input className="a-input" defaultValue="$5.00" />
-              </div>
-            </div>
-            <div className="a-field">
-              <label className="a-label">Dispatch time</label>
-              <select className="a-select" defaultValue="1-2 business days">
-                <option>Same day</option>
-                <option>1-2 business days</option>
-                <option>3-5 business days</option>
-              </select>
-            </div>
-          </SettingsCard>
-
-          <SettingsCard title="Payments" description="Providers accepted at checkout." onSave={save}>
-            {[
-              ['Stripe', 'Cards, Apple Pay, Google Pay', true],
-              ['PayPal', 'PayPal balance and cards', true],
-              ['Razorpay', 'UPI, netbanking, wallets', false],
-              ['Cash on delivery', 'India only', false],
-            ].map(([name, desc, on]) => (
-              <PaymentRow key={name} name={name} desc={desc} defaultOn={on} />
-            ))}
-          </SettingsCard>
-        </div>
-
         <SettingsCard
           title="Notifications"
-          description="Where operational alerts are sent."
-          onSave={save}
+          description="Control alerts in the admin notification bell. Changes save automatically."
         >
+          {notifError && <p role="alert" className="text-sm text-red-600">{notifError}</p>}
+          {!notifs && !notifError && <p className="a-sub">Loading preferences…</p>}
           {NOTIFS.map((n) => (
             <div key={n.key} className="flex items-center justify-between gap-4">
               <div>
@@ -163,48 +125,16 @@ export default function AdminSettings() {
                 <p className="a-sub">{n.desc}</p>
               </div>
               <Switch
-                checked={!!notifs[n.key]}
-                onChange={(v) => setNotifs((s) => ({ ...s, [n.key]: v }))}
+                checked={!!notifs?.[n.key]}
+                disabled={!notifs || notifBusy}
+                label={n.label}
+                onChange={(v) => toggleNotification(n.key, v)}
               />
             </div>
           ))}
         </SettingsCard>
 
-        <SettingsCard title="Danger zone" description="Irreversible actions.">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-[0.86rem] font-medium">Put store in maintenance mode</p>
-              <p className="a-sub">Storefront shows a holding page; admin stays open.</p>
-            </div>
-            <button className="a-btn a-btn-sm">Enable</button>
-          </div>
-          <hr className="a-divider" />
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-[0.86rem] font-medium" style={{ color: 'var(--a-danger)' }}>
-                Delete all demo data
-              </p>
-              <p className="a-sub">Removes sample orders, products and customers.</p>
-            </div>
-            <button className="a-btn a-btn-sm a-btn-danger" style={{ borderColor: 'var(--a-border-strong)' }}>
-              Delete data
-            </button>
-          </div>
-        </SettingsCard>
       </div>
-    </div>
-  )
-}
-
-function PaymentRow({ name, desc, defaultOn }) {
-  const [on, setOn] = useState(defaultOn)
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <div>
-        <p className="text-[0.86rem] font-medium">{name}</p>
-        <p className="a-sub">{desc}</p>
-      </div>
-      <Switch checked={on} onChange={setOn} />
     </div>
   )
 }

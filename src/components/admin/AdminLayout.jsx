@@ -25,13 +25,13 @@ import {
   Search,
   X,
 } from 'lucide-react'
-import { signOut, getUser, isAdmin, hasPermission, fetchNotifications, markAllNotificationsRead, deleteNotification } from './auth'
+import { signOut, getUser, isAdmin, hasPermission, fetchNotifications, markNotificationsRead, markAllNotificationsRead, deleteNotification } from './auth'
 import { AdminThemeContext } from './theme'
 import { loadAdminFont } from './loadAdminFont'
 
 loadAdminFont()
 
-const NOTIF_ICON = { order: ShoppingBag, product: Package, subscriber: MailCheck, message: MessageSquare }
+const NOTIF_ICON = { order: ShoppingBag, product: Package, 'low-stock': Package, review: Star, subscriber: MailCheck, message: MessageSquare }
 
 const NAV = [
   { to: '/admin', end: true, label: 'Dashboard', icon: LayoutDashboard, page: 'dashboard' },
@@ -89,7 +89,11 @@ export default function AdminLayout() {
     if (isAdmin()) {
       loadNotifications()
       const interval = setInterval(loadNotifications, 30000)
-      return () => clearInterval(interval)
+      window.addEventListener('samaha:notification-preferences', loadNotifications)
+      return () => {
+        clearInterval(interval)
+        window.removeEventListener('samaha:notification-preferences', loadNotifications)
+      }
     }
   }, [location.pathname])
 
@@ -281,8 +285,21 @@ export default function AdminLayout() {
                                   <Icon size={14} />
                                 </span>
                                 <div className="min-w-0 flex-1">
+                                  {n.url ? <Link
+                                    to={n.url}
+                                    className="block rounded focus-visible:outline-2 focus-visible:outline-offset-2"
+                                    onClick={() => {
+                                      setNotifOpen(false)
+                                      setNotifications((list) => list.map((item) => item.id === n.id ? { ...item, read: true } : item))
+                                      markNotificationsRead([n.id]).catch(() => {})
+                                    }}
+                                  >
+                                    <p className="text-[0.8rem] font-medium truncate">{n.title}</p>
+                                    <p className="text-[0.72rem] a-mute truncate">{n.body}</p>
+                                  </Link> : <>
                                   <p className="text-[0.8rem] font-medium truncate">{n.title}</p>
                                   <p className="text-[0.72rem] a-mute truncate">{n.body}</p>
+                                  </>}
                                   <p className="text-[0.68rem] a-mute mt-0.5">{new Date(n.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
                                 </div>
                                 <div className="flex shrink-0 items-center gap-1.5">

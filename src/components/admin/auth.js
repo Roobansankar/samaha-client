@@ -290,6 +290,14 @@ export async function fetchNotifications() {
   return request(`${API_URL}/admin/notifications`)
 }
 
+export function fetchNotificationPreferences() {
+  return request(`${API_URL}/admin/notification-preferences`)
+}
+
+export function updateNotificationPreferences(preferences) {
+  return request(`${API_URL}/admin/notification-preferences`, { method: 'PUT', body: JSON.stringify(preferences) })
+}
+
 export async function markNotificationsRead(ids) {
   return request(`${API_URL}/admin/notifications/read`, { method: 'PUT', body: JSON.stringify({ ids }) })
 }
