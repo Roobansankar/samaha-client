@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Home, ShoppingCart, Search, Heart, UserRound } from 'lucide-react'
+import { Home, ShoppingCart, Search, Store, UserRound } from 'lucide-react'
 import { useAccount } from '../lib/account'
 
 const initialOf = (name) => (name || '').trim().charAt(0).toUpperCase() || 'U'
@@ -10,9 +10,9 @@ export default function MobileTabBar() {
 
   const TABS = [
     { label: 'Home', to: '/', Icon: Home, exact: true },
-    { label: 'Shop', to: '/shop', Icon: ShoppingCart },
+    { label: 'Shop', to: '/shop', Icon: Store },
     { label: 'Search', Icon: Search, action: 'search' },
-    { label: 'Wishlist', to: '/wishlist', Icon: Heart },
+    { label: 'Cart', to: '/cart', Icon: ShoppingCart },
     account
       ? { label: 'Account', to: '/profile', initial: initialOf(account.name), avatar: account.avatar }
       : { label: 'Account', to: '/account', Icon: UserRound },
@@ -65,6 +65,7 @@ export default function MobileTabBar() {
             <Link
               key={t.label}
               to={t.to}
+              onClick={() => window.dispatchEvent(new CustomEvent('samaha:mobile-navigate'))}
               className={`tabbar__tab ${active ? 'is-active' : ''}`}
               aria-current={active ? 'page' : undefined}
             >

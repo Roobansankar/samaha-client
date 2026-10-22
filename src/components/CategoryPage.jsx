@@ -73,10 +73,6 @@ export default function CategoryPage() {
     animateUpdate(() => setPicked(new Set()))
   const isVisible = useVisibleProducts()
 
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
-
   // page copy written in the admin (Categories) — unique text for this oil
   const [content, setContent] = useState(null)
   useEffect(() => {

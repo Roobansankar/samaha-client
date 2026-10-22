@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useScrolled } from '../hooks/useScrolled'
 import { useAccount } from '../lib/account'
@@ -106,8 +106,8 @@ function SearchOverlay({ open, onClose }) {
 
     if (q) trackSearch(q)
 
-    navigate(q ? `/shop?q=${encodeURIComponent(q)}` : '/shop')
-    close()
+    setQuery('')
+    navigate(q ? `/shop?q=${encodeURIComponent(q)}` : '/shop', { replace: true })
   }
 
   return (
@@ -202,9 +202,18 @@ function Wordmark({ className = 'h-11 sm:h-[52px]' }) {
 export default function Navbar() {
   const scrolled = useScrolled(8)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
 
   const location = useLocation()
+  const navigate = useNavigate()
+  const searchOpen = location.state?.searchOverlay === true
+  const openSearch = useCallback(() => {
+    setMenuOpen(false)
+    if (!searchOpen) {
+      navigate(location.pathname + location.search + location.hash, {
+        state: { ...location.state, searchOverlay: true },
+      })
+    }
+  }, [location, navigate, searchOpen])
   const account = useAccount()
   const { uniqueCount } = useCart(null)
 
@@ -230,12 +239,20 @@ export default function Navbar() {
 
   /* The mobile tab bar's search button opens the full-page overlay via this event. */
   useEffect(() => {
-    const open = () => setSearchOpen(true)
+    const closeMenu = () => setMenuOpen(false)
+    const open = () => {
+      closeMenu()
+      openSearch()
+    }
 
     window.addEventListener('samaha:search', open)
+    window.addEventListener('samaha:mobile-navigate', closeMenu)
 
-    return () => window.removeEventListener('samaha:search', open)
-  }, [])
+    return () => {
+      window.removeEventListener('samaha:search', open)
+      window.removeEventListener('samaha:mobile-navigate', closeMenu)
+    }
+  }, [openSearch])
 
   const isActive = (link) =>
     link.exact
@@ -295,7 +312,7 @@ export default function Navbar() {
             type="button"
             className="nav-icon max-[900px]:hidden"
             aria-label="Search"
-            onClick={() => setSearchOpen(true)}
+            onClick={openSearch}
           >
             <Search size={20} strokeWidth={1.8} />
           </button>
@@ -341,7 +358,7 @@ export default function Navbar() {
 
       <SearchOverlay
         open={searchOpen}
-        onClose={() => setSearchOpen(false)}
+        onClose={() => navigate(-1)}
       />
 
       {/* Mobile drawer */}

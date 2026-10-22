@@ -460,7 +460,6 @@ export default function ProductPage() {
       .catch(() => setReviews({ average: 0, count: 0, distribution: {}, reviews: [] }))
 
   useEffect(() => {
-    window.scrollTo(0, 0)
     setQty(1)
     setAdded(false)
     setReviews(null)
