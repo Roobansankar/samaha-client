@@ -29,8 +29,8 @@ const FALLBACK = [
     steps: ['Sun-dried groundnuts', 'Wood-pressed the slow way', 'Small, dated lots'],
   },
   {
-    src: '/slide3.png',
-    srcMobile: '/slidem3.png',
+    src: '/slide3.webp',
+    srcMobile: '/slidem3.webp',
     alt: 'Samaha cold-pressed sesame oil on a stone plinth',
     eyebrow: 'Stone-ground · Cold-pressed',
     title: 'Sesame Oil',

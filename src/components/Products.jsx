@@ -4,9 +4,9 @@ import { useProducts } from '../context/ProductsContext'
 import { useVisibleProducts } from '../lib/catalog'
 
 const PRODUCTS = [
-  { name: 'Coconut Oil', slug: 'coconut-oil', tag: 'Coconut', img: '/hcoconut.png', pos: '50% 40%' },
-  { name: 'Groundnut Oil', slug: 'groundnut-oil', tag: 'Groundnut', img: '/hground.png', pos: '50% 50%' },
-  { name: 'Sesame Oil', slug: 'sesame-oil', tag: 'Sesame', img: '/hseasme.png', pos: '50% 50%' },
+  { name: 'Coconut Oil', slug: 'coconut-oil', tag: 'Coconut', img: '/hcoconut.webp', pos: '50% 40%' },
+  { name: 'Groundnut Oil', slug: 'groundnut-oil', tag: 'Groundnut', img: '/hground.webp', pos: '50% 50%' },
+  { name: 'Sesame Oil', slug: 'sesame-oil', tag: 'Sesame', img: '/hseasme.webp', pos: '50% 50%' },
 ]
 
 function Tile({ p, className = '' }) {

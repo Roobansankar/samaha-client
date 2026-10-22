@@ -6,7 +6,7 @@ import { addToCart } from '../lib/cart'
 
 const rupees = (n) => `₹${n.toLocaleString('en-IN')}`
 
-export default function VariantCard({ v, tint, blurb }) {
+export default function VariantCard({ v, tint, blurb, priority = false }) {
   const [broken, setBroken] = useState(false)
   const [added, setAdded] = useState(false)
 
@@ -30,7 +30,7 @@ export default function VariantCard({ v, tint, blurb }) {
             alt={v.title || v.name || `${v.oil} ${v.sizeLong}`}
             width="800"
             height="600"
-            loading="lazy"
+            loading={priority ? 'eager' : 'lazy'}
             decoding="async"
             onError={() => setBroken(true)}
             className="absolute inset-0 h-full w-full object-contain p-3 transition-transform duration-500 ease-out group-hover:scale-[1.04]"

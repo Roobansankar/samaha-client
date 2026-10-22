@@ -17,8 +17,21 @@
     <meta name="theme-color" content="#2f5028" />
 
     <!-- Preload the first hero image so it paints fast -->
-    <link rel="preload" as="image" href="/slidem1.webp" media="(max-width: 639px)" fetchpriority="high" />
-    <link rel="preload" as="image" href="/slide1.webp" media="(min-width: 640px)" fetchpriority="high" />
+    <script>
+      // Start the actual first banner before the app bundle finishes loading.
+      if (location.pathname === '/') {
+        let banner
+        try { banner = JSON.parse(localStorage.getItem('samahaBanners') || 'null')?.[0] } catch {}
+        const mobile = matchMedia('(max-width: 639px)').matches
+        const preload = document.createElement('link')
+        preload.rel = 'preload'
+        preload.as = 'image'
+        preload.fetchPriority = 'high'
+        preload.href = (mobile ? banner?.srcMobile || banner?.src : banner?.src)
+          || (mobile ? '/slidem1.webp' : '/slide1.webp')
+        document.head.appendChild(preload)
+      }
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

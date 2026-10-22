@@ -251,7 +251,7 @@ export default function CategoryPage() {
                 className={phase === 'entering' ? 'card-enter' : ''}
                 style={phase === 'entering' ? { animationDelay: `${i * 40}ms` } : undefined}
               >
-                <VariantCard v={v} tint={group.tint} blurb={group.blurb} />
+                <VariantCard v={v} tint={group.tint} blurb={group.blurb} priority={i < 4} />
               </div>
             ))}
           </div>

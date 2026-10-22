@@ -1,4 +1,16 @@
 const BASE = '/api'
+const CATALOG_KEY = 'samahaCatalog:v1'
+let productsRequest
+
+export function cachedProducts() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(CATALOG_KEY) || 'null')
+    if (cached?.savedAt > Date.now() - 24 * 60 * 60 * 1000 && Array.isArray(cached.products)) {
+      return cached.products
+    }
+  } catch { /* Storage may be unavailable. */ }
+  return null
+}
 
 async function request(path) {
   let res
@@ -15,7 +27,16 @@ async function request(path) {
 }
 
 export function fetchProducts() {
-  return request('/products')
+  if (!productsRequest) {
+    productsRequest = request('/products').then((products) => {
+      if (!Array.isArray(products)) throw new Error('Invalid product data.')
+      try {
+        localStorage.setItem(CATALOG_KEY, JSON.stringify({ savedAt: Date.now(), products }))
+      } catch { /* Storage may be full. */ }
+      return products
+    }).finally(() => { productsRequest = null })
+  }
+  return productsRequest
 }
 
 export function fetchProduct(slug) {

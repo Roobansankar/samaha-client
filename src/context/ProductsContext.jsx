@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { fetchProducts } from '../lib/api'
+import { cachedProducts, fetchProducts } from '../lib/api'
 import { setCatalog } from '../lib/analytics'
 
 const ProductsContext = createContext(null)
@@ -84,12 +84,11 @@ function groupByOil(products) {
 /* ---- provider ---- */
 
 export function ProductsProvider({ children }) {
-  const [raw, setRaw] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [raw, setRaw] = useState(() => (cachedProducts() || []).map(normalize))
+  const [loading, setLoading] = useState(() => cachedProducts() === null)
   const [error, setError] = useState(null)
 
   const load = () => {
-    setLoading(true)
     setError(null)
     fetchProducts()
       .then((list) => {
@@ -97,7 +96,6 @@ export function ProductsProvider({ children }) {
         setCatalog(Array.isArray(list) ? list : [])
       })
       .catch((e) => {
-        setRaw([])
         setError(e.message || 'Could not load products.')
       })
       .finally(() => setLoading(false))
