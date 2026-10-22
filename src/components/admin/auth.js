@@ -294,6 +294,10 @@ export function fetchNotificationPreferences() {
   return request(`${API_URL}/admin/notification-preferences`)
 }
 
+export function updateStoreDetails(details) {
+  return request(`${API_URL}/admin/store-details`, { method: 'PUT', body: JSON.stringify(details) })
+}
+
 export function updateNotificationPreferences(preferences) {
   return request(`${API_URL}/admin/notification-preferences`, { method: 'PUT', body: JSON.stringify(preferences) })
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Check } from 'lucide-react'
 import { PageHeader } from './ui'
-import { fetchNotificationPreferences, updateNotificationPreferences } from './auth'
+import { fetchNotificationPreferences, updateNotificationPreferences, updateStoreDetails } from './auth'
+import { fetchStoreDetails } from '../../lib/api'
 
 function Switch({ checked, onChange, disabled, label }) {
   return (
@@ -17,7 +18,7 @@ function Switch({ checked, onChange, disabled, label }) {
   )
 }
 
-function SettingsCard({ title, description, children, onSave }) {
+function SettingsCard({ title, description, children, onSave, saving, saveDisabled }) {
   return (
     <section className="a-card">
       <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--a-border)' }}>
@@ -30,8 +31,8 @@ function SettingsCard({ title, description, children, onSave }) {
           className="flex justify-end px-5 py-3"
           style={{ borderTop: '1px solid var(--a-border)', background: 'var(--a-surface-2)' }}
         >
-          <button className="a-btn a-btn-primary a-btn-sm" onClick={onSave}>
-            Save changes
+          <button className="a-btn a-btn-primary a-btn-sm" onClick={onSave} disabled={saving || saveDisabled}>
+            {saving ? 'Saving…' : 'Save changes'}
           </button>
         </div>
       )}
@@ -47,12 +48,18 @@ const NOTIFS = [
 
 export default function AdminSettings() {
   const [saved, setSaved] = useState(false)
+  const [store, setStore] = useState(null)
+  const [storeBusy, setStoreBusy] = useState(false)
+  const [storeError, setStoreError] = useState('')
   const [notifs, setNotifs] = useState(null)
   const [notifBusy, setNotifBusy] = useState(false)
   const [notifError, setNotifError] = useState('')
 
   useEffect(() => {
     let active = true
+    fetchStoreDetails()
+      .then((data) => { if (active) setStore(data) })
+      .catch((error) => { if (active) setStoreError(error.message) })
     fetchNotificationPreferences()
       .then((data) => { if (active) setNotifs(data) })
       .catch((error) => { if (active) setNotifError(error.message) })
@@ -73,9 +80,23 @@ export default function AdminSettings() {
     }
   }
 
-  const save = () => {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+  const save = async () => {
+    setStoreBusy(true)
+    setSaved(false)
+    setStoreError('')
+    try {
+      await updateStoreDetails(store)
+      setSaved(true)
+    } catch (error) {
+      setStoreError(error.message)
+    } finally {
+      setStoreBusy(false)
+    }
+  }
+
+  const changeStore = (key, value) => {
+    setSaved(false)
+    setStore((details) => ({ ...details, [key]: value }))
   }
 
   return (
@@ -95,20 +116,24 @@ export default function AdminSettings() {
       <div className="grid gap-4 lg:grid-cols-2">
         <SettingsCard
           title="Store details"
-          description="Shown on invoices, emails and the storefront footer."
+          description="Shown on downloaded order invoices."
           onSave={save}
+          saving={storeBusy}
+          saveDisabled={!store}
         >
+          {storeError && <p role="alert" className="text-sm text-red-600">{storeError}</p>}
+          {!store && !storeError && <p className="a-sub">Loading store details…</p>}
           <div className="a-field">
             <label className="a-label">Store name</label>
-            <input className="a-input" defaultValue="Samaha" />
+            <input className="a-input" aria-label="Store name" value={store?.name ?? ''} maxLength={120} disabled={!store || storeBusy} onChange={(e) => changeStore('name', e.target.value)} />
           </div>
           <div className="a-field">
             <label className="a-label">Support email</label>
-            <input className="a-input" type="email" defaultValue="hello@samaha.com" />
+            <input className="a-input" aria-label="Support email" type="email" value={store?.email ?? ''} maxLength={254} disabled={!store || storeBusy} onChange={(e) => changeStore('email', e.target.value)} />
           </div>
           <div className="a-field">
             <label className="a-label">Business address</label>
-            <textarea className="a-textarea" defaultValue={'14 Grove Road\nCoimbatore 641004\nTamil Nadu, India'} />
+            <textarea className="a-textarea" aria-label="Business address" value={store?.address ?? ''} maxLength={1000} disabled={!store || storeBusy} onChange={(e) => changeStore('address', e.target.value)} />
           </div>
         </SettingsCard>
 

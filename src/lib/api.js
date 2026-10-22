@@ -39,6 +39,10 @@ export function fetchProducts() {
   return productsRequest
 }
 
+export function fetchStoreDetails() {
+  return request('/store-details')
+}
+
 export function fetchProduct(slug) {
   return request(`/products/${encodeURIComponent(slug)}`)
 }

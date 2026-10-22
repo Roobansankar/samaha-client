@@ -1,3 +1,5 @@
+import { fetchStoreDetails } from './api'
+
 /* jsPDF's built-in fonts have no ₹ glyph, so the PDF uses "Rs." */
 const rs = (n) =>
   `Rs. ${(Number(n) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
@@ -119,9 +121,10 @@ export async function orderInvoiceBlob(order, getVariant) {
 /** Build the branded PDF invoice for one order and return the jsPDF document. */
 async function buildOrderInvoicePdf(order, getVariant) {
 
-  const [{ jsPDF }, autoTableMod] = await Promise.all([
+  const [{ jsPDF }, autoTableMod, store] = await Promise.all([
     import('jspdf'),
     import('jspdf-autotable'),
+    fetchStoreDetails(),
   ])
   const autoTable = autoTableMod.default || autoTableMod.autoTable
 
@@ -140,18 +143,32 @@ async function buildOrderInvoicePdf(order, getVariant) {
   const W = doc.internal.pageSize.getWidth()
   const M = 15
   const half = W / 2 + 4
+  const H = doc.internal.pageSize.getHeight()
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(8)
+  const footerAddress = store.address.replace(/\s*\n\s*/g, ', ').replace(/\s+/g, ' ').trim()
+  const footerLines = doc.splitTextToSize(`${store.email}\n${footerAddress}`, W - M * 2)
+  const footerLineHeight = 8 * 0.352778 * 1.3
+  const footerTextHeight = (footerLines.length - 1) * footerLineHeight
+  const footerHeight = Math.max(18, footerTextHeight + 11)
+  const footerTop = H - footerHeight
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(19)
+  const storeNameLines = doc.splitTextToSize(store.name, W / 2 - M - 5)
+  const headerHeight = Math.max(30, storeNameLines.length * 7 + 15)
 
   /* ---- header band ---- */
   doc.setFillColor(...OLIVE)
-  doc.rect(0, 0, W, 30, 'F')
+  doc.rect(0, 0, W, headerHeight, 'F')
   doc.setTextColor(238, 243, 234)
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(19)
-  doc.text('SAMAHA', M, 15)
+  doc.text(storeNameLines, M, 15, { lineHeightFactor: 1.04 })
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(7.5)
   doc.setTextColor(198, 214, 194)
-  doc.text('COLD-PRESSED EDIBLE OILS', M, 21)
+  doc.text('COLD-PRESSED EDIBLE OILS', M, headerHeight - 6)
 
   doc.setTextColor(238, 243, 234)
   doc.setFont('helvetica', 'bold')
@@ -162,7 +179,7 @@ async function buildOrderInvoicePdf(order, getVariant) {
   doc.text(`Order ${order.order_number ?? '#' + order.id}`, W - M, 19, { align: 'right' })
   doc.text(placed, W - M, 24, { align: 'right' })
 
-  let y = 42
+  let y = headerHeight + 12
 
   /* ---- status ---- */
   doc.setFont('helvetica', 'bold')
@@ -210,7 +227,7 @@ async function buildOrderInvoicePdf(order, getVariant) {
   /* ---- items table ---- */
   autoTable(doc, {
     startY: y,
-    margin: { left: M, right: M },
+    margin: { left: M, right: M, top: 20, bottom: footerHeight + 10 },
     head: [['', 'Item', 'Unit price', 'Qty', 'Amount']],
     body: items.map((i) => [
       '',
@@ -256,6 +273,10 @@ async function buildOrderInvoicePdf(order, getVariant) {
   })
 
   y = (doc.lastAutoTable?.finalY || y) + 10
+  if (y + 43 > footerTop - 8) {
+    doc.addPage()
+    y = 20
+  }
 
   /* ---- totals ---- */
   const tLabel = W - M - 62
@@ -278,17 +299,24 @@ async function buildOrderInvoicePdf(order, getVariant) {
   doc.text('Total paid', tLabel, y)
   doc.text(rs(total), tVal, y, { align: 'right' })
 
-  /* ---- footer ---- */
-  y += 16
-  doc.setDrawColor(...LINE)
-  doc.setLineWidth(0.2)
-  doc.line(M, y, W - M, y)
-  y += 6
+  y += 13
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8)
   doc.setTextColor(...MUTE)
-  doc.text('Samaha Natural Oils  -  thank you for your order.', M, y)
-  doc.text('This is a computer-generated invoice. For any query, reply to your order confirmation email.', M, y + 4)
+  doc.text('Thank you for your order.', M, y)
+  doc.text('This is a computer-generated invoice.', M, y + 4.5)
+
+  /* ---- footer on every page ---- */
+  for (let page = 1; page <= doc.getNumberOfPages(); page++) {
+    doc.setPage(page)
+    doc.setFillColor(...OLIVE)
+    doc.rect(0, footerTop, W, footerHeight, 'F')
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(8)
+    doc.setTextColor(238, 243, 234)
+    const footerTextY = footerTop + (footerHeight - footerTextHeight) / 2 + 1
+    doc.text(footerLines, W / 2, footerTextY, { align: 'center', lineHeightFactor: 1.3 })
+  }
 
   return doc
 }
