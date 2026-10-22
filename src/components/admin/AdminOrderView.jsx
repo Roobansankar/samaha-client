@@ -13,7 +13,6 @@ import {
   orderStatusLabel,
   deliveryStatusLabel,
   isDeliverableOrder,
-  nextDeliveryStep,
 } from '../../lib/orderInvoice'
 import { useProducts } from '../../context/ProductsContext'
 
@@ -85,7 +84,12 @@ export default function AdminOrderView() {
   const shipping = order.shipping ?? 0
   const total = order.total ?? subtotal + shipping
   const deliverable = isDeliverableOrder(order)
-  const nextStep = deliverable ? nextDeliveryStep(order.delivery_status) : null
+  const deliveryActions = [
+    { status: 'dispatched', label: 'Dispatched' },
+    { status: 'out_for_delivery', label: 'Out for delivery' },
+    { status: 'delivered', label: 'Delivered' },
+  ]
+  const currentDeliveryIndex = deliveryActions.findIndex((step) => step.status === order.delivery_status)
   const orderName = order.order_number != null ? `Order ${order.order_number}` : 'this order'
 
   return (
@@ -108,11 +112,11 @@ export default function AdminOrderView() {
             <StatusBadge status={deliveryStatusLabel(order.delivery_status)} />
           </span>
         )}
-        {nextStep && (
-          <button className="a-btn a-btn-sm" disabled={updatingDelivery} onClick={() => setDeliveryStep(nextStep)}>
-            {nextStep.status === 'delivered' ? <PackageCheck size={14} /> : <Truck size={14} />} {nextStep.label}
+        {deliverable && deliveryActions.map((step, index) => (
+          <button key={step.status} className={`a-btn a-btn-sm ${order.delivery_status === step.status ? 'a-btn-primary' : ''}`} disabled={updatingDelivery || index <= currentDeliveryIndex} onClick={() => setDeliveryStep(step)}>
+            {step.status === 'delivered' ? <PackageCheck size={14} /> : <Truck size={14} />} {step.label}
           </button>
-        )}
+        ))}
         {order.status === 'paid' && (
           <button className="a-btn a-btn-sm a-btn-primary" onClick={() => downloadOrderInvoice(order, getVariant)}>
             <FileDown size={14} /> Download PDF

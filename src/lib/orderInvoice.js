@@ -30,7 +30,7 @@ export const orderStatusLabel = (status, paymentMethod) =>
 /**
  * Delivery progress, separate from the payment `status` above. `deliveryStatus` is null
  * (pending, not yet dispatched) | dispatched | out_for_delivery | delivered — set by the
- * backend only, one step at a time.
+ * backend only, moving forward to the selected stage.
  */
 const DELIVERY_LABEL = { dispatched: 'Dispatched', out_for_delivery: 'Out for delivery', delivered: 'Delivered' }
 export const deliveryStatusLabel = (deliveryStatus) => DELIVERY_LABEL[deliveryStatus] || 'Pending'
