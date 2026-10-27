@@ -17,7 +17,7 @@ const inp =
 
 const fmtAddress = (a) => [a.line1, a.line2, a.city, a.state, a.pincode].filter(Boolean).join(', ')
 
-function OrderPlacedModal({ orderId, codDue, onClose }) {
+function OrderPlacedModal({ orderId, onClose }) {
   useEffect(() => {
     document.body.classList.add('no-scroll')
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
@@ -67,12 +67,6 @@ function OrderPlacedModal({ orderId, codDue, onClose }) {
           Thank you for your order. We’ll press, pack and dispatch it soon.
         </p>
 
-        {codDue > 0 && (
-          <p className="mt-3 rounded-lg bg-paper-2 px-3 py-2.5 text-sm font-medium text-olive-900">
-            Please keep {money(codDue)} ready in cash for the delivery.
-          </p>
-        )}
-
         <button type="button" onClick={onClose} className="btn btn-primary mt-6 w-full">
           Close
         </button>
@@ -102,7 +96,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState('online') // 'online' | 'cod'
   const [paying, setPaying] = useState(false)
   const [error, setError] = useState('')
-  const [orderPlaced, setOrderPlaced] = useState(null) // { orderId, codDue } once the order is confirmed
+  const [orderPlaced, setOrderPlaced] = useState(null) // { orderId } once the order is confirmed
 
   // funnel: the signed-in visitor reached checkout with items (fires once)
   const startedRef = useRef(false)
@@ -171,7 +165,7 @@ export default function CheckoutPage() {
       })
       // real, confirmed order data — no gateway round-trip for COD, it's placed the moment this returns
       trackPurchase({ orderId: result.order.id, value: result.order.total, cartRows: items })
-      setOrderPlaced({ orderId: result.order.order_number, codDue: result.order.total })
+      setOrderPlaced({ orderId: result.order.order_number })
       setPaying(false)
       clearCart()
     } catch (err) {
@@ -222,7 +216,7 @@ export default function CheckoutPage() {
             // has been recorded yet, so it can't race the confirmation and bounce to /cart
             // — the invoice number is only assigned once payment is actually verified, so it
             // comes from THIS response, not the pre-payment order created before "Pay" was clicked
-            setOrderPlaced({ orderId: verified.order?.order_number ?? order.order_id, codDue: 0 })
+            setOrderPlaced({ orderId: verified.order?.order_number ?? order.order_id })
             setPaying(false)
             clearCart()
           } catch (err) {
@@ -458,7 +452,7 @@ export default function CheckoutPage() {
       </div>
 
       {orderPlaced && (
-        <OrderPlacedModal orderId={orderPlaced.orderId} codDue={orderPlaced.codDue} onClose={() => navigate('/profile')} />
+        <OrderPlacedModal orderId={orderPlaced.orderId} onClose={() => navigate('/profile')} />
       )}
     </div>
   )

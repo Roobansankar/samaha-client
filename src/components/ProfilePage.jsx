@@ -10,7 +10,7 @@ import {
 } from '../lib/account'
 import { fetchOrders } from '../lib/checkout'
 import { useProducts } from '../context/ProductsContext'
-import { downloadOrderInvoice } from '../lib/orderInvoice'
+import { downloadOrderInvoice, orderStatusLabel, deliveryStatusLabel } from '../lib/orderInvoice'
 
 const money2 = (n) =>
   `₹${(Number(n) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
@@ -468,9 +468,12 @@ function OrderCard({ order, compact }) {
             {fmtDate(order.placed_at)} · {units} {units === 1 ? 'item' : 'items'}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="rounded-full bg-olive-100 px-2.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-olive-800">
-            {order.status === 'paid' ? 'Paid' : order.status}
+            {orderStatusLabel(order.status, order.payment_method)}
+          </span>
+          <span className="rounded-full bg-paper-2 px-2.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-olive-700">
+            {deliveryStatusLabel(order.delivery_status)}
           </span>
           <span className="text-sm font-semibold text-olive-900">{money2(total)}</span>
         </div>
@@ -513,7 +516,13 @@ function OrderCard({ order, compact }) {
         </div>
 
         <div className="flex flex-wrap items-center justify-end gap-2 border-t border-olive-900/10 pt-2.5">
-          <DownloadBillButton order={order} />
+          {/* COD isn't collected (or the invoice "final") until the order is actually delivered —
+              an online order is already paid, so its bill is ready right away */}
+          {order.payment_method === 'cod' && order.delivery_status !== 'delivered' ? (
+            <p className="text-xs text-olive-700/60">Bill available once delivered</p>
+          ) : (
+            <DownloadBillButton order={order} />
+          )}
         </div>
       </div>
     </div>
