@@ -404,7 +404,7 @@ export default function AdminProductForm() {
             <SpecsEditor specs={f.specs} onChange={(specs) => setF((s) => ({ ...s, specs }))} />
           </Card>
 
-          <Card title="Images" hint="Up to 4. First image is used on cards. Recommended: square, at least 1200×1200px, JPG/PNG/WebP, up to 20MB.">
+          <Card title="Images" hint="Up to 4. First image is used on cards. Upload JPG/PNG/WebP, up to 20MB; new and replacement images are automatically saved as WebP. Recommended: square, at least 1200×1200px.">
             <div className="flex flex-wrap gap-3">
               {[0, 1, 2, 3].map((i) => (
                 <ImageSlot key={i} url={f.images[i]} name={f.name.trim() || `${f.oil} ${f.size_long}`} onChange={(url) => setImageAt(i, url)} />

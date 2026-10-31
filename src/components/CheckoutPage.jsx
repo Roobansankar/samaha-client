@@ -393,30 +393,32 @@ export default function CheckoutPage() {
 
                 <div className="mt-5 border-t border-line pt-5">
                   <span className="mb-2 block text-xs font-medium uppercase tracking-wide text-olive-700/60">Payment method</span>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     <button
                       type="button"
                       onClick={() => setPaymentMethod('online')}
                       aria-pressed={paymentMethod === 'online'}
-                      className={`flex items-center justify-center gap-1.5 rounded-lg border py-2.5 text-sm font-medium transition-colors cursor-pointer ${
+                      className={`flex min-w-0 items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-center text-sm font-medium leading-snug transition-colors cursor-pointer ${
                         paymentMethod === 'online'
                           ? 'border-olive-800 bg-olive-900 text-paper'
                           : 'border-line bg-white text-olive-800 hover:border-olive-300'
                       }`}
                     >
-                      <Lock size={14} /> Pay online
+                      <Lock size={14} className="shrink-0" />
+                      <span className="min-w-0 break-words">Pay online</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setPaymentMethod('cod')}
                       aria-pressed={paymentMethod === 'cod'}
-                      className={`flex items-center justify-center gap-1.5 rounded-lg border py-2.5 text-sm font-medium transition-colors cursor-pointer ${
+                      className={`flex min-w-0 items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-center text-sm font-medium leading-snug transition-colors cursor-pointer ${
                         paymentMethod === 'cod'
                           ? 'border-olive-800 bg-olive-900 text-paper'
                           : 'border-line bg-white text-olive-800 hover:border-olive-300'
                       }`}
                     >
-                      <Banknote size={14} /> Cash on delivery
+                      <Banknote size={14} className="shrink-0" />
+                      <span className="min-w-0 break-words">Cash on delivery</span>
                     </button>
                   </div>
                 </div>

@@ -293,7 +293,7 @@ function BannerForm({ banner, onClose, onSaved }) {
             />
           </div>
           {(imageFile || mobileFile) && (
-            <p className="text-[0.72rem] a-mute">New image will upload when you {isNew ? 'create' : 'save'} the banner.</p>
+            <p className="text-[0.72rem] a-mute">New desktop and mobile images will upload and convert to WebP when you {isNew ? 'create' : 'save'} the banner.</p>
           )}
 
           <Field label="Navigate link (where this slide goes)">

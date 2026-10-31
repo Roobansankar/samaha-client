@@ -1,4 +1,4 @@
-import { Leaf, Mail, Phone } from 'lucide-react'
+import { Mail, Phone } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { SOCIALS } from './SocialIcons'
 import PaymentIcons from './PaymentIcons'
@@ -42,15 +42,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <Link to="/" className="inline-flex items-center gap-2.5" aria-label="Samaha — home">
-              <span className="grid h-[30px] w-[30px] place-items-center rounded-full border border-line-on-olive text-gold-300">
-                <Leaf size={15} strokeWidth={2} />
-              </span>
-              <span className="flex flex-col items-start leading-none">
-                <span className="font-display text-[1.4rem] font-medium text-on-olive">Samaha</span>
-                <span className="mt-[2px] text-[0.48rem] font-semibold uppercase tracking-[0.2em] text-on-olive-mute">
-                  Pure Natural Healthy
-                </span>
-              </span>
+              <img src="/footerlogo.webp" alt="Samaha — Goodness from Nature" width={1798} height={875} className="h-auto w-48 max-w-full object-contain" loading="lazy" />
             </Link>
             <p className="mt-5 max-w-[32ch] text-sm leading-relaxed text-on-olive-mute">
               Single-origin oils, cold-pressed within hours of harvest and bottled

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Search, RefreshCw, Loader2, Trash2, Eye, EyeOff, Plus, Pencil, X, ImagePlus } from 'lucide-react'
 import { Panel, EmptyRow, ResultCount, Pager } from './ui'
-import { fetchReviews, createReview, saveReview, deleteReview, fetchProducts } from './auth'
+import { fetchReviews, createReview, saveReview, deleteReview, fetchProducts, hasPermission } from './auth'
+import { fetchProducts as fetchPublicProducts } from '../../lib/api'
 
 const PER_PAGE = 12
 const fmtDate = (d) =>
@@ -22,7 +23,7 @@ export default function AdminReviews() {
     setLoading(true)
     setError('')
     try {
-      const [r, p] = await Promise.all([fetchReviews(), fetchProducts().catch(() => [])])
+      const [r, p] = await Promise.all([fetchReviews(), (hasPermission('products') ? fetchProducts() : fetchPublicProducts()).catch(() => [])])
       setRows(r)
       setProducts(p)
     } catch (e) {
@@ -108,6 +109,7 @@ export default function AdminReviews() {
         <table className="a-table">
           <thead>
             <tr>
+              <th>S.No</th>
               <th className="hidden sm:table-cell">Product</th>
               <th>Review</th>
               <th className="hidden md:table-cell">Date</th>
@@ -117,16 +119,17 @@ export default function AdminReviews() {
           </thead>
           <tbody>
             {loading && (
-              <tr><td colSpan={5} className="py-12 text-center a-mute"><Loader2 size={16} className="mx-auto animate-spin" /></td></tr>
+              <tr><td colSpan={6} className="py-12 text-center a-mute"><Loader2 size={16} className="mx-auto animate-spin" /></td></tr>
             )}
             {!loading && error && (
-              <tr><td colSpan={5} className="py-8 text-center text-red-600">{error}</td></tr>
+              <tr><td colSpan={6} className="py-8 text-center text-red-600">{error}</td></tr>
             )}
             {!loading && !error && view.length === 0 && (
-              <EmptyRow colSpan={5} label={q ? 'No reviews match your search' : 'No reviews yet'} />
+              <EmptyRow colSpan={6} label={q ? 'No reviews match your search' : 'No reviews yet'} />
             )}
-            {!loading && !error && view.map((r) => (
+            {!loading && !error && view.map((r, index) => (
               <tr key={r.id} className="cursor-pointer" onClick={() => setEditing(r)}>
+                <td className="a-mute a-mono">{(safePage - 1) * PER_PAGE + index + 1}</td>
                 <td className="hidden sm:table-cell a-dim text-[0.8rem]">
                   {r.product || r.product_slug}
                   <span className="a-mute a-mono block text-[0.68rem]">{r.product_slug}</span>
@@ -294,7 +297,7 @@ function ReviewForm({ review, products, onClose, onSaved }) {
             </div>
             <label className={`relative flex items-center gap-3 rounded-lg border border-dashed p-3 focus-within:ring-2 focus-within:ring-olive-500 ${busy || retained.length + photos.length >= 4 ? 'opacity-50' : 'cursor-pointer'}`} style={{ borderColor: 'var(--a-border)' }}>
               <ImagePlus size={22} className="a-mute shrink-0" />
-              <span className="flex-1 text-xs"><span className="block font-medium">{retained.length + photos.length >= 4 ? 'All 4 photos added' : 'Choose photos'}</span><span className="a-mute">JPG, PNG or WebP ? Up to 5 MB each</span></span>
+              <span className="flex-1 text-xs"><span className="block font-medium">{retained.length + photos.length >= 4 ? 'All 4 photos added' : 'Choose photos'}</span><span className="a-mute">JPG, PNG or WebP. Up to 5 MB each. Saved as WebP.</span></span>
               <input type="file" multiple accept="image/jpeg,image/png,image/webp" aria-label="Choose review photos"
                 disabled={busy || retained.length + photos.length >= 4} className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 onChange={(e) => {

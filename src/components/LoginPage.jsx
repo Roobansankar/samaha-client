@@ -156,7 +156,7 @@ export default function LoginPage() {
         {(isLogin || isRegister) && (
           <>
             <a
-              href={GOOGLE_LOGIN_URL}
+              href={`${GOOGLE_LOGIN_URL}?origin=${encodeURIComponent(window.location.origin)}`}
               onClick={() => { if (redirect) setAuthRedirect(redirect) }}
               className="mt-9 flex w-full items-center justify-center gap-3 rounded-xl border border-olive-900/15 bg-white py-4 text-[0.92rem] font-medium text-olive-900 transition-colors hover:border-olive-900/30 hover:bg-olive-100/50"
             >

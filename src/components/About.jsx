@@ -29,10 +29,9 @@ export default function About() {
           <div className="relative mb-4 lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:mb-0 lg:self-center">
             <div className="relative h-[clamp(340px,42vw,520px)] overflow-hidden rounded-[var(--radius-lg)] bg-paper-3 shadow-md">
               <img
-                src="/habout.png"
-                alt="Corked bottle of cold-pressed Samaha oil on a wooden board with a bowl of nuts and fresh greenery"
-                className="h-full w-full scale-[1.15] object-cover"
-                data-gsap-parallax
+                src="/habout.webp"
+                alt="Samaha groundnut oil bottle on a wooden board with peanuts and fresh greenery"
+                className="h-full w-full object-cover object-[62%_top]"
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-olive-900/25 to-transparent" />
             </div>

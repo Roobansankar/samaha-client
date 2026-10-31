@@ -198,7 +198,7 @@ export default function ProductReviews({ slug, data, onChange }) {
               }} />
               <span className="mb-1.5 grid h-8 w-8 place-items-center rounded-full bg-olive-100 text-olive-800"><ImagePlus size={17} strokeWidth={1.5} /></span>
               <span className="text-sm font-medium text-olive-900">{photos.length >= 4 ? 'All 4 photos added' : 'Add your photos'}</span>
-              <span id="review-photo-help" className="mt-1 text-xs text-text-mute">JPG, PNG or WebP ? Up to 5 MB each</span>
+              <span id="review-photo-help" className="mt-1 text-xs text-text-mute">JPG, PNG or WebP. Up to 5 MB each. Photos are saved as WebP.</span>
               <span className="mt-2 rounded-full border border-olive-800 px-3 py-1.5 text-xs font-semibold text-olive-900 transition-colors group-hover:bg-olive-100">{photos.length >= 4 ? 'Remove a photo to add another' : photos.length ? 'Add more photos' : 'Choose photos'}</span>
             </label>
             {previews.length > 0 && (

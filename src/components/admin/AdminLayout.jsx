@@ -42,12 +42,12 @@ const NAV = [
   { to: '/admin/products/trash', label: 'Deleted products', icon: Trash2, page: 'products' },
   { to: '/admin/categories', label: 'Categories & SEO', icon: Search, page: 'categories', adminOnly: true },
   { to: '/admin/customers', label: 'Customers', icon: Users, page: 'customers' },
-  { to: '/admin/banners', label: 'Home banners', icon: Images, page: 'banners', adminOnly: true },
-  { to: '/admin/gallery', label: 'Gallery', icon: Images, page: 'gallery', adminOnly: true },
-  { to: '/admin/reviews', label: 'Reviews', icon: Star, page: 'reviews', adminOnly: true },
-  { to: '/admin/messages', label: 'Messages', icon: MessageSquare, page: 'messages', adminOnly: true },
+  { to: '/admin/banners', label: 'Home banners', icon: Images, page: 'banners' },
+  { to: '/admin/gallery', label: 'Gallery', icon: Images, page: 'gallery' },
+  { to: '/admin/reviews', label: 'Reviews', icon: Star, page: 'reviews' },
+  { to: '/admin/messages', label: 'Messages', icon: MessageSquare, page: 'messages' },
   { to: '/admin/staff', label: 'Staff', icon: UserCog, page: 'staff', adminOnly: true },
-  { to: '/admin/subscribers', label: 'Subscribers', icon: MailCheck, page: 'subscribers', adminOnly: true },
+  { to: '/admin/subscribers', label: 'Subscribers', icon: MailCheck, page: 'subscribers' },
 ]
 
 const isDesktop = () =>

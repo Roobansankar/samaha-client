@@ -4,13 +4,15 @@ import { Panel, EmptyRow, ResultCount, Pager, Loader } from './ui'
 import { fetchStaff, createStaff, updateStaff, deleteStaff } from './auth'
 
 const PAGE_OPTIONS = [
-  { value: 'dashboard', label: 'Dashboard' },
   { value: 'orders', label: 'Orders' },
   { value: 'expenses', label: 'Expenses' },
   { value: 'products', label: 'Products' },
   { value: 'customers', label: 'Customers' },
-  { value: 'settings', label: 'Settings' },
-  { value: 'staff', label: 'Staff' },
+  { value: 'gallery', label: 'Gallery' },
+  { value: 'reviews', label: 'Reviews' },
+  { value: 'messages', label: 'Messages' },
+  { value: 'banners', label: 'Home Banners' },
+  { value: 'subscribers', label: 'Subscribers' },
 ]
 
 const PER_PAGE = 8
@@ -55,7 +57,7 @@ export default function AdminStaff() {
 
   const openEdit = (s) => {
     setEditing(s)
-    setForm({ name: s.name, email: s.email, password: '', permissions: s.permissions || [] })
+    setForm({ name: s.name, email: s.email, password: '', permissions: (s.permissions || []).filter((permission) => PAGE_OPTIONS.some((option) => option.value === permission)) })
     setError('')
     setShowModal(true)
   }

@@ -10,6 +10,10 @@ const PAGE_MAP = {
   '/admin/staff': 'staff',
   '/admin/messages': 'messages',
   '/admin/subscribers': 'subscribers',
+  '/admin/gallery': 'gallery',
+  '/admin/reviews': 'reviews',
+  '/admin/banners': 'banners',
+  '/admin/expenses': 'expenses',
 }
 
 const FIRST_PAGE_BY_PERMISSION = {
@@ -19,6 +23,12 @@ const FIRST_PAGE_BY_PERMISSION = {
   customers: '/admin/customers',
   settings: '/admin/settings',
   staff: '/admin/staff',
+  expenses: '/admin/expenses',
+  gallery: '/admin/gallery',
+  reviews: '/admin/reviews',
+  messages: '/admin/messages',
+  banners: '/admin/banners',
+  subscribers: '/admin/subscribers',
 }
 
 function getDefaultPage() {
@@ -26,7 +36,7 @@ function getDefaultPage() {
   if (!user) return '/admin'
   if (user.role === 'admin') return '/admin'
   const perms = user.permissions || []
-  for (const key of ['dashboard', 'orders', 'products', 'customers']) {
+  for (const key of Object.keys(FIRST_PAGE_BY_PERMISSION)) {
     if (perms.includes(key)) return FIRST_PAGE_BY_PERMISSION[key]
   }
   return '/admin/login'
@@ -39,7 +49,8 @@ export default function ProtectedRoute({ children }) {
     return <Navigate to="/admin/login" replace state={{ from: location.pathname }} />
   }
 
-  const page = PAGE_MAP[location.pathname]
+  const path = location.pathname.replace(/\/+$/, '')
+  const page = PAGE_MAP[path] || Object.entries(PAGE_MAP).find(([prefix]) => prefix !== '/admin' && path.startsWith(`${prefix}/`))?.[1]
   if (page && !hasPermission(page)) {
     return <Navigate to={getDefaultPage()} replace />
   }
