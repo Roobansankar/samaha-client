@@ -18,7 +18,7 @@
  * them in step when the slug or the first photo changes.
  *
  * `specs` is not in TEMPLATE_KEYS (it's an array of [label, value] pairs, not text) — the form
- * handles it separately. It's the same list already stored for the 12 launch products.
+ * handles it separately. It's the same list already stored for the launch products.
  */
 
 /* Same patterns the form falls back to when the name fields are left empty. */
@@ -94,13 +94,14 @@ const OIL_COPY = {
 
 /* Standard list prices (₹) by pack size. Sizes not listed here get no price. */
 const LIST_PRICE = {
-  'Coconut Oil': { '500 ml': 100, '1 Litre': 180, '5 Litres': 830, '16 Litre Tin': 2520 },
-  'Groundnut Oil': { '500 ml': 120, '1 Litre': 220, '5 Litres': 1010, '16 Litre Tin': 3080 },
-  'Sesame Oil': { '500 ml': 160, '1 Litre': 290, '5 Litres': 1340, '16 Litre Tin': 4080 },
+  'Coconut Oil': { '250 ml': 55, '500 ml': 100, '1 Litre': 180, '5 Litres': 830, '16 Litre Tin': 2520 },
+  'Groundnut Oil': { '250 ml': 65, '500 ml': 120, '1 Litre': 220, '5 Litres': 1010, '16 Litre Tin': 3080 },
+  'Sesame Oil': { '250 ml': 90, '500 ml': 160, '1 Litre': 290, '5 Litres': 1340, '16 Litre Tin': 4080 },
 }
 
 /* Starter stock (the launch quantities) and a one-line pack description. */
 const SIZE_INFO = {
+  '250 ml': { stock: 120, line: 'The 250 ml bottle is a small pack to try Samaha.' },
   '500 ml': { stock: 120, line: 'The 500 ml bottle is a handy size to try Samaha or for a small kitchen.' },
   '1 Litre': { stock: 90, line: 'The 1 litre bottle is our everyday size for regular cooking.' },
   '5 Litres': { stock: 45, line: 'The 5 litre pack suits kitchens that cook in larger quantities.' },

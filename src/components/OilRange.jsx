@@ -32,7 +32,7 @@ export default function OilRange() {
       </div>
 
       <div className="no-scrollbar mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 sm:mt-5 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-5 sm:overflow-visible lg:grid-cols-4">
-        {variants.map((v) => (
+        {variants.slice(0, 4).map((v) => (
           <div key={v.id} className="w-[64vw] max-w-[260px] shrink-0 snap-start sm:h-full sm:w-auto sm:max-w-none">
             <VariantCard v={v} tint={oil.tint} blurb={oil.blurb} />
           </div>

@@ -11,8 +11,8 @@ const REDUCED_MOTION =
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 const CATEGORIES = ['Coconut', 'Groundnut', 'Sesame']
-const SIZES = ['500 ml', '1 Litre', '5 Litres', '16 Litre Tin']
-const SIZE_SLUG = { '500 ml': '500ml', '1 Litre': '1l', '5 Litres': '5l', '16 Litre Tin': '16l' }
+const SIZES = ['250 ml', '500 ml', '1 Litre', '5 Litres', '16 Litre Tin']
+const SIZE_SLUG = { '250 ml': '250ml', '500 ml': '500ml', '1 Litre': '1l', '5 Litres': '5l', '16 Litre Tin': '16l' }
 const SLUG_SIZE = Object.fromEntries(Object.entries(SIZE_SLUG).map(([k, v]) => [v, k]))
 
 const PRICE_BANDS = [
