@@ -128,12 +128,25 @@ export async function fetchReviews(q = '') {
   return request(`${API_URL}/admin/reviews${qs}`)
 }
 
+function reviewFormData(data) {
+  const form = new FormData()
+  for (const [key, value] of Object.entries(data)) {
+    if (key === 'photos') value.forEach((file) => form.append('photos[]', file))
+    else if (key === 'retained_photos') value.forEach((url) => form.append('retained_photos[]', url))
+    else form.append(key, typeof value === 'boolean' ? (value ? '1' : '0') : value ?? '')
+  }
+  return form
+}
+
 export async function createReview(data) {
-  return request(`${API_URL}/admin/reviews`, { method: 'POST', body: JSON.stringify(data) })
+  return request(`${API_URL}/admin/reviews`, { method: 'POST', body: reviewFormData(data) })
 }
 
 export async function saveReview(id, data) {
-  return request(`${API_URL}/admin/reviews/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+  if (!data.manage_photos) return request(`${API_URL}/admin/reviews/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+  const form = reviewFormData(data)
+  form.append('_method', 'PUT')
+  return request(`${API_URL}/admin/reviews/${id}`, { method: 'POST', body: form })
 }
 
 export async function deleteReview(id) {

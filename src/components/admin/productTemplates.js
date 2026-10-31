@@ -30,7 +30,7 @@ export const suggestMrp = (price) => (price ? Math.round((Number(price) * 1.34) 
 export const TEMPLATE_KEYS = [
   'name', 'short_name', 'sku', 'blurb', 'badge', 'tagline', 'description',
   'price', 'mrp', 'stock',
-  'meta_title', 'meta_description', 'canonical_url', 'og_title', 'og_description', 'og_image', 'seo_content',
+  'focus_keyword', 'meta_keywords', 'meta_title', 'meta_description', 'canonical_url', 'og_title', 'og_description', 'og_image', 'seo_content',
 ]
 
 const OIL_COPY = {
@@ -136,6 +136,8 @@ export function buildTemplate({ oil, sizeLong, slug, firstImage = '' }) {
       price,
       mrp: price !== null ? suggestMrp(price) : null,
       stock: size?.stock ?? DEFAULT_STOCK,
+      focus_keyword: `${oil} ${sizeLong}`.toLowerCase(),
+      meta_keywords: [`${oil} ${sizeLong}`, `cold pressed ${oil}`, `Samaha ${oil}`].join(', ').toLowerCase(),
       meta_title: longTitle.length <= 60 ? longTitle : `${short} | Samaha`,
       meta_description: copy ? `Buy ${short} online from Samaha. ${copy.seo}` : `Buy ${short} online from Samaha.`,
       canonical_url: `/shop/${slug}`,

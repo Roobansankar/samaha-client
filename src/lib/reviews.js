@@ -17,18 +17,22 @@ export async function fetchFeaturedReviews() {
 
 export async function submitReview(slug, data) {
   const token = getToken()
+  const form = new FormData()
+  form.append('rating', data.rating)
+  form.append('title', data.title || '')
+  form.append('body', data.body)
+  for (const photo of data.photos || []) form.append('photos[]', photo)
   const res = await fetch(`/api/products/${slug}/reviews`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
       Accept: 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify(data),
+    body: form,
   })
   const body = await res.json().catch(() => ({}))
   if (!res.ok) {
-    throw new Error(body.message || body.errors?.body?.[0] || body.errors?.rating?.[0] || 'Could not submit your review.')
+    throw new Error(Object.values(body.errors || {}).flat()[0] || body.message || 'Could not submit your review.')
   }
   return body
 }

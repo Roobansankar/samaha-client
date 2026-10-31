@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Star, Loader2, Check } from 'lucide-react'
+import * as Dialog from '@radix-ui/react-dialog'
+import { Star, Loader2, Check, ImagePlus, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAccount } from '../lib/account'
 import { submitReview } from '../lib/reviews'
@@ -53,6 +54,13 @@ export default function ProductReviews({ slug, data, onChange }) {
   const [rating, setRating] = useState(0)
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
+  const [photos, setPhotos] = useState([])
+  const [previews, setPreviews] = useState([])
+  useEffect(() => {
+    const urls = photos.map((photo) => URL.createObjectURL(photo))
+    setPreviews(urls)
+    return () => urls.forEach((url) => URL.revokeObjectURL(url))
+  }, [photos])
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
@@ -76,10 +84,10 @@ export default function ProductReviews({ slug, data, onChange }) {
     if (body.trim().length < 4) return setError('Please write a little more.')
     setBusy(true)
     try {
-      await submitReview(slug, { rating, title: title.trim() || null, body: body.trim() })
+      await submitReview(slug, { rating, title: title.trim() || null, body: body.trim(), photos })
       toast.success('Thanks for your review!')
       setOpen(false)
-      setRating(0); setTitle(''); setBody('')
+      setRating(0); setTitle(''); setBody(''); setPhotos([])
       onChange?.()
     } catch (err) {
       setError(err.message)
@@ -169,6 +177,44 @@ export default function ProductReviews({ slug, data, onChange }) {
             maxLength={2000}
             className="mt-3 w-full resize-none rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-olive-900 outline-none focus:border-olive-500"
           />
+          <div className="mt-5">
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <p className="text-sm font-semibold text-olive-900">Add photos <span className="font-normal text-text-mute">(optional, maximum 4)</span></p>
+              <span className="shrink-0 rounded-full bg-olive-100 px-2.5 py-1 text-xs font-medium text-olive-800" aria-live="polite">{photos.length}/4</span>
+            </div>
+            <label className={`group relative flex flex-col items-center rounded-xl border-2 border-dashed border-olive-200 bg-white/70 px-3 py-3 text-center transition-colors focus-within:ring-2 focus-within:ring-olive-500 focus-within:ring-offset-2 ${busy || photos.length >= 4 ? 'cursor-default opacity-60' : 'cursor-pointer hover:border-olive-500 hover:bg-olive-50'}`}>
+              <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={busy || photos.length >= 4}
+                aria-label="Choose review photos" aria-describedby="review-photo-help"
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-default"
+              onChange={(e) => {
+                const selected = Array.from(e.target.files || [])
+                e.target.value = ''
+                if (photos.length + selected.length > 4) return setError('You can add a maximum of 4 photos.')
+                if (selected.some((file) => !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024)) {
+                  return setError('Choose JPG, PNG or WebP photos up to 5 MB each.')
+                }
+                setError('')
+                setPhotos((current) => [...current, ...selected])
+              }} />
+              <span className="mb-1.5 grid h-8 w-8 place-items-center rounded-full bg-olive-100 text-olive-800"><ImagePlus size={17} strokeWidth={1.5} /></span>
+              <span className="text-sm font-medium text-olive-900">{photos.length >= 4 ? 'All 4 photos added' : 'Add your photos'}</span>
+              <span id="review-photo-help" className="mt-1 text-xs text-text-mute">JPG, PNG or WebP ? Up to 5 MB each</span>
+              <span className="mt-2 rounded-full border border-olive-800 px-3 py-1.5 text-xs font-semibold text-olive-900 transition-colors group-hover:bg-olive-100">{photos.length >= 4 ? 'Remove a photo to add another' : photos.length ? 'Add more photos' : 'Choose photos'}</span>
+            </label>
+            {previews.length > 0 && (
+              <div className="mt-2 grid max-w-xs grid-cols-4 gap-2">
+                {previews.map((url, index) => (
+                  <div key={url} className="relative overflow-hidden rounded-xl border border-line bg-white p-1.5">
+                    <img src={url} alt={`Selected review photo ${index + 1}`} className="aspect-square w-full rounded-lg object-cover" />
+                    <button type="button" disabled={busy} aria-label={`Remove photo ${index + 1}`}
+                      className="absolute right-1 top-1 grid h-5 w-5 cursor-pointer place-items-center rounded-full bg-white text-olive-900 shadow-sm transition-colors hover:bg-red-50 hover:text-red-700 focus-visible:outline-2 focus-visible:outline-olive-800 disabled:opacity-50"
+                      onClick={() => setPhotos((current) => current.filter((_, i) => i !== index))}><X size={12} /></button>
+                    <p className="truncate px-0.5 pb-0.5 pt-1 text-[10px] text-text-mute" title={photos[index]?.name}>{photos[index]?.name}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           {error && <p className="mt-2 text-sm text-red-700">{error}</p>}
           <button type="submit" disabled={busy} className="btn btn-primary mt-4">
             {busy ? <Loader2 size={15} className="animate-spin" /> : 'Submit review'}
@@ -194,6 +240,31 @@ export default function ProductReviews({ slug, data, onChange }) {
             </div>
             {r.title && <p className="mt-1.5 text-sm font-semibold text-olive-900">{r.title}</p>}
             <p className="mt-1 text-sm leading-relaxed text-text-soft">{r.body}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {(r.photos || []).map((url, index) => (
+                <Dialog.Root key={url}>
+                  <Dialog.Trigger asChild>
+                    <button type="button" aria-label={`View photo ${index + 1} from ${r.name}'s review`}
+                      className="cursor-zoom-in rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive-800">
+                      <img src={url} alt={`Review by ${r.name}, photo ${index + 1}`} loading="lazy" className="h-24 w-24 rounded-lg object-cover" />
+                    </button>
+                  </Dialog.Trigger>
+                  <Dialog.Portal>
+                    <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/80" />
+                    <Dialog.Content aria-describedby={undefined}
+                      className="fixed left-1/2 top-1/2 z-[101] w-[calc(100%-2rem)] max-w-4xl -translate-x-1/2 -translate-y-1/2 rounded-xl bg-black p-2 shadow-2xl focus:outline-none">
+                      <Dialog.Title className="sr-only">Photo {index + 1} from {r.name}'s review</Dialog.Title>
+                      <img src={url} alt={`Review by ${r.name}, photo ${index + 1}`} className="max-h-[80dvh] w-full rounded-lg object-contain" />
+                      <Dialog.Close asChild>
+                        <button type="button" aria-label="Close photo" className="absolute right-3 top-3 grid h-9 w-9 cursor-pointer place-items-center rounded-full bg-white text-olive-900 shadow transition-colors hover:bg-olive-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                          <X size={20} />
+                        </button>
+                      </Dialog.Close>
+                    </Dialog.Content>
+                  </Dialog.Portal>
+                </Dialog.Root>
+              ))}
+            </div>
             <p className="mt-1.5 text-xs text-text-mute">{fmtDate(r.date)}</p>
           </div>
         ))}

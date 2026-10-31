@@ -1,6 +1,6 @@
 /** The SEO fields shared by products and categories (same names as the database columns). */
 export const SEO_FIELDS = [
-  'meta_title', 'meta_description', 'canonical_url',
+  'focus_keyword', 'meta_keywords', 'meta_title', 'meta_description', 'canonical_url',
   'og_title', 'og_description', 'og_image', 'robots', 'seo_content',
 ]
 

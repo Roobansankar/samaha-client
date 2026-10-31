@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Search, RefreshCw, Loader2, Trash2, Eye, EyeOff, Plus, Pencil, X } from 'lucide-react'
+import { Search, RefreshCw, Loader2, Trash2, Eye, EyeOff, Plus, Pencil, X, ImagePlus } from 'lucide-react'
 import { Panel, EmptyRow, ResultCount, Pager } from './ui'
 import { fetchReviews, createReview, saveReview, deleteReview, fetchProducts } from './auth'
 
@@ -138,6 +138,13 @@ export default function AdminReviews() {
                     {r.title && <span className="a-dim font-normal"> — {r.title}</span>}
                   </p>
                   <p className="a-mute text-[0.8rem] max-w-[46ch] line-clamp-2">{r.body}</p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {(r.photos || []).map((url, index) => (
+                      <a key={url} href={url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
+                        <img src={url} alt={`Review photo ${index + 1} by ${r.name}`} loading="lazy" className="h-16 w-16 rounded object-cover" />
+                      </a>
+                    ))}
+                  </div>
                 </td>
                 <td className="hidden md:table-cell a-dim whitespace-nowrap">{fmtDate(r.created_at)}</td>
                 <td>
@@ -198,6 +205,14 @@ function ReviewForm({ review, products, onClose, onSaved }) {
     body: review?.body || '',
     is_approved: review?.is_approved ?? true,
   }))
+  const [photos, setPhotos] = useState([])
+  const [retained, setRetained] = useState(review?.photos || [])
+  const [previews, setPreviews] = useState([])
+  useEffect(() => {
+    const urls = photos.map((file) => URL.createObjectURL(file))
+    setPreviews(urls)
+    return () => urls.forEach((url) => URL.revokeObjectURL(url))
+  }, [photos])
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
 
@@ -217,6 +232,9 @@ function ReviewForm({ review, products, onClose, onSaved }) {
       title: f.title.trim() || null,
       body: f.body.trim(),
       is_approved: f.is_approved,
+      manage_photos: true,
+      photos,
+      retained_photos: retained,
     }
     setBusy(true)
     try {
@@ -232,7 +250,7 @@ function ReviewForm({ review, products, onClose, onSaved }) {
   return (
     <div className="fixed inset-0 z-[60] grid place-items-center bg-black/40 p-4" onClick={onClose}>
       <div
-        className="a-card w-full max-w-lg p-6"
+        className="a-card max-h-[90vh] w-full max-w-lg overflow-y-auto p-6"
         style={{ borderRadius: 'var(--a-radius-lg)' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -269,6 +287,35 @@ function ReviewForm({ review, products, onClose, onSaved }) {
             <textarea className="a-textarea" rows={4} value={f.body} onChange={set('body')} maxLength={2000} />
           </Field>
 
+          <div>
+            <div className="mb-2 flex items-center justify-between text-xs">
+              <span className="font-semibold">Add photos <span className="a-mute font-normal">(optional, maximum 4)</span></span>
+              <span aria-live="polite" className="a-mute">{retained.length + photos.length}/4</span>
+            </div>
+            <label className={`relative flex items-center gap-3 rounded-lg border border-dashed p-3 focus-within:ring-2 focus-within:ring-olive-500 ${busy || retained.length + photos.length >= 4 ? 'opacity-50' : 'cursor-pointer'}`} style={{ borderColor: 'var(--a-border)' }}>
+              <ImagePlus size={22} className="a-mute shrink-0" />
+              <span className="flex-1 text-xs"><span className="block font-medium">{retained.length + photos.length >= 4 ? 'All 4 photos added' : 'Choose photos'}</span><span className="a-mute">JPG, PNG or WebP ? Up to 5 MB each</span></span>
+              <input type="file" multiple accept="image/jpeg,image/png,image/webp" aria-label="Choose review photos"
+                disabled={busy || retained.length + photos.length >= 4} className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                onChange={(e) => {
+                  const selected = Array.from(e.target.files || [])
+                  e.target.value = ''
+                  if (retained.length + photos.length + selected.length > 4) return setErr('You can add a maximum of 4 photos.')
+                  if (selected.some((file) => !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024)) return setErr('Choose JPG, PNG or WebP photos up to 5 MB each.')
+                  setErr('')
+                  setPhotos((current) => [...current, ...selected])
+                }} />
+            </label>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {[...retained, ...previews].map((url, index) => (
+                <div key={url} className="relative">
+                  <a href={url} target="_blank" rel="noreferrer"><img src={url} alt={`Review photo ${index + 1}`} className="h-16 w-16 rounded-lg object-cover" /></a>
+                  <button type="button" aria-label={`Remove photo ${index + 1}`} disabled={busy} className="absolute right-0 top-0 rounded-full bg-white p-1 text-gray-800 shadow"
+                    onClick={() => index < retained.length ? setRetained((current) => current.filter((_, i) => i !== index)) : setPhotos((current) => current.filter((_, i) => i !== index - retained.length))}><X size={12} /></button>
+                </div>
+              ))}
+            </div>
+          </div>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={f.is_approved} onChange={set('is_approved')} className="h-4 w-4 cursor-pointer" />
             Published — visible on the storefront

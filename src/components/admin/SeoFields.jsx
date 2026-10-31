@@ -43,6 +43,17 @@ export default function SeoFields({ values, onChange, fallback }) {
   const shownTitle = values.meta_title || fallback.title
   const shownDescription = values.meta_description || fallback.description
 
+  const suggestedKeyword = (fallback.path || '').split('/').filter(Boolean).pop()?.replace(/-/g, ' ') || ''
+  const focus = (values.focus_keyword || '').trim().toLowerCase()
+  const includesFocus = (text) => !!focus && (text || '').toLowerCase().includes(focus)
+  const checks = [
+    ['Focus keyword in SEO title', includesFocus(shownTitle)],
+    ['Focus keyword in description', includesFocus(shownDescription)],
+    ['Focus keyword in page content', includesFocus(values.seo_content)],
+    ['SEO title is 60 characters or fewer', !!shownTitle && shownTitle.length <= TITLE_RECOMMENDED],
+    ['Description is 160 characters or fewer', !!shownDescription && shownDescription.length <= DESCRIPTION_RECOMMENDED],
+  ]
+
   return (
     <div className="space-y-4">
       {/* what Google will roughly show */}
@@ -51,6 +62,27 @@ export default function SeoFields({ values, onChange, fallback }) {
         <p className="a-mute mt-2 truncate text-[0.78rem]">{(values.canonical_url || `${origin}${fallback.path}`).replace(/^https?:\/\//, '')}</p>
         <p className="mt-0.5 text-[1.05rem] leading-snug" style={{ color: 'var(--a-accent)' }}>{shownTitle || 'Page title'}</p>
         <p className="a-dim mt-0.5 text-[0.82rem] leading-snug">{shownDescription || 'The description search engines may show under the title.'}</p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <button type="button" className="a-btn a-btn-sm" onClick={() => {
+          onChange('focus_keyword', suggestedKeyword)
+          onChange('meta_keywords', [suggestedKeyword, `cold pressed ${suggestedKeyword}`, `Samaha ${suggestedKeyword}`].join(', '))
+        }}>Use keyword suggestions</button>
+        <span className="a-mute text-xs">Based on this page URL. Review for accuracy before saving.</span>
+      </div>
+      <Field label="Focus keyword" hint="The main search phrase this page answers. Use it naturally in your title, description and useful page content. This editing guide does not guarantee rankings.">
+        <input className="a-input" value={values.focus_keyword || ''} onChange={set('focus_keyword')} maxLength={160} placeholder="e.g. cold pressed coconut oil 500ml" />
+      </Field>
+      <Field label="Related keywords / meta keywords" hint="Comma-separated phrases. Saved in the page's meta keywords tag. Google ignores this tag for ranking; use relevant phrases naturally in visible page content too.">
+        <textarea className="a-textarea" rows={2} value={values.meta_keywords || ''} onChange={set('meta_keywords')} maxLength={1000} placeholder="coconut oil 500ml, cold pressed coconut oil, Samaha coconut oil" />
+      </Field>
+      <div className="rounded-lg border p-3" style={{ borderColor: 'var(--a-border)' }}>
+        <p className="text-xs font-semibold">On-page SEO checks</p>
+        <p className="a-mute mt-1 text-xs">Editing guidance only. Content checks cover the Page content field below, not the entire page.</p>
+        <ul className="mt-2 space-y-1 text-xs">
+          {checks.map(([label, passed]) => <li key={label} className={passed ? 'text-green-700' : 'a-mute'}>{passed ? 'Pass:' : 'Check:'} {label}</li>)}
+        </ul>
       </div>
 
       <Field

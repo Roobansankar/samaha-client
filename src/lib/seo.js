@@ -121,6 +121,8 @@ export function applySeo(seo) {
 
   if ('description' in seo) setMeta('name', 'description', seo.description)
 
+  setMeta('name', 'keywords', seo.canonical ? seo.keywords || null : null)
+
   if (seo.robots) {
     // same string the server writes, so a reload and a navigation look identical to a crawler
     const robots = seo.robots.startsWith('index') ? `${seo.robots},max-image-preview:large,max-snippet:-1` : seo.robots
