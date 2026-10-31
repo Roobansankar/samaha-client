@@ -79,7 +79,7 @@ const OIL_COPY = {
     tagline: 'Rich, aromatic and deeply nutty — the finishing oil of choice.',
     description:
       'Stone-ground from whole, unhulled sesame seeds and cold-pressed to preserve the deep, roasted aroma that makes sesame oil irreplaceable in Asian and Indian kitchens.\n\nA little goes a long way — drizzle over finished dishes, use in marinades, or add depth to stir-fries and dressings.',
-    seo: 'Unrefined oil from stone-ground whole sesame seeds, pressed in small lots in Coimbatore.',
+    seo: 'Sesame oil, also known as gingelly oil. Unrefined oil from stone-ground whole sesame seeds, pressed in small lots in Coimbatore.',
     process: 'It is unrefined, pressed in small, dated lots and bottled by hand.',
     specs: [
       ['Extraction', 'Stone-ground, cold-pressed'],
@@ -94,9 +94,9 @@ const OIL_COPY = {
 
 /* Standard list prices (₹) by pack size. Sizes not listed here get no price. */
 const LIST_PRICE = {
-  'Coconut Oil': { '250 ml': 55, '500 ml': 100, '1 Litre': 180, '5 Litres': 830, '16 Litre Tin': 2520 },
-  'Groundnut Oil': { '250 ml': 65, '500 ml': 120, '1 Litre': 220, '5 Litres': 1010, '16 Litre Tin': 3080 },
-  'Sesame Oil': { '250 ml': 90, '500 ml': 160, '1 Litre': 290, '5 Litres': 1340, '16 Litre Tin': 4080 },
+  'Coconut Oil': { '250 ml': 55, '500 ml': 100, '1 Litre': 180, '5 Litres': 830, '16.5 Litre Tin': 2520 },
+  'Groundnut Oil': { '250 ml': 65, '500 ml': 120, '1 Litre': 220, '5 Litres': 1010, '16.5 Litre Tin': 3080 },
+  'Sesame Oil': { '250 ml': 90, '500 ml': 160, '1 Litre': 290, '5 Litres': 1340, '16.5 Litre Tin': 4080 },
 }
 
 /* Starter stock (the launch quantities) and a one-line pack description. */
@@ -105,7 +105,7 @@ const SIZE_INFO = {
   '500 ml': { stock: 120, line: 'The 500 ml bottle is a handy size to try Samaha or for a small kitchen.' },
   '1 Litre': { stock: 90, line: 'The 1 litre bottle is our everyday size for regular cooking.' },
   '5 Litres': { stock: 45, line: 'The 5 litre pack suits kitchens that cook in larger quantities.' },
-  '16 Litre Tin': { stock: 18, line: 'The 16 litre tin is our largest pack, for bulk buying.' },
+  '16.5 Litre Tin': { stock: 18, line: 'The 16.5 litre tin is our largest pack, for bulk buying.' },
 }
 const DEFAULT_STOCK = 50
 
@@ -131,14 +131,14 @@ export function buildTemplate({ oil, sizeLong, slug, firstImage = '' }) {
       short_name: short,
       sku: `SAM-${slug.toUpperCase()}`.slice(0, 80), // internal code, derived from the slug
       blurb: copy?.blurb ?? null,
-      badge: copy ? (sizeLong === '16 Litre Tin' ? 'Best value' : copy.badge) : null,
+      badge: copy ? (sizeLong === '16.5 Litre Tin' ? 'Best value' : copy.badge) : null,
       tagline: copy?.tagline ?? null,
       description: copy?.description ?? null,
       price,
       mrp: price !== null ? suggestMrp(price) : null,
       stock: size?.stock ?? DEFAULT_STOCK,
       focus_keyword: `${oil} ${sizeLong}`.toLowerCase(),
-      meta_keywords: [`${oil} ${sizeLong}`, `cold pressed ${oil}`, `Samaha ${oil}`].join(', ').toLowerCase(),
+      meta_keywords: [`${oil} ${sizeLong}`, `cold pressed ${oil}`, `Samaha ${oil}`, ...(oil === 'Sesame Oil' ? ['gingelly oil', 'cold pressed gingelly oil', `gingelly oil ${sizeLong}`] : [])].join(', ').toLowerCase(),
       meta_title: longTitle.length <= 60 ? longTitle : `${short} | Samaha`,
       meta_description: copy ? `Buy ${short} online from Samaha. ${copy.seo}` : `Buy ${short} online from Samaha.`,
       canonical_url: `/shop/${slug}`,

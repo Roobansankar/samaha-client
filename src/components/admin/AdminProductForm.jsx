@@ -14,8 +14,8 @@ const OILS = {
   'Sesame Oil': { oil_slug: 'sesame-oil', tag: 'Sesame', tint: '#d4b896' },
 }
 /* size_long (what you pick)  ->  short label stored in `size` */
-const SIZES = { '250 ml': '1/4 L', '500 ml': '1/2 L', '1 Litre': '1 L', '5 Litres': '5 L', '16 Litre Tin': '16 L tin' }
-const SIZE_SUFFIX = { '250 ml': '250ml', '500 ml': '500ml', '1 Litre': '1l', '5 Litres': '5l', '16 Litre Tin': '16l' }
+const SIZES = { '250 ml': '1/4 L', '500 ml': '1/2 L', '1 Litre': '1 L', '5 Litres': '5 L', '16.5 Litre Tin': '16.5 L tin' }
+const SIZE_SUFFIX = { '250 ml': '250ml', '500 ml': '500ml', '1 Litre': '1l', '5 Litres': '5l', '16.5 Litre Tin': '16l' }
 
 const slugify = (s) =>
   String(s || 'oil')
