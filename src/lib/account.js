@@ -186,3 +186,7 @@ export function useAccount() {
 
   return user
 }
+
+export async function cancelOrder(id) {
+  return request(`/account/orders/${id}/cancel`, { method: 'POST' })
+}

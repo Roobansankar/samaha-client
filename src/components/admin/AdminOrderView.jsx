@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, FileDown, Loader2, X, Truck, PackageCheck } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { StatusBadge } from './ui'
-import { fetchOrder, updateOrderDeliveryStatus } from './auth'
+import { fetchOrder, updateOrderDeliveryStatus, cancelAdminOrder } from './auth'
 import {
   enrichItems,
   downloadOrderInvoice,
@@ -25,6 +25,8 @@ export default function AdminOrderView() {
   const { getVariant } = useProducts()
   const [order, setOrder] = useState(null)
   const [err, setErr] = useState('')
+  const [cancelOpen, setCancelOpen] = useState(false)
+  const [cancelling, setCancelling] = useState(false)
   const [deliveryStep, setDeliveryStep] = useState(null) // the step awaiting confirmation
   const [updatingDelivery, setUpdatingDelivery] = useState(false)
 
@@ -106,7 +108,7 @@ export default function AdminOrderView() {
           <p className="a-mute text-[0.78rem]">{fmtDateTime(order.placed_at)}</p>
         </div>
         <StatusBadge status={orderStatusLabel(order.status, order.payment_method)} />
-        {deliverable && (
+        {(deliverable || order.delivery_status === 'cancelled') && (
           <span className="flex items-center gap-1.5" title="Delivery status">
             <span className="a-mute text-[0.75rem]">Delivery</span>
             <StatusBadge status={deliveryStatusLabel(order.delivery_status)} />
@@ -117,12 +119,19 @@ export default function AdminOrderView() {
             {step.status === 'delivered' ? <PackageCheck size={14} /> : <Truck size={14} />} {step.label}
           </button>
         ))}
+        {order.can_cancel && (
+          <button className="a-btn a-btn-sm text-red-700" disabled={cancelling || updatingDelivery} onClick={() => setCancelOpen(true)}><X size={14} /> Cancel order</button>
+        )}
         {order.status === 'paid' && (
           <button className="a-btn a-btn-sm a-btn-primary" onClick={() => downloadOrderInvoice(order, getVariant)}>
             <FileDown size={14} /> Download PDF
           </button>
         )}
       </div>
+
+      {order.delivery_status === 'cancelled' && (
+        <p className="mb-5 rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-800">Order cancelled before dispatch.{order.status === 'paid' ? ' Payment was collected; review and arrange any refund separately.' : ''}</p>
+      )}
 
       {order.status !== 'paid' && (
         <p className="mb-5 rounded-lg border px-3.5 py-2.5 text-sm" style={{ borderColor: 'var(--a-border-strong)', background: 'var(--a-surface-2)', color: 'var(--a-text-dim)' }}>
@@ -190,6 +199,32 @@ export default function AdminOrderView() {
           </Card>
         </div>
       </div>
+
+      {cancelOpen && (
+        <ConfirmDialog label="Cancel order" icon={<X size={18} />} title={`Cancel ${orderName}?`}
+          busy={cancelling} confirmIcon={<X size={14} />} confirmLabel="Yes, cancel order" busyLabel="Cancelling..."
+          onCancel={() => setCancelOpen(false)} onConfirm={async () => {
+            setCancelling(true)
+            try {
+              const result = await cancelAdminOrder(id)
+              setCancelOpen(false)
+              toast.success('Order cancelled')
+              if (result.whatsapp_sent) toast.success('WhatsApp notification submitted')
+              else toast.error('Order cancelled, but WhatsApp could not be sent. Check the template approval and server logs.')
+              setOrder(await fetchOrder(id))
+            } catch (error) {
+              toast.error(error.message || 'Could not cancel the order.')
+              setCancelOpen(false)
+              fetchOrder(id).then(setOrder).catch(() => {})
+            } finally {
+              setCancelling(false)
+            }
+          }}>
+          The order will be cancelled and its stock restored.
+          {order.phone ? ` A cancellation message will be sent to ${order.phone} on WhatsApp.` : ' No phone number is available, so WhatsApp cannot be sent.'}
+          {order.status === 'paid' && ' Any refund must be processed separately.'}
+        </ConfirmDialog>
+      )}
 
       {/* Custom confirm popup */}
       {deliveryStep && (

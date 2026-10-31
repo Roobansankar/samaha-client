@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
+import * as Dialog from '@radix-ui/react-dialog'
 import { Link, Navigate } from 'react-router-dom'
 import {
   LayoutDashboard, Package, MapPin, User as UserIcon, LogOut,
   Plus, Pencil, Trash2, Check, Loader2, FileDown,
 } from 'lucide-react'
 import {
-  useAccount, updateAccount, logout,
+  useAccount, updateAccount, logout, cancelOrder,
   fetchAddresses, createAddress, updateAddress, deleteAddress, makeAddressDefault,
 } from '../lib/account'
 import { fetchOrders } from '../lib/checkout'
@@ -432,7 +433,7 @@ function OrderList({ limit }) {
   return (
     <div className="mt-4 space-y-4">
       {shown.map((o) => (
-        <OrderCard key={o.id} order={o} compact={Boolean(limit)} />
+        <OrderCard key={o.id} order={o} compact={Boolean(limit)} onCancelled={() => fetchOrders().then(setOrders)} />
       ))}
       {limit && orders.length > limit && (
         <Link to="/profile/orders" className="inline-block text-sm font-semibold text-olive-900 underline underline-offset-2">
@@ -443,7 +444,10 @@ function OrderList({ limit }) {
   )
 }
 
-function OrderCard({ order, compact }) {
+function OrderCard({ order, compact, onCancelled }) {
+  const [cancelOpen, setCancelOpen] = useState(false)
+  const [cancelling, setCancelling] = useState(false)
+  const [cancelError, setCancelError] = useState('')
   const { getVariant } = useProducts()
   const items = order.items.map((it) => {
     const v = getVariant(it.slug)
@@ -516,9 +520,51 @@ function OrderCard({ order, compact }) {
         </div>
 
         <div className="flex flex-wrap items-center justify-end gap-2 border-t border-olive-900/10 pt-2.5">
+          {order.can_cancel && (
+            <button type="button" disabled={cancelling}
+              className="mr-auto inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 disabled:opacity-60"
+              onClick={() => { setCancelError(''); setCancelOpen(true) }}>Cancel order</button>
+          )}
+          <Dialog.Root open={cancelOpen} onOpenChange={(open) => { if (!cancelling) setCancelOpen(open) }}>
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/45 backdrop-blur-sm" />
+              <Dialog.Content className="fixed left-1/2 top-1/2 z-[101] w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-olive-900/10 bg-[#faf8f3] p-6 shadow-2xl focus:outline-none">
+                <span className="mb-4 grid h-11 w-11 place-items-center rounded-full bg-red-50 text-red-700"><Package size={22} /></span>
+                <Dialog.Title className="font-display text-xl font-medium text-olive-900">Cancel this order?</Dialog.Title>
+                <Dialog.Description className="mt-2 text-sm leading-relaxed text-olive-700">
+                  Order {order.order_number ?? `#${order.id}`} will be cancelled and will no longer be dispatched.
+                  {order.status === 'paid' ? ' For this paid order, contact support for refund assistance.' : ''}
+                </Dialog.Description>
+                {cancelError && <p role="alert" className="mt-3 text-sm text-red-700">{cancelError}</p>}
+                <div className="mt-6 flex gap-3">
+                  <Dialog.Close asChild>
+                    <button type="button" disabled={cancelling} className="flex-1 cursor-pointer rounded-full border border-olive-900/20 bg-white px-3 py-2.5 text-sm font-semibold text-olive-900 disabled:opacity-50">Keep order</button>
+                  </Dialog.Close>
+                  <button type="button" disabled={cancelling}
+                    className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-red-700 px-3 py-2.5 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-60"
+                    onClick={async () => {
+                      setCancelling(true)
+                      setCancelError('')
+                      try {
+                        await cancelOrder(order.id)
+                        setCancelOpen(false)
+                        await onCancelled()
+                      } catch (error) {
+                        setCancelError(error.message || 'Could not cancel your order.')
+                        await onCancelled()
+                      } finally {
+                        setCancelling(false)
+                      }
+                    }}>{cancelling && <Loader2 size={14} className="animate-spin" />}{cancelling ? 'Cancelling...' : 'Yes, cancel'}</button>
+                </div>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
+          {cancelError && <p role="alert" className="w-full text-xs text-red-700">{cancelError}</p>}
+          {order.delivery_status === 'cancelled' && <p className="mr-auto text-xs text-olive-700">Order cancelled.{order.status === 'paid' ? ' Contact support for refund assistance.' : ''}</p>}
           {/* COD isn't collected (or the invoice "final") until the order is actually delivered —
               an online order is already paid, so its bill is ready right away */}
-          {order.payment_method === 'cod' && order.delivery_status !== 'delivered' ? (
+          {order.delivery_status === 'cancelled' ? null : order.payment_method === 'cod' && order.delivery_status !== 'delivered' ? (
             <p className="text-xs text-olive-700/60">Bill available once delivered</p>
           ) : (
             <DownloadBillButton order={order} />

@@ -32,11 +32,11 @@ export const orderStatusLabel = (status, paymentMethod) =>
  * (pending, not yet dispatched) | dispatched | out_for_delivery | delivered — set by the
  * backend only, moving forward to the selected stage.
  */
-const DELIVERY_LABEL = { dispatched: 'Dispatched', out_for_delivery: 'Out for delivery', delivered: 'Delivered' }
+const DELIVERY_LABEL = { cancelled: 'Cancelled', dispatched: 'Dispatched', out_for_delivery: 'Out for delivery', delivered: 'Delivered' }
 export const deliveryStatusLabel = (deliveryStatus) => DELIVERY_LABEL[deliveryStatus] || 'Pending'
 
 /** Only paid orders and confirmed COD orders are real orders that can be shipped. */
-export const isDeliverableOrder = (o) => o?.status === 'paid' || o?.status === 'confirmed'
+export const isDeliverableOrder = (o) => o?.delivery_status !== 'cancelled' && (o?.status === 'paid' || o?.status === 'confirmed')
 
 /**
  * The order as it will be once delivered — what its invoice should show. Mirrors the backend:

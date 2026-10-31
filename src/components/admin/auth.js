@@ -448,3 +448,7 @@ export async function uploadGalleryVideo(file, name) {
   return data
 }
 
+
+export async function cancelAdminOrder(id) {
+  return request(`${API_URL}/admin/orders/${id}/cancel`, { method: 'POST' })
+}
