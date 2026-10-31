@@ -107,7 +107,16 @@ function SearchOverlay({ open, onClose }) {
     if (q) trackSearch(q)
 
     setQuery('')
-    navigate(q ? `/shop?q=${encodeURIComponent(q)}` : '/shop', { replace: true })
+    const normalized = q.toLowerCase().replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim()
+    const oilPages = {
+      coconut: 'coconut-oil', 'coconut oil': 'coconut-oil',
+      groundnut: 'groundnut-oil', 'groundnut oil': 'groundnut-oil',
+      peanut: 'groundnut-oil', 'peanut oil': 'groundnut-oil',
+      sesame: 'sesame-oil', 'sesame oil': 'sesame-oil',
+      gingelly: 'sesame-oil', 'gingelly oil': 'sesame-oil',
+    }
+    const oilSlug = oilPages[normalized]
+    navigate(oilSlug ? `/shop/${oilSlug}` : q ? `/shop?q=${encodeURIComponent(q)}` : '/shop', { replace: true })
   }
 
   return (
