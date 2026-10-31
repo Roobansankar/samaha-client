@@ -1,3 +1,4 @@
+import PaymentIcons from './PaymentIcons'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
@@ -325,7 +326,7 @@ export default function CheckoutPage() {
                 </label>
                 <label className="block sm:col-span-2">
                   <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-olive-700/60">Phone</span>
-                  <input className={inp} value={form.phone} onChange={set('phone')} placeholder="+91 …" />
+                  <input className={inp} value={form.phone} onChange={set('phone')} placeholder="9954565460" />
                 </label>
                 <label className="block sm:col-span-2">
                   <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-olive-700/60">Address line 1</span>
@@ -441,10 +442,14 @@ export default function CheckoutPage() {
                   ) : (
                     <>
                       <li className="flex items-center gap-2"><ShieldCheck size={13} className="text-olive-700" /> Secured by Razorpay</li>
-                      <li className="flex items-center gap-2"><Lock size={13} className="text-olive-700" /> Test mode — no real charge</li>
                     </>
                   )}
                 </ul>
+                {paymentMethod === 'online' && (
+                  <div className="mt-4 border-t border-olive-900/10 pt-4">
+                    <PaymentIcons />
+                  </div>
+                )}
               </div>
             </div>
           </div>

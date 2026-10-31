@@ -64,6 +64,8 @@ export default function AdminGallery() {
   const [error, setError] = useState('')
   const [busyId, setBusyId] = useState(null)
   const [editing, setEditing] = useState(null)
+  const [removing, setRemoving] = useState(null)
+  const [removeError, setRemoveError] = useState('')
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('All')
   const [mediaType, setMediaType] = useState('All')
@@ -85,26 +87,20 @@ export default function AdminGallery() {
     load()
   }, [])
 
-  const remove = async (item) => {
-    const mediaLabel = isVideoItem(item) ? 'video' : 'image'
-
-    if (
-      !window.confirm(
-        `Delete this gallery ${mediaLabel}? The uploaded media will also be removed.`,
-      )
-    ) {
-      return
-    }
+  const remove = async () => {
+    const item = removing
 
     setBusyId(item.id)
+    setRemoveError('')
 
     try {
       await deleteGallery(item.id)
       setRows((list) => list.filter((x) => x.id !== item.id))
+      setRemoving(null)
     } catch (e) {
-      window.alert(
+      setRemoveError(
         e.message ||
-          `Could not delete the gallery ${mediaLabel}.`,
+          `Could not delete the gallery ${isVideoItem(item) ? 'video' : 'image'}.`,
       )
     } finally {
       setBusyId(null)
@@ -325,7 +321,10 @@ export default function AdminGallery() {
                   item={item}
                   busy={busyId === item.id}
                   onEdit={() => setEditing(item)}
-                  onDelete={() => remove(item)}
+                  onDelete={() => {
+                    setRemoveError('')
+                    setRemoving(item)
+                  }}
                 />
               ))}
             </div>
@@ -342,7 +341,81 @@ export default function AdminGallery() {
           }}
         />
       )}
+
+      {removing !== null && (
+        <DeleteDialog
+          item={removing}
+          busy={busyId === removing.id}
+          error={removeError}
+          onCancel={() => setRemoving(null)}
+          onConfirm={remove}
+        />
+      )}
     </>
+  )
+}
+
+function DeleteDialog({ item, busy, error, onCancel, onConfirm }) {
+  const mediaLabel = isVideoItem(item) ? 'video' : 'image'
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape' && !busy) onCancel()
+    }
+
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [busy, onCancel])
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] grid place-items-center bg-black/40 px-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Delete gallery ${mediaLabel}`}
+      onClick={() => !busy && onCancel()}
+    >
+      <div
+        className="a-card w-full max-w-md p-6"
+        style={{ borderRadius: 'var(--a-radius-lg)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-red-50 text-red-600">
+            <Trash2 size={18} />
+          </span>
+          <button className="a-iconbtn" aria-label="Close" disabled={busy} onClick={onCancel}>
+            <X size={16} />
+          </button>
+        </div>
+
+        <h2 className="mt-3 text-[1.05rem] font-semibold tracking-tight">
+          Delete this gallery {mediaLabel}?
+        </h2>
+        <p className="a-dim mt-1.5 text-[0.85rem] leading-relaxed">
+          {item.title ? <><strong>{item.title}</strong> and its</> : 'Its'} uploaded media will be permanently removed.
+        </p>
+
+        {error && (
+          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-[0.82rem] text-red-700" role="alert">{error}</p>
+        )}
+
+        <div className="mt-5 flex items-center justify-end gap-2">
+          <button className="a-btn a-btn-sm" disabled={busy} onClick={onCancel}>
+            Cancel
+          </button>
+          <button
+            className="a-btn a-btn-sm border-transparent text-white hover:opacity-90"
+            style={{ background: 'var(--a-danger)' }}
+            disabled={busy}
+            onClick={onConfirm}
+          >
+            {busy ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+            {busy ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
 

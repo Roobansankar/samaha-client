@@ -161,6 +161,9 @@ function Addresses() {
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(null) // null | 'new' | address
   const [busy, setBusy] = useState(false)
+  const [removing, setRemoving] = useState(null) // address awaiting confirmation
+  const [removeBusy, setRemoveBusy] = useState(false)
+  const [removeError, setRemoveError] = useState('')
 
   const load = () => {
     setLoading(true)
@@ -187,13 +190,17 @@ function Addresses() {
     }
   }
 
-  const remove = async (id) => {
-    if (!window.confirm('Remove this address?')) return
+  const remove = async () => {
+    setRemoveBusy(true)
+    setRemoveError('')
     try {
-      await deleteAddress(id)
+      await deleteAddress(removing.id)
+      setRemoving(null)
       load()
     } catch (e) {
-      setError(e.message)
+      setRemoveError(e.message || 'Could not remove the address.')
+    } finally {
+      setRemoveBusy(false)
     }
   }
 
@@ -265,7 +272,7 @@ function Addresses() {
                   <button type="button" onClick={() => setEditing(a)} className="inline-flex items-center gap-1 text-olive-700 transition-colors hover:text-olive-900 cursor-pointer">
                     <Pencil size={13} /> Edit
                   </button>
-                  <button type="button" onClick={() => remove(a.id)} className="inline-flex items-center gap-1 text-red-600 transition-colors hover:text-red-700 cursor-pointer">
+                  <button type="button" onClick={() => { setRemoveError(''); setRemoving(a) }} className="inline-flex items-center gap-1 text-red-600 transition-colors hover:text-red-700 cursor-pointer">
                     <Trash2 size={13} /> Remove
                   </button>
                 </div>
@@ -274,6 +281,29 @@ function Addresses() {
           </div>
         )
       )}
+
+      <Dialog.Root open={removing !== null} onOpenChange={(open) => { if (!open && !removeBusy) setRemoving(null) }}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/45 backdrop-blur-sm" />
+          <Dialog.Content className="fixed left-1/2 top-1/2 z-[101] w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-olive-900/10 bg-[#faf8f3] p-6 shadow-2xl focus:outline-none">
+            <span className="mb-4 grid h-11 w-11 place-items-center rounded-full bg-red-50 text-red-700"><MapPin size={22} /></span>
+            <Dialog.Title className="font-display text-xl font-medium text-olive-900">Remove this address?</Dialog.Title>
+            <Dialog.Description className="mt-2 text-sm leading-relaxed text-olive-700">
+              {removing && `${removing.label || removing.name}, ${addressText(removing)} will be removed from your account.`}
+            </Dialog.Description>
+            {removeError && <p role="alert" className="mt-3 text-sm text-red-700">{removeError}</p>}
+            <div className="mt-6 flex gap-3">
+              <Dialog.Close asChild>
+                <button type="button" disabled={removeBusy} className="flex-1 cursor-pointer rounded-full border border-olive-900/20 bg-white px-3 py-2.5 text-sm font-semibold text-olive-900 disabled:opacity-50">Keep address</button>
+              </Dialog.Close>
+              <button type="button" disabled={removeBusy} onClick={remove}
+                className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-red-700 px-3 py-2.5 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-60">
+                {removeBusy && <Loader2 size={14} className="animate-spin" />}{removeBusy ? 'Removing...' : 'Yes, remove'}
+              </button>
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   )
 }
@@ -306,7 +336,7 @@ function AddressForm({ initial, isFirst, busy, onCancel, onSave }) {
         <L label="Label (optional)"><input className={inp} value={f.label} onChange={set('label')} placeholder="Home, Work…" /></L>
         <L label="Full name"><input className={inp} required value={f.name} onChange={set('name')} /></L>
       </div>
-      <L label="Phone"><input className={inp} value={f.phone} onChange={set('phone')} placeholder="+91 …" /></L>
+      <L label="Phone"><input className={inp} value={f.phone} onChange={set('phone')} placeholder="9954565460" /></L>
       <L label="Address line 1"><input className={inp} required value={f.line1} onChange={set('line1')} /></L>
       <L label="Address line 2 (optional)"><input className={inp} value={f.line2} onChange={set('line2')} /></L>
       <div className="grid gap-3 sm:grid-cols-3">
