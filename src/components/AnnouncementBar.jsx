@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 const MESSAGES = [
+  'Free delivery across Coimbatore',
   'Complimentary shipping on orders over ₹5000',
   'Harvest 2026 — the first cold press is now bottled',
   'Pressed, tinned & labelled by hand in small lots',

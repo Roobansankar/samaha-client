@@ -1,7 +1,7 @@
 import PaymentIcons from './PaymentIcons'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronRight, Loader2, ShieldCheck, Lock, CheckCircle2, X, Banknote } from 'lucide-react'
 import { useCart, clearCart } from '../lib/cart'
 import { useProducts } from '../context/ProductsContext'
@@ -81,7 +81,18 @@ export default function CheckoutPage() {
   const account = useAccount()
   const navigate = useNavigate()
   const { getVariant, loading: productsLoading } = useProducts()
-  const { items, subtotal, savings } = useCart(getVariant)
+  const cart = useCart(getVariant)
+  const [params] = useSearchParams()
+  const buyNow = params.has('buyNow')
+  const product = buyNow ? getVariant(params.get('buyNow')) : null
+  const requestedQty = Number(params.get('qty') || 1)
+  const qty = Number.isInteger(requestedQty) ? Math.max(1, Math.min(99, requestedQty)) : 1
+  const items = useMemo(
+    () => buyNow ? (product ? [{ slug: product.slug, qty, product }] : []) : cart.items,
+    [buyNow, product, qty, cart.items],
+  )
+  const subtotal = buyNow ? items.reduce((sum, item) => sum + item.qty * item.product.price, 0) : cart.subtotal
+  const savings = buyNow ? Math.max(0, items.reduce((sum, item) => sum + item.qty * (item.product.mrp - item.product.price), 0)) : cart.savings
 
   const [addresses, setAddresses] = useState([])
   const [form, setForm] = useState({
@@ -129,7 +140,7 @@ export default function CheckoutPage() {
       .catch(() => {})
   }, [account])
 
-  if (!account) return <Navigate to="/account?redirect=/checkout" replace />
+  if (!account) return <Navigate to={`/account?redirect=${encodeURIComponent(`/checkout${params.size ? `?${params}` : ''}`)}`} replace />
   // on a fresh page load (e.g. a bookmark or refresh) the catalogue hasn't loaded yet, so a
   // real cart briefly looks empty (getVariant can't resolve anything) — wait for it rather
   // than bouncing a customer with real items in their cart off to /cart
@@ -163,12 +174,13 @@ export default function CheckoutPage() {
       const result = await placeCodOrder({
         items: items.map((i) => ({ slug: i.slug, qty: i.qty })),
         ...placeOrder,
+        preserve_cart: buyNow,
       })
       // real, confirmed order data — no gateway round-trip for COD, it's placed the moment this returns
       trackPurchase({ orderId: result.order.id, value: result.order.total, cartRows: items })
       setOrderPlaced({ orderId: result.order.order_number })
       setPaying(false)
-      clearCart()
+      if (!buyNow) clearCart()
     } catch (err) {
       setError(err.message || 'Could not place the order.')
       setPaying(false)
@@ -208,6 +220,7 @@ export default function CheckoutPage() {
               razorpay_order_id: resp.razorpay_order_id,
               razorpay_payment_id: resp.razorpay_payment_id,
               razorpay_signature: resp.razorpay_signature,
+              preserve_cart: buyNow,
             })
             settled = true
             // real, confirmed order data only — ids, quantities and the verified total
@@ -219,7 +232,7 @@ export default function CheckoutPage() {
             // comes from THIS response, not the pre-payment order created before "Pay" was clicked
             setOrderPlaced({ orderId: verified.order?.order_number ?? order.order_id })
             setPaying(false)
-            clearCart()
+            if (!buyNow) clearCart()
           } catch (err) {
             settled = true
             setError(err.message || 'We couldn’t confirm your payment.')
@@ -385,6 +398,10 @@ export default function CheckoutPage() {
                     <dd className="font-medium text-olive-900">{money(0)}</dd>
                   </div>
                 </dl>
+
+                <p className="mt-3 text-sm font-medium text-olive-900">
+                  Free delivery across Coimbatore
+                </p>
 
                 <div className="mt-4 flex items-baseline justify-between border-t border-line pt-4">
                   <span className="font-display text-lg font-medium text-olive-900">Total</span>
