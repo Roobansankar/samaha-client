@@ -575,6 +575,7 @@ export default function ProductPage() {
                   Save {rupees(product.save)}
                 </span>
               </div>
+              <p className="mt-2 text-xs text-text-mute">Inclusive of all taxes</p>
               <p className="mt-2 text-sm text-text-mute">
                 Pack size: <span className="font-medium text-olive-900">{product.sizeLong}</span>
               </p>
