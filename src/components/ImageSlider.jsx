@@ -44,7 +44,7 @@ const REDUCED_MOTION =
   typeof window !== 'undefined' &&
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
-export default function ImageSlider() {
+export default function ImageSlider({ isActive = true }) {
   const [current, setCurrent] = useState(0)
   const [remote, setRemote] = useState(() => cachedBanners())
 
@@ -82,9 +82,10 @@ export default function ImageSlider() {
   const prev = useCallback(() => setCurrent((c) => (c - 1 + count) % count), [count])
 
   useEffect(() => {
+    if (!isActive) return
     const timer = setInterval(next, 5000)
     return () => clearInterval(timer)
-  }, [next])
+  }, [next, isActive])
 
   // Touch swipe (mobile)
   const touch = useRef(null)
@@ -104,6 +105,7 @@ export default function ImageSlider() {
   return (
     // Mobile frame follows a poster's own shape (--hero-m), else 4:5. 8:3 strip from 640px up.
     <section
+      data-no-reveal
       style={heroM ? { '--hero-m': String(heroM) } : undefined}
       className="relative w-full overflow-hidden bg-olive-950 aspect-[var(--hero-m,4/5)] sm:aspect-[8/3]"
       onTouchStart={onTouchStart}
@@ -133,7 +135,7 @@ export default function ImageSlider() {
                 alt={s.alt}
                 loading={i === 0 ? 'eager' : 'lazy'}
                 fetchPriority={i === 0 ? 'high' : 'low'}
-                decoding="async"
+                decoding={i === 0 ? 'sync' : 'async'}
                 className={`img-shimmer absolute inset-0 h-full w-full ${
                   s.plain ? 'object-contain' : 'object-cover'
                 }`}

@@ -124,18 +124,6 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Map */}
-            <div className="mt-2 h-[240px] rounded-2xl bg-paper-2 border border-line overflow-hidden">
-              <iframe
-                title="Samaha location"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15666.123456789!2d77.0669!3d10.8059!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba85f2e2b1b1b1b%3A0x1234567890abcdef!2sSulur%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1234567890"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-              />
-            </div>
           </div>
 
           {/* Form */}

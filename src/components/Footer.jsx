@@ -42,7 +42,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <Link to="/" className="inline-flex items-center gap-2.5" aria-label="Samaha — home">
-              <img src="/footerlogo.webp" alt="Samaha — Goodness from Nature" width={1798} height={875} className="h-auto w-48 max-w-full object-contain" loading="lazy" />
+              <img src="/footerlogo.webp" alt="Samaha — Goodness from Nature" width={1798} height={875} className="h-11 w-auto max-w-full object-contain sm:h-[52px]" loading="lazy" />
             </Link>
             <p className="mt-5 max-w-[32ch] text-sm leading-relaxed text-on-olive-mute">
               Single-origin oils, cold-pressed within hours of harvest and bottled

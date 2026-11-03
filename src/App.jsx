@@ -85,7 +85,6 @@ function RouteFallback() {
 function Home() {
   return (
     <>
-      <ImageSlider />
       <main>
         
         <Products />
@@ -135,6 +134,11 @@ function AppContent() {
         <div className="site-top">
           <AnnouncementBar />
           <Navbar />
+        </div>
+      )}
+      {!isAdmin && (
+        <div hidden={location.pathname !== '/'}>
+          <ImageSlider isActive={location.pathname === '/'} />
         </div>
       )}
       <Suspense fallback={<RouteFallback />}>
